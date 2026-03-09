@@ -40,7 +40,8 @@ namespace PDC_System
         public Home(User user)
         {
             InitializeComponent();
-            ThemeManager.ApplyTheme(this); // Apply initial theme
+
+            ThemeManager.ApplyTheme(this);
             Loaded += Home_Loaded;
 
             SetupTrayIcon();
@@ -50,7 +51,47 @@ namespace PDC_System
 
             LoadCalculateSettings();
 
-         
+            UpdateManager.StateChanged += UpdateManager_StateChanged;
+
+            Loaded += async (s, e) =>
+            {
+                try
+                {
+                    if (Properties.Settings.Default.AutoUpdateEnabled)
+                    {
+                        await UpdateManager.CheckForUpdates();
+                    }
+                }
+                catch
+                {
+                }
+            };
+        
+
+
+
+        }
+
+
+
+        private void UpdateManager_StateChanged(UpdateState state)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (state == UpdateState.Downloaded)
+                {
+                    var result = CustomMessageBox.Show(
+                        $"New update {UpdateManager.LatestVersion} is ready.\n\nInstall now?",
+                        "Update Available",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        UpdateManager.InstallUpdate();
+                    }
+                }
+            });
         }
 
 

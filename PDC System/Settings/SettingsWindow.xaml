@@ -71,7 +71,7 @@
                                 <!-- General Settings Section -->
                                 <StackPanel Grid.Row="2">
                                     <TextBlock Margin="0,20,0,20"  Text="Genaral" FontSize="18" FontWeight="SemiBold" />
-                                    <Border CornerRadius="20" BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="{DynamicResource BorderBrush}" Width="542">
+                                    <Border CornerRadius="20" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="{DynamicResource BorderBrush}" Width="542">
                                         <StackPanel>
                                             <Grid  Margin="20" >
                                                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Launch app on system startup" FontSize="14" FontWeight="Regular"/>
@@ -79,12 +79,98 @@
                                             </Grid>
                                         </StackPanel>
                                     </Border>
+
+
+                                    <StackPanel>
+                                        <TextBlock Text="Update"  Foreground="{DynamicResource Forground}" Margin="0,20,0,20" FontSize="18" FontWeight="SemiBold"/>
+                                    </StackPanel>
+
+
+                                    <Border CornerRadius="20" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="{DynamicResource BorderBrush}" Width="542">
+
+
+                                        <StackPanel Margin="20">
+
+                                            <StackPanel  VerticalAlignment="Center" Margin="0,0,0,10" HorizontalAlignment="Center">
+
+                                                <!-- ✅ Add Auto Update Checkbox -->
+
+                                                <StackPanel  VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,0,0,19.6" >
+                                                    <TextBlock VerticalAlignment="Center" Text="Auto Update" />
+
+                                                    <CheckBox VerticalAlignment="Center" x:Name="AutoUpdateCheckBox"
+Content="Auto Update"
+Margin="8,0,0,0"
+Checked="AutoUpdateCheckBox_Checked"
+Unchecked="AutoUpdateCheckBox_Unchecked"/>
+
+                                                </StackPanel>
+
+
+                                                <StackPanel  Orientation="Horizontal" >
+                                                    <Button Style="{DynamicResource ActionButton}" x:Name="CheckUpdateButton"
+                Content="Check for Updates"
+                Click="CheckUpdate_Click"
+               Width="120"
+                Margin="0,0,10,0"/>
+
+                                                    <TextBlock VerticalAlignment="Center" TextAlignment="Center" x:Name="UpdateStatusText"
+               
+Text="Current:"/>
+                                                </StackPanel>
+
+
+
+                                                <Button x:Name="DownloadButton"
+                Content="Download"
+                Height="35"
+                Margin="0,0,10,0"
+                Click="CheckUpdate_Click"
+                Visibility="Collapsed"
+                ToolTip="Starts the update check and download"/>
+
+
+                                            </StackPanel>
+
+
+
+                                            <ProgressBar x:Name="UpdateProgressBar"
+                 Style="{StaticResource RoundedProgressBar}"
+                 Minimum="0"
+                 Maximum="1"
+                 Height="8"
+                                                     Visibility="Collapsed"
+                 Margin="0,0,0,15"/>
+
+                                            <Button x:Name="InstallButton"
+Content="Install Update"
+Click="InstallButton_Click"
+Width="120"
+Style="{DynamicResource ActionButton}"
+Background="Green"
+IsEnabled="False"
+Visibility="Collapsed"/>
+
+                                        </StackPanel>
+                                        
+
+
+                                        
+                                        
+                                    </Border>
                                 </StackPanel>
+
+
+
+
+
+
+
 
                                 <!-- Appearance Section -->
                                 <StackPanel Grid.Row="3">
                                     <TextBlock Margin="0,20,0,20" FontSize="18"  Foreground="{DynamicResource Forground}" FontWeight="SemiBold" Text="Appearance"/>
-                                    <Border Background="{DynamicResource SettingsBackground}"  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" HorizontalAlignment="Center" Height="204" Width="542">
+                                    <Border Background="{DynamicResource SettingsBackground}"  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2" CornerRadius="20" HorizontalAlignment="Center" Height="204" Width="542">
                                         <StackPanel Margin="30">
                                             <Grid>
                                                 <Grid.RowDefinitions>
@@ -201,7 +287,7 @@
                                         <TextBox x:Name="TimerIntervalMinutes" Style="{DynamicResource TextBoxStyle}"></TextBox>
                                     </StackPanel>
 
-                                   
+
                                     <StackPanel  HorizontalAlignment="Left" Margin="0,10,0,0">
 
                                         <StackPanel Orientation="Horizontal">
@@ -214,7 +300,7 @@
                                             <TextBlock VerticalAlignment="Center" Text="Send daily attendance report to employees via email." FontSize="12" Foreground="{DynamicResource Forground}" Margin="20,0,0,0"/>
                                         </StackPanel>
 
-                                     
+
 
 
 

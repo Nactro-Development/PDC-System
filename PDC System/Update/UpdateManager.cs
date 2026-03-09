@@ -1,76 +1,158 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Newtonsoft.Json;
-using System.Windows;
 
-public class UpdateManager
+public enum UpdateState
 {
-    class VersionInfo
+    None,
+    Checking,
+    Available,
+    Downloading,
+    Downloaded
+}
+
+public class VersionInfo
+{
+    public string version { get; set; }
+    public string url { get; set; }
+}
+
+public static class UpdateManager
+{
+    public static UpdateState State { get; private set; } = UpdateState.None;
+
+    public static double Progress { get; private set; }
+
+    public static bool AutoInstall { get; set; } = false;
+
+    public static string InstallerPath =
+        Path.Combine(Path.GetTempPath(), "PDCUpdate.exe");
+
+    // NEW: expose latest discovered version and URL for UI
+    public static string? LatestVersion { get; private set; }
+    public static string? LatestUrl { get; private set; }
+
+    public static event Action<double>? ProgressChanged;
+    public static event Action<UpdateState>? StateChanged;
+
+    static void SetState(UpdateState state)
     {
-        public string version { get; set; }
-        public string url { get; set; }
+        State = state;
+        StateChanged?.Invoke(state);
     }
 
-    public static async Task CheckForUpdate()
+    public static async Task CheckForUpdates()
     {
+        if (State == UpdateState.Downloading)
+            return;
+
         try
         {
-            // current app version
+            SetState(UpdateState.Checking);
+
+            using HttpClient client = new HttpClient();
+
+            string json = await client.GetStringAsync(
+            "https://raw.githubusercontent.com/kavidu-kaushalya/PDC-System/refs/heads/master/PDC%20System/Update/version.json");
+
+            VersionInfo data =
+                JsonConvert.DeserializeObject<VersionInfo>(json);
+
             string currentVersion =
                 Assembly.GetExecutingAssembly()
                 .GetName()
                 .Version
                 .ToString();
 
-            HttpClient client = new HttpClient();
-
-            // GitHub version.json RAW URL
-            string json = await client.GetStringAsync(
-            "https://raw.githubusercontent.com/USERNAME/REPO/main/version.json");
-
-            VersionInfo data =
-                JsonConvert.DeserializeObject<VersionInfo>(json);
-
             Version current = new Version(currentVersion);
             Version latest = new Version(data.version);
 
+            // store latest info for UI consumption
+            LatestVersion = data.version;
+            LatestUrl = data.url;
+
             if (latest > current)
             {
-                var result = MessageBox.Show(
-                    $"New version {latest} available.\nUpdate now?",
-                    "Update",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
+                SetState(UpdateState.Available);
 
-                if (result == MessageBoxResult.Yes)
-                {
-                    string tempFile = Path.Combine(
-                        Path.GetTempPath(),
-                        "update.exe");
-
-                    byte[] file =
-                        await client.GetByteArrayAsync(data.url);
-
-                    File.WriteAllBytes(tempFile, file);
-
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = tempFile,
-                        Arguments = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
-                        UseShellExecute = true
-                    });
-
-                    Application.Current.Shutdown();
-                }
+                // Note: existing behavior proceeds to download immediately.
+                // Keep existing flow — UI will be notified of Available -> Downloading -> Downloaded.
+                await DownloadUpdate(data.url);
+            }
+            else
+            {
+                SetState(UpdateState.None);
             }
         }
         catch
         {
-            // ignore update errors
+            SetState(UpdateState.None);
         }
+    }
+
+    public static async Task DownloadUpdate(string url)
+    {
+        try
+        {
+            SetState(UpdateState.Downloading);
+
+            using HttpClient client = new HttpClient();
+
+            var response = await client.GetAsync(
+                url,
+                HttpCompletionOption.ResponseHeadersRead);
+
+            var total = response.Content.Headers.ContentLength ?? 1;
+
+            using var stream = await response.Content.ReadAsStreamAsync();
+            using var file = File.Create(InstallerPath);
+
+            byte[] buffer = new byte[8192];
+            long read = 0;
+
+            while (true)
+            {
+                int bytes = await stream.ReadAsync(buffer);
+
+                if (bytes == 0)
+                    break;
+
+                await file.WriteAsync(buffer, 0, bytes);
+
+                read += bytes;
+
+                Progress = (double)read / total;
+
+                ProgressChanged?.Invoke(Progress);
+            }
+
+            SetState(UpdateState.Downloaded);
+
+            if (AutoInstall)
+                InstallUpdate();
+        }
+        catch
+        {
+            SetState(UpdateState.None);
+        }
+    }
+
+    public static void InstallUpdate()
+    {
+        if (!File.Exists(InstallerPath))
+            return;
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = InstallerPath,
+            Arguments = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+            UseShellExecute = true
+        });
+
+        System.Windows.Application.Current.Shutdown();
     }
 }

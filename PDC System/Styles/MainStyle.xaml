@@ -1089,9 +1089,32 @@
 
 
 
+    <Style x:Key="RoundedProgressBar" TargetType="ProgressBar">
+        <Setter Property="Height" Value="18"/>
+        <Setter Property="Background" Value="{DynamicResource Background}"/>
+        <Setter Property="Foreground" Value="#2D7DFF"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border Background="{TemplateBinding Background}"
+                        CornerRadius="5"
+                        SnapsToDevicePixels="True">
+
+                        <Grid x:Name="PART_Track" ClipToBounds="True">
+                            <Border x:Name="PART_Indicator"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="5"
+                                HorizontalAlignment="Left"/>
+                        </Grid>
+
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 
-  
+
 
 
 

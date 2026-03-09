@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Reflection; // NEW
 
 namespace PDC_System.Settings
 {
@@ -26,7 +27,7 @@ namespace PDC_System.Settings
         #region Fields
 
 
-      
+
         private PeopleServiceService peopleService;
         // No JSON used anymore – kept only to avoid errors
         private string jsonFile = "";
@@ -47,6 +48,25 @@ namespace PDC_System.Settings
             chkStartup.IsChecked = StartupManager.IsInStartup();
 
 
+            UpdateManager.ProgressChanged += UpdateProgress;
+            UpdateManager.StateChanged += UpdateStateChanged;
+
+            UpdateProgressBar.Value = UpdateManager.Progress;
+
+            if (UpdateManager.State == UpdateState.Downloaded)
+                InstallButton.IsEnabled = true;
+
+            // set current version text in the status textbox
+            try
+            {
+                var current = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
+                UpdateStatusText.Text = $"Current: v{current}";
+            }
+            catch
+            {
+                UpdateStatusText.Text = "Current: unknown";
+            }
+
             LoadSettings();
             isEnableStatus();
             LoadETF();
@@ -55,6 +75,8 @@ namespace PDC_System.Settings
             isLoaded = true;
             // Apply theme when window loads
             ThemeManager.ApplyTheme(this);
+
+            AutoUpdateCheckBox.IsChecked = Properties.Settings.Default.AutoUpdateEnabled;
         }
 
         #endregion
@@ -67,7 +89,7 @@ namespace PDC_System.Settings
             // Small delay to ensure Settings are saved
             await Task.Delay(100);
 
-         
+
         }
 
         #endregion
@@ -405,6 +427,8 @@ namespace PDC_System.Settings
 
 
 
+
+
         #endregion
 
         #region Close Button
@@ -418,7 +442,118 @@ namespace PDC_System.Settings
         #endregion
 
 
+        #region Update Checking
 
+
+        void UpdateProgress(double progress)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                UpdateProgressBar.Value = progress;
+                // show percent in status textbox while downloading
+                if (UpdateManager.State == UpdateState.Downloading && UpdateManager.LatestVersion != null)
+                {
+                    UpdateStatusText.Text = $"Downloading v{UpdateManager.LatestVersion}... {Math.Round(progress * 100)}%";
+                }
+            });
+        }
+
+        void UpdateStateChanged(UpdateState state)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                switch (state)
+                {
+                    case UpdateState.Checking:
+                        UpdateStatusText.Text = "Checking for updates...";
+                        CheckUpdateButton.IsEnabled = false;
+                        InstallButton.IsEnabled = false;
+                        break;
+
+                    case UpdateState.Available:
+                        // Use LatestVersion (set by UpdateManager)
+                        if (!string.IsNullOrEmpty(UpdateManager.LatestVersion))
+                            UpdateStatusText.Text = $"Found: v{UpdateManager.LatestVersion}";
+                        else
+                            UpdateStatusText.Text = "Update available";
+                        // still disable install until download completes
+                        InstallButton.IsEnabled = false;
+                        break;
+
+                    case UpdateState.Downloading:
+                        if (!string.IsNullOrEmpty(UpdateManager.LatestVersion))
+                            UpdateStatusText.Text = $"Downloading v{UpdateManager.LatestVersion}...";
+
+                        else
+                            UpdateStatusText.Text = "Downloading...";
+                        InstallButton.IsEnabled = false;
+                        UpdateProgressBar.Visibility = Visibility.Visible;
+
+                        break;
+
+                    case UpdateState.Downloaded:
+                        if (!string.IsNullOrEmpty(UpdateManager.LatestVersion))
+                            UpdateStatusText.Text = $"Available: v{UpdateManager.LatestVersion}";
+                        else
+                            UpdateStatusText.Text = "Update ready";
+
+                        InstallButton.IsEnabled = true;
+                        InstallButton.Visibility = Visibility.Visible;
+
+                        CheckUpdateButton.IsEnabled = true;
+                        break;
+
+
+                    case UpdateState.None:
+                    default:
+                        // no update or error
+                        var current = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
+                        UpdateStatusText.Text = $"Up to date (v{current})";
+                        CheckUpdateButton.IsEnabled = true;
+                        InstallButton.IsEnabled = false;
+                        break;
+                }
+            });
+        }
+
+        private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            // disable to prevent double clicks; state handler will re-enable
+            CheckUpdateButton.IsEnabled = false;
+            try
+            {
+                await UpdateManager.CheckForUpdates();
+            }
+            catch (Exception ex)
+            {
+                // show friendly error and re-enable
+                UpdateStatusText.Text = "Update check failed";
+                CheckUpdateButton.IsEnabled = true;
+            }
+        }
+
+        private void InstallButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateManager.InstallUpdate();
+        }
+
+        private void AutoUpdateCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoUpdateEnabled = true;
+            Properties.Settings.Default.Save();
+       
+        }
+
+        private void AutoUpdateCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoUpdateEnabled = false;
+            Properties.Settings.Default.Save();
+        }
+
+
+
+
+        #endregion
 
 
         #region ETF

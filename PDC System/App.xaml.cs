@@ -41,6 +41,15 @@ namespace PDC_System
             CleanupOldHistory();
 
 
+            if (PDC_System.Properties.Settings.Default.UpgradeRequired)
+            {
+                PDC_System.Properties.Settings.Default.Upgrade();
+                PDC_System.Properties.Settings.Default.UpgradeRequired = false;
+                PDC_System.Properties.Settings.Default.Save();
+            }
+
+
+
             // 🕒 Get interval from Settings.settings
             int intervalSeconds = PDC_System.Properties.Settings.Default.TimerIntervalMinutes;
 
