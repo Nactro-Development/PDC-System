@@ -63,6 +63,7 @@
 		<None Remove="Assets\EditW.png" />
 		<None Remove="Assets\HomeHeading.png" />
 		<None Remove="Assets\Login.gif" />
+		<None Remove="Assets\LoginImage.png" />
 		<None Remove="Assets\LogoB.png" />
 		<None Remove="Assets\LogoW.png" />
 		<None Remove="Assets\L_D.png" />
@@ -210,6 +211,9 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Assets\Login.gif">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\LoginImage.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Assets\LogoB.png">

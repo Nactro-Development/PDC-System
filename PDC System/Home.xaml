@@ -172,7 +172,7 @@
                                 </RadioButton>
 
 
-                                <TextBlock Text="🖨️ Printing" FontSize="14" FontWeight="Bold" Margin="10,20,0,10" Foreground="{DynamicResource Forground}"/> 
+                                <TextBlock Text="Printing" FontSize="14" FontWeight="Bold" Margin="10,20,0,10" Foreground="#FF0660FE"/> 
 
                                 <!-- Order Check -->
                                 <RadioButton x:Name="OderCheck" Click="OpenView9_Click" Style="{StaticResource SelectableRadioButtonStyle}" 
@@ -222,7 +222,7 @@
                                     </StackPanel>
                                 </RadioButton>
 
-                                <TextBlock Text="💹 Finance And Management" FontSize="14" FontWeight="Bold" Margin="10,20,0,10" Foreground="{DynamicResource Forground}"/>
+                                <TextBlock Text="Finance And Management" FontSize="14" FontWeight="Bold" Margin="10,20,0,10" Foreground="#FF0660FE"/>
 
                                 <!-- Quotation -->
                                 <RadioButton x:Name="Quotation" Click="OpenView3_Click" Style="{StaticResource SelectableRadioButtonStyle}" 
@@ -275,7 +275,7 @@ Margin="3" Width="250" Height="45">
 
 
 
-                                <TextBlock Text="🤵 Attendance" FontSize="14" FontWeight="Bold" Margin="10,20,0,10" Foreground="{DynamicResource Forground}"/>
+                                <TextBlock Text="Attendance" FontSize="14" FontWeight="Bold" Margin="10,20,0,10" Foreground="#FF0660FE"/>
 
                                 <!-- Attendance -->
                                 <RadioButton x:Name="Attendance" Click="OpenView5_Click" Style="{StaticResource SelectableRadioButtonStyle}" 

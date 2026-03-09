@@ -18,21 +18,46 @@ using PDC_System.Models;
 
 namespace PDC_System
 {
-    /// <summary>
-    /// Interaction logic for AddLoanWindow.xaml
-    /// </summary>
     public partial class AddLoanWindow : Window
     {
-
         private string loanFile = "Savers/loan.json";
-
         private string employeeFile = "Savers/employee.json";
         public event Action<Loan> LoanSaved;
 
+        // ✅ Edit mode: holds the existing loan being edited
+        private Loan _editingLoan = null;
+
+        // ✅ Default constructor: Add mode
         public AddLoanWindow()
         {
             InitializeComponent();
             LoadEmployees();
+        }
+
+        // ✅ Edit constructor: pre-fills fields with existing loan data
+        public AddLoanWindow(Loan existingLoan) : this()
+        {
+            _editingLoan = existingLoan;
+            PDCtitel.Text = "Edit Loan";
+
+            // Pre-fill fields
+            LoanAmountBox.Text = existingLoan.LoanAmount.ToString();
+            MonthlyPayBox.Text = existingLoan.MonthlyPay.ToString();
+            LoanDatePicker.SelectedDate = existingLoan.LoanDate;
+
+            // Pre-select the employee in the ComboBox and disable it (can't change employee in edit)
+            Loaded += (s, e) =>
+            {
+                foreach (Employee emp in EmployeeCombo.Items)
+                {
+                    if (emp.EmployeeId == existingLoan.EmployeeId)
+                    {
+                        EmployeeCombo.SelectedItem = emp;
+                        break;
+                    }
+                }
+                EmployeeCombo.IsEnabled = false;
+            };
         }
 
         private void LoadEmployees()
@@ -49,36 +74,54 @@ namespace PDC_System
         {
             if (EmployeeCombo.SelectedItem is Employee emp)
             {
-                // Load all loans
                 var existingLoans = File.Exists(loanFile)
                     ? JsonConvert.DeserializeObject<List<Loan>>(File.ReadAllText(loanFile))
                     : new List<Loan>();
 
-                // ❗ Block if employee has ANY previous loan (Active or Finished)
-                bool hasAnyLoan = existingLoans.Any(l =>
-                    l.EmployeeId == emp.EmployeeId
-                );
+                // ✅ Edit mode: update existing loan
+                if (_editingLoan != null)
+                {
+                    if (decimal.TryParse(LoanAmountBox.Text, out decimal loanAmt) &&
+                        decimal.TryParse(MonthlyPayBox.Text, out decimal monthly))
+                    {
+                        var loanToUpdate = existingLoans.FirstOrDefault(l => l.LoanId == _editingLoan.LoanId);
+                        if (loanToUpdate != null)
+                        {
+                            loanToUpdate.LoanAmount = loanAmt;
+                            loanToUpdate.MonthlyPay = monthly;
+                            loanToUpdate.LoanDate = LoanDatePicker.SelectedDate ?? _editingLoan.LoanDate;
 
+                            File.WriteAllText(loanFile, JsonConvert.SerializeObject(existingLoans, Formatting.Indented));
+                            LoanSaved?.Invoke(loanToUpdate);
+                            this.Close();
+                        }
+                    }
+                    else
+                    {
+                        CustomMessageBox.Show("Please enter valid numbers for loan and monthly pay.");
+                    }
+                    return;
+                }
+
+                // ✅ Add mode: block if employee already has a loan
+                bool hasAnyLoan = existingLoans.Any(l => l.EmployeeId == emp.EmployeeId);
                 if (hasAnyLoan)
                 {
-
-
                     CustomMessageBox.Show("This employee already has a loan. Loan End and Can Create Loan");
                     return;
                 }
 
                 var selectedDate = LoanDatePicker.SelectedDate ?? DateTime.Now;
 
-                if (decimal.TryParse(LoanAmountBox.Text, out decimal loanAmt) &&
-                    decimal.TryParse(MonthlyPayBox.Text, out decimal monthly))
+                if (decimal.TryParse(LoanAmountBox.Text, out decimal newLoanAmt) &&
+                    decimal.TryParse(MonthlyPayBox.Text, out decimal newMonthly))
                 {
                     var newLoan = new Loan
                     {
                         EmployeeId = emp.EmployeeId,
                         Name = emp.Name,
-                        LoanAmount = loanAmt,
-                        MonthlyPay = monthly,
-                        
+                        LoanAmount = newLoanAmt,
+                        MonthlyPay = newMonthly,
                         LoanDate = selectedDate,
                         Status = "Active"
                     };
@@ -100,9 +143,6 @@ namespace PDC_System
             }
         }
 
-
-
-
         #region Window Control
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -123,7 +163,6 @@ namespace PDC_System
         {
             if (_isMaximized)
             {
-                // Restore to previous size and position
                 this.Left = _previousLeft;
                 this.Top = _previousTop;
                 this.Width = _previousWidth;
@@ -132,16 +171,12 @@ namespace PDC_System
             }
             else
             {
-                // get before maximizing
                 _previousLeft = this.Left;
                 _previousTop = this.Top;
                 _previousWidth = this.Width;
                 _previousHeight = this.Height;
 
-                // Get the working area (screen minus taskbar)
                 var workingArea = SystemParameters.WorkArea;
-
-                // Set window position and size to working area
                 this.Left = workingArea.Left;
                 this.Top = workingArea.Top;
                 this.Width = workingArea.Width;
@@ -151,14 +186,8 @@ namespace PDC_System
             }
         }
 
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-
-            Close();
-        }
+        private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
         #endregion
-
-
     }
 }

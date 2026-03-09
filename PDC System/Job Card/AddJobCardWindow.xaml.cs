@@ -3,6 +3,7 @@ using PDC_System;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,7 +15,7 @@ namespace PDC_System
     {
         public JobCard JobCard { get; private set; }
         private BitmapSource? capturedImage;
-        private string? tempCapturedFilePath; // Temporary save location
+        private string? tempCapturedFilePath;
 
         private readonly string saversFolder = Path.Combine(Directory.GetCurrentDirectory(), "Savers");
         private string outsourcingFile => Path.Combine(saversFolder, "Outsource.json");
@@ -24,34 +25,113 @@ namespace PDC_System
         private string? selectedPlateName;
         private string selectedPrintingType;
 
+        // Edit mode: holds the original job card being edited
+        private JobCard? _editingJobCard;
+        private bool _isEditMode => _editingJobCard != null;
+
+        // ── Add mode constructor ──────────────────────────────────────────
         public AddJobCardWindow(List<Customerinfo> customers)
         {
             InitializeComponent();
             typebox.Text = "Person";
             CustomerComboBox.ItemsSource = customers;
-
-            // Handle selection change
             CustomerComboBox.SelectionChanged += CustomerComboBox_SelectionChanged;
-
 
             Digital.Visibility = Visibility.Visible;
             Offset.Visibility = Visibility.Collapsed;
-
-            // If Outside Printing checkbox is unchecked, hide the panel
             Oustanding_Printing.Visibility = Visibility.Collapsed;
 
-            // Create Savers folder if not exists
             if (!Directory.Exists(saversFolder))
                 Directory.CreateDirectory(saversFolder);
 
             jsonFile = Path.Combine(saversFolder, "jobData.json");
 
             GenerateJobNumber();
-            Digital_Checked.IsChecked = true; // Default to Digital
-
+            Digital_Checked.IsChecked = true;
         }
 
+        // ── Edit mode constructor ─────────────────────────────────────────
+        public AddJobCardWindow(List<Customerinfo> customers, JobCard existingJobCard)
+            : this(customers)
+        {
+            _editingJobCard = existingJobCard;
+            PreFillFields(existingJobCard);
+        }
 
+        private void PreFillFields(JobCard jc)
+        {
+            // Temporarily unsubscribe to prevent SelectionChanged from resetting fields
+            CustomerComboBox.SelectionChanged -= CustomerComboBox_SelectionChanged;
+
+            // Job number (read-only in edit mode)
+            currentJobNumber = jc.JobNo ?? currentJobNumber;
+            JobNumberTextBox.Text = currentJobNumber;
+
+            // Customer
+            var matchedCustomer = (CustomerComboBox.ItemsSource as List<Customerinfo>)
+                                  ?.FirstOrDefault(c => c.Name == jc.Customer_Name);
+            if (matchedCustomer != null)
+                CustomerComboBox.SelectedItem = matchedCustomer;
+            else
+                CustomerComboBox.Text = jc.Customer_Name;
+
+            // Re-subscribe after setting customer
+            CustomerComboBox.SelectionChanged += CustomerComboBox_SelectionChanged;
+
+            // Description
+            DescriptionTextBox.Text = jc.Description;
+
+            // Quantity
+            QuantityTextBox.Text = jc.Quantity.ToString();
+
+            // Special note
+            SpecialTextBox.Text = jc.Special_Note;
+
+            // Printing type
+            if (jc.Type == "Offset")
+            {
+                Offset_Checked.IsChecked = true;
+                PlateCompanyTextBox.Text = jc.selectedPlateName;
+                PlateQuantityTextBox.Text = jc.PlateQuantitiy;
+                selectedPrintingType = "Offset";
+                selectedPlateName = jc.selectedPlateName;
+            }
+            else
+            {
+                Digital_Checked.IsChecked = true;
+                selectedPrintingType = "Digital";
+
+                PaperSizeTextBox.Text = jc.Paper_Size;
+                GSMTextBox.Text = jc.GSM.ToString();
+                PaperTypeTextBox.Text = jc.Paper_Type;
+                DsTextBox.Text = jc.Duplex;
+                LaminateTextBox.Text = jc.Laminate;
+                PrintedTextBox.Text = jc.Printed.ToString();
+
+                // Outside printing
+                if (!string.IsNullOrEmpty(jc.DigitalConpanyName) && jc.DigitalConpanyName != "OUR")
+                {
+                    OutstandingCheckBox.IsChecked = true;
+                    Oustanding_Printing.Visibility = Visibility.Visible;
+                    selectedCompany = jc.DigitalConpanyName;
+                    Outstanding_PrintingCompanyName.Text = jc.DigitalConpanyName;
+                }
+                else
+                {
+                    OutstandingCheckBox.IsChecked = false;
+                    Oustanding_Printing.Visibility = Visibility.Collapsed;
+                }
+            }
+
+            // Screenshot preview
+            if (!string.IsNullOrEmpty(jc.ScreenshotPath) && File.Exists(jc.ScreenshotPath))
+            {
+                var bitmap = new BitmapImage(new Uri(jc.ScreenshotPath));
+                PreviewImage.Source = bitmap;
+                capturedImage = bitmap;
+                tempCapturedFilePath = jc.ScreenshotPath;
+            }
+        }
 
         #region Window Control
 
@@ -73,7 +153,6 @@ namespace PDC_System
         {
             if (_isMaximized)
             {
-                // Restore to previous size and position
                 this.Left = _previousLeft;
                 this.Top = _previousTop;
                 this.Width = _previousWidth;
@@ -82,16 +161,12 @@ namespace PDC_System
             }
             else
             {
-                // get before maximizing
                 _previousLeft = this.Left;
                 _previousTop = this.Top;
                 _previousWidth = this.Width;
                 _previousHeight = this.Height;
 
-                // Get the working area (screen minus taskbar)
                 var workingArea = SystemParameters.WorkArea;
-
-                // Set window position and size to working area
                 this.Left = workingArea.Left;
                 this.Top = workingArea.Top;
                 this.Width = workingArea.Width;
@@ -103,7 +178,6 @@ namespace PDC_System
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-
             Hide();
         }
 
@@ -115,13 +189,7 @@ namespace PDC_System
             {
                 string json = File.ReadAllText(outsourcingFile);
                 var allCompanies = JsonConvert.DeserializeObject<List<Outsourcinginfo>>(json);
-
-                // Filter only Digital
-                var digitalCompanies = allCompanies
-                    .Where(c => c.Type1 == "Digital")
-                    .ToList();
-
-                // Bind to ComboBox
+                var digitalCompanies = allCompanies.Where(c => c.Type1 == "Digital").ToList();
                 Outstanding_PrintingCompanyName.ItemsSource = digitalCompanies;
                 Outstanding_PrintingCompanyName.DisplayMemberPath = "DigitalName";
                 Outstanding_PrintingCompanyName.SelectedValuePath = "DigitalName";
@@ -134,42 +202,24 @@ namespace PDC_System
             {
                 string json = File.ReadAllText(outsourcingFile);
                 var allCompanies = JsonConvert.DeserializeObject<List<Outsourcinginfo>>(json);
-
-                // Filter only Digital
-                var digitalCompanies = allCompanies
-                    .Where(c => c.Type1 == "Plate")
-                    .ToList();
-
-                // Bind to ComboBox
+                var digitalCompanies = allCompanies.Where(c => c.Type1 == "Plate").ToList();
                 PlateCompanyTextBox.ItemsSource = digitalCompanies;
                 PlateCompanyTextBox.DisplayMemberPath = "PlateName";
                 PlateCompanyTextBox.SelectedValuePath = "PlateName";
             }
         }
 
-
-
         private void Outstanding_PrintingCompanyName_SelectionChanged2(object sender, SelectionChangedEventArgs e)
         {
             if (PlateCompanyTextBox.SelectedItem is Outsourcinginfo selected)
-            {
-                // Make sure this matches the property you want
                 selectedPlateName = selected.PlateName;
-                // Now selectedCompany contains the selected ComboBox value
-            }
         }
-
 
         private void Outstanding_PrintingCompanyName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Outstanding_PrintingCompanyName.SelectedItem is Outsourcinginfo selected)
-            {
-                // Make sure this matches the property you want
                 selectedCompany = selected.DigitalName;
-                // Now selectedCompany contains the selected ComboBox value
-            }
         }
-
 
         private void GenerateJobNumber()
         {
@@ -189,56 +239,43 @@ namespace PDC_System
             {
                 string lastJob = jobs.Last().JobNumber;
                 int num;
-
-                // Check if job number contains a dash (e.g., "JOB-0001")
                 if (lastJob.Contains("-"))
-                {
                     num = int.Parse(lastJob.Split('-')[1]);
-                }
                 else
-                {
                     num = int.Parse(lastJob);
-                }
 
                 num++;
                 currentJobNumber = num.ToString("D4");
-
             }
 
             JobNumberTextBox.Text = currentJobNumber;
         }
 
-
         private void CustomerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CustomerComboBox.SelectedItem is Customerinfo selectedCustomer)
             {
-                // Show customer type, or "Person" if Type is null/empty
                 typebox.Text = string.IsNullOrEmpty(selectedCustomer.Type) ? "Person" : selectedCustomer.Type;
                 companyname.Text = selectedCustomer.companyname;
             }
             else
             {
-                // Default to "Person" if nothing is selected
                 typebox.Text = "Person";
             }
         }
 
-
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
         {
-            // Minimize this window while capturing instead of hiding
             this.WindowState = WindowState.Minimized;
             var captureWindow = new ScreenCaptureWindow();
             bool? result = captureWindow.ShowDialog();
             this.WindowState = WindowState.Normal;
-            this.Activate(); // Bring window to front
+            this.Activate();
 
             if (result == true && captureWindow.CapturedImage != null)
             {
                 capturedImage = captureWindow.CapturedImage;
 
-                // Save to temporary folder
                 string tempFolder = Path.GetTempPath();
                 tempCapturedFilePath = Path.Combine(tempFolder, $"Temp_JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png");
 
@@ -247,13 +284,12 @@ namespace PDC_System
                 using var stream = File.Create(tempCapturedFilePath);
                 encoder.Save(stream);
 
-                PreviewImage.Source = capturedImage; // Preview image
+                PreviewImage.Source = capturedImage;
             }
         }
 
         private bool ValidateFields()
         {
-            // Common required fields
             string customerName = (CustomerComboBox.SelectedItem as Customerinfo)?.Name ?? CustomerComboBox.Text;
             if (string.IsNullOrWhiteSpace(customerName))
             {
@@ -273,14 +309,12 @@ namespace PDC_System
                 return false;
             }
 
-            // Check if a printing type is selected
             if (string.IsNullOrWhiteSpace(selectedPrintingType))
             {
                 CustomMessageBox.Show("Please select a Printing Type (Digital or Offset).", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
-            // Offset-specific validation
             if (selectedPrintingType == "Offset")
             {
                 if (PlateCompanyTextBox.SelectedItem == null && string.IsNullOrWhiteSpace(PlateCompanyTextBox.Text))
@@ -296,7 +330,6 @@ namespace PDC_System
                 }
             }
 
-            // Digital-specific validation
             if (selectedPrintingType == "Digital")
             {
                 if (string.IsNullOrWhiteSpace(PaperSizeTextBox.Text))
@@ -329,7 +362,6 @@ namespace PDC_System
                     return false;
                 }
 
-                // If Outside Printing is checked, company must be selected
                 if (OutstandingCheckBox.IsChecked == true && Outstanding_PrintingCompanyName.SelectedItem == null)
                 {
                     CustomMessageBox.Show("Please select a Digital Printing Company.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -337,43 +369,18 @@ namespace PDC_System
                 }
             }
 
-            // Special Note is OPTIONAL - no validation needed
-
             return true;
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            // Validate required fields first (Special Note is optional)
             if (!ValidateFields())
                 return;
 
-            List<JobNo> jobs = new List<JobNo>();
-
-            if (File.Exists(jsonFile))
-            {
-                string json = File.ReadAllText(jsonFile);
-                jobs = JsonConvert.DeserializeObject<List<JobNo>>(json) ?? new List<JobNo>();
-            }
-
-            // Prevent duplicates silently
-            if (jobs.Any(j => j.JobNumber == currentJobNumber))
-                return;
-
-            jobs.Add(new JobNo { JobNumber = currentJobNumber });
-
-            // Save file (formatted)
-            File.WriteAllText(jsonFile, JsonConvert.SerializeObject(jobs, Formatting.Indented));
-
-            // Generate next job number automatically
-            GenerateJobNumber();
-
-            // Set default 0 if empty
             GSMTextBox.Text = string.IsNullOrWhiteSpace(GSMTextBox.Text) ? "0" : GSMTextBox.Text;
             QuantityTextBox.Text = string.IsNullOrWhiteSpace(QuantityTextBox.Text) ? "0" : QuantityTextBox.Text;
             PrintedTextBox.Text = string.IsNullOrWhiteSpace(PrintedTextBox.Text) ? "0" : PrintedTextBox.Text;
 
-            // Parse the values
             int gsm = int.Parse(GSMTextBox.Text);
             int quantity = int.Parse(QuantityTextBox.Text);
             int printed = int.Parse(PrintedTextBox.Text);
@@ -381,51 +388,96 @@ namespace PDC_System
             string customerName = (CustomerComboBox.SelectedItem as Customerinfo)?.Name ?? CustomerComboBox.Text;
 
             string? finalScreenshotPath = null;
+
             if (!string.IsNullOrEmpty(tempCapturedFilePath) && File.Exists(tempCapturedFilePath))
             {
-                // Use your existing folder: Savers\Screenshots
-                string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Savers", "Screenshots");
+                // Keep existing path if it's already in the permanent folder
+                if (tempCapturedFilePath.Contains("Savers"))
+                {
+                    finalScreenshotPath = tempCapturedFilePath;
+                }
+                else
+                {
+                    string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Savers", "Screenshots");
+                    if (!Directory.Exists(folder))
+                        Directory.CreateDirectory(folder);
 
-                // Ensure folder exists
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-
-                // Save absolute path
-                finalScreenshotPath = Path.GetFullPath(Path.Combine(folder, $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png"));
-
-                File.Copy(tempCapturedFilePath, finalScreenshotPath, true); // Copy to permanent location
+                    finalScreenshotPath = Path.GetFullPath(Path.Combine(folder, $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png"));
+                    File.Copy(tempCapturedFilePath, finalScreenshotPath, true);
+                }
+            }
+            else if (_isEditMode)
+            {
+                // Keep existing screenshot if no new one was captured
+                finalScreenshotPath = _editingJobCard!.ScreenshotPath;
             }
 
-            JobCard = new JobCard
+            if (_isEditMode)
             {
-                Customer_Name = customerName,
-                JobNo = currentJobNumber,
-                DigitalConpanyName = selectedCompany,
-                selectedPlateName = selectedPlateName,
-                Paper_Size = PaperSizeTextBox.Text,
-                Description = DescriptionTextBox.Text,
-                GSM = gsm,
-                Duplex = DsTextBox.Text,
-                Laminate = LaminateTextBox.Text,
-                Special_Note = SpecialTextBox.Text, // Optional - can be empty
-                Paper_Type = PaperTypeTextBox.Text,
-                Quantity = quantity,
-                Printed = printed,
-                PlateQuantitiy = PlateQuantityTextBox.Text,
-                ScreenshotPath = finalScreenshotPath,
-                Type = selectedPrintingType,
+                // Update the existing JobCard object in place
+                _editingJobCard!.Customer_Name = customerName;
+                _editingJobCard.Description = DescriptionTextBox.Text;
+                _editingJobCard.Quantity = quantity;
+                _editingJobCard.Printed = printed;
+                _editingJobCard.GSM = gsm;
+                _editingJobCard.Paper_Size = PaperSizeTextBox.Text;
+                _editingJobCard.Paper_Type = PaperTypeTextBox.Text;
+                _editingJobCard.Duplex = DsTextBox.Text;
+                _editingJobCard.Laminate = LaminateTextBox.Text;
+                _editingJobCard.Special_Note = SpecialTextBox.Text;
+                _editingJobCard.Type = selectedPrintingType;
+                _editingJobCard.DigitalConpanyName = selectedCompany;
+                _editingJobCard.selectedPlateName = selectedPlateName;
+                _editingJobCard.PlateQuantitiy = PlateQuantityTextBox.Text;
+                _editingJobCard.ScreenshotPath = finalScreenshotPath;
+                JobCard = _editingJobCard;
+            }
+            else
+            {
+                // Add mode — register job number
+                List<JobNo> jobs = new List<JobNo>();
+                if (File.Exists(jsonFile))
+                {
+                    string json = File.ReadAllText(jsonFile);
+                    jobs = JsonConvert.DeserializeObject<List<JobNo>>(json) ?? new List<JobNo>();
+                }
 
-            };
+                if (jobs.Any(j => j.JobNumber == currentJobNumber))
+                    return;
+
+                jobs.Add(new JobNo { JobNumber = currentJobNumber });
+                File.WriteAllText(jsonFile, JsonConvert.SerializeObject(jobs, Formatting.Indented));
+                GenerateJobNumber();
+
+                JobCard = new JobCard
+                {
+                    Customer_Name = customerName,
+                    JobNo = currentJobNumber,
+                    DigitalConpanyName = selectedCompany,
+                    selectedPlateName = selectedPlateName,
+                    Paper_Size = PaperSizeTextBox.Text,
+                    Description = DescriptionTextBox.Text,
+                    GSM = gsm,
+                    Duplex = DsTextBox.Text,
+                    Laminate = LaminateTextBox.Text,
+                    Special_Note = SpecialTextBox.Text,
+                    Paper_Type = PaperTypeTextBox.Text,
+                    Quantity = quantity,
+                    Printed = printed,
+                    PlateQuantitiy = PlateQuantityTextBox.Text,
+                    ScreenshotPath = finalScreenshotPath,
+                    Type = selectedPrintingType,
+                    IsSeen = false,
+                };
+            }
 
             this.DialogResult = true;
-
         }
 
         private void QuantityTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             e.Handled = !char.IsDigit(e.Text, 0);
         }
-
 
         private void Digital_Clicked(object sender, RoutedEventArgs e)
         {
@@ -435,7 +487,6 @@ namespace PDC_System
             selectedPrintingType = "Digital";
             ResetOffsetFields();
             LoadComboBox();
-
         }
 
         private void Offset_Clicked(object sender, RoutedEventArgs e)
@@ -450,7 +501,6 @@ namespace PDC_System
         private void Outstanding_Checked(object sender, RoutedEventArgs e)
         {
             Oustanding_Printing.Visibility = Visibility.Visible;
-
         }
 
         private void Outstanding_Unchecked(object sender, RoutedEventArgs e)
@@ -459,47 +509,30 @@ namespace PDC_System
             selectedCompany = "OUR";
         }
 
-
         private void ResetDigitalFields()
         {
-            // Uncheck Outside Printing
             OutstandingCheckBox.IsChecked = false;
-
-            // Hide the Outside Printing panel
             Oustanding_Printing.Visibility = Visibility.Collapsed;
-
-            // Clear all TextBoxes
             Outstanding_PrintingCompanyName.Text = "";
             PrintedTextBox.Text = "";
-          
 
-            // Clear all ComboBoxes (both selected item and editable text)
             PaperSizeTextBox.SelectedIndex = -1;
             PaperSizeTextBox.Text = "";
-
             GSMTextBox.SelectedIndex = -1;
             GSMTextBox.Text = "";
-
             PaperTypeTextBox.SelectedIndex = -1;
             PaperTypeTextBox.Text = "";
-
             DsTextBox.SelectedIndex = -1;
             DsTextBox.Text = "";
-
             LaminateTextBox.SelectedIndex = -1;
             LaminateTextBox.Text = "";
-
-           
         }
-
 
         private void ResetOffsetFields()
         {
             PlateCompanyTextBox.Text = "";
             PlateQuantityTextBox.Text = "";
         }
-
-
     }
 
     public class JobNo

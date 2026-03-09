@@ -10,6 +10,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Configuration;
+using PDC_System.Backup;
 
 namespace PDC_System
 {
@@ -29,11 +31,95 @@ namespace PDC_System
         // Encryption key
         private static readonly string EncryptionKey = "PDC_BACKUP_2025_SECURE_KEY";
 
+        // --- Log persistence ---
+        // Log stored in Documents\PDC_Backups\BackupWindow.log.txt
+        private readonly string logDirectory;
+        private readonly string logFilePath;
+        private readonly object logFileLock = new();
+
         public BackupWindow()
         {
             InitializeComponent();
+
+            logDirectory = defaultBackupFolder;
+            logFilePath = Path.Combine(logDirectory, "BackupWindow.log.txt");
+
+            LoadCustomBackupPath();
+            LoadAutoBackupSettings();
+
+            // Load persisted log and prune entries older than 7 days
+            LoadAndPruneLogFile();
+
             LogMessage("Backup window loaded.");
             LogMessage($"Default backup location: {defaultBackupFolder}");
+        }
+
+        // ==================== LOAD SAVED CUSTOM PATH ====================
+        private void LoadCustomBackupPath()
+        {
+            string savedPath = Properties.Settings.Default.CustomBackupPath;
+            if (!string.IsNullOrEmpty(savedPath))
+            {
+                customBackupFolder = savedPath;
+                txtCustomBackupPath.Text = savedPath;
+                LogMessage($"Loaded saved custom backup location: {savedPath}");
+            }
+        }
+
+        // ==================== LOAD AUTO BACKUP SETTINGS ====================
+        private void LoadAutoBackupSettings()
+        {
+            try
+            {
+                chkAutoBackup.IsChecked = Properties.Settings.Default.AutoBackupEnabled;
+                txtAutoBackupInterval.Text = Properties.Settings.Default.AutoBackupIntervalMinutes.ToString();
+                LogMessage("Auto backup settings loaded.");
+            }
+            catch
+            {
+                // best-effort
+            }
+        }
+
+        // ==================== SAVE AUTO BACKUP SETTINGS ====================
+        private void SaveAutoBackupSettings_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool enabled = chkAutoBackup.IsChecked == true;
+
+                if (!int.TryParse(txtAutoBackupInterval.Text.Trim(), out int minutes) || minutes < 1)
+                {
+                    CustomMessageBox.Show("Please enter a valid number of minutes (>= 1).", "Invalid Interval",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                Properties.Settings.Default.AutoBackupEnabled = enabled;
+                Properties.Settings.Default.AutoBackupUseInterval = true;
+                Properties.Settings.Default.AutoBackupIntervalMinutes = minutes;
+                Properties.Settings.Default.Save();
+
+                if (enabled)
+                {
+                    // Update scheduler with the new interval (do not start immediate backup by default)
+                    AutoBackupScheduler.UpdateInterval(minutes, enableInterval: true, startImmediately: false);
+                    LogMessage($"Auto backup enabled. Interval set to {minutes} minute(s).");
+                }
+                else
+                {
+                    // Disable scheduling
+                    AutoBackupScheduler.UpdateInterval(minutes, enableInterval: false, startImmediately: false);
+                    LogMessage("Auto backup disabled.");
+                }
+
+                CustomMessageBox.Show("Auto backup settings saved.", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Failed to save auto backup settings: {ex.Message}");
+                CustomMessageBox.Show($"Failed to save settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // ==================== CLOSE ====================
@@ -55,7 +141,12 @@ namespace PDC_System
             {
                 customBackupFolder = dialog.FileName;
                 txtCustomBackupPath.Text = customBackupFolder;
-                LogMessage($"Custom backup location set: {customBackupFolder}");
+
+                // Save to Settings
+                Properties.Settings.Default.CustomBackupPath = customBackupFolder;
+                Properties.Settings.Default.Save();
+
+                LogMessage($"Custom backup location set and saved: {customBackupFolder}");
             }
         }
 
@@ -326,6 +417,31 @@ namespace PDC_System
                 {
                     Dispatcher.Invoke(() => LogMessage("⚠️ PaysheetFile folder not found, skipping."));
                 }
+
+                // Add application config (app.config / exe.config)
+                try
+                {
+                    string exeConfig = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath;
+                    if (!string.IsNullOrEmpty(exeConfig) && File.Exists(exeConfig))
+                    {
+                        zip.CreateEntryFromFile(exeConfig, "Settings/app.config", CompressionLevel.Optimal);
+                        Dispatcher.Invoke(() => LogMessage($"⚙️ Application config added to backup: {exeConfig}"));
+                    }
+                }
+                catch { /* best-effort */ }
+
+                // Add per-user config (user.config)
+                try
+                {
+                    var userConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
+                    string userConfigPath = userConfig.FilePath;
+                    if (!string.IsNullOrEmpty(userConfigPath) && File.Exists(userConfigPath))
+                    {
+                        zip.CreateEntryFromFile(userConfigPath, "Settings/user.config", CompressionLevel.Optimal);
+                        Dispatcher.Invoke(() => LogMessage($"⚙️ User config added to backup: {userConfigPath}"));
+                    }
+                }
+                catch { /* best-effort */ }
             }
 
             // Cleanup temporary .db copies
@@ -391,6 +507,49 @@ namespace PDC_System
                     if (string.IsNullOrEmpty(entry.Name))
                         continue; // Skip directory entries
 
+                    // Special handling for saved settings
+                    if (entry.FullName == "Settings/app.config")
+                    {
+                        try
+                        {
+                            string dest = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath;
+                            using var entryStream = entry.Open();
+                            using var fs = File.Create(dest);
+                            entryStream.CopyTo(fs);
+                            Dispatcher.Invoke(() => LogMessage($"⚙️ Restored application config to: {dest}"));
+                        }
+                        catch (Exception ex)
+                        {
+                            Dispatcher.Invoke(() => LogMessage($"⚠️ Failed to restore app config: {ex.Message}"));
+                        }
+                        continue;
+                    }
+
+                    if (entry.FullName == "Settings/user.config")
+                    {
+                        try
+                        {
+                            var userConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
+                            string dest = userConfig.FilePath;
+                            // Ensure destination directory exists
+                            string? destDir = Path.GetDirectoryName(dest);
+                            if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir))
+                                Directory.CreateDirectory(destDir);
+
+                            using var entryStream = entry.Open();
+                            using var fs = File.Create(dest);
+                            entryStream.CopyTo(fs);
+
+                            Dispatcher.Invoke(() => LogMessage($"⚙️ Restored user config to: {dest}"));
+                        }
+                        catch (Exception ex)
+                        {
+                            Dispatcher.Invoke(() => LogMessage($"⚠️ Failed to restore user config: {ex.Message}"));
+                        }
+                        continue;
+                    }
+
+                    // Default behaviour - restore into application folder structure
                     string destinationPath = Path.Combine(baseDir, entry.FullName);
                     string? destinationDir = Path.GetDirectoryName(destinationPath);
 
@@ -483,11 +642,134 @@ namespace PDC_System
         }
 
         // ==================== LOG ====================
+        /// <summary>
+        /// Appends a message to the on-screen history and persists it to a text file.
+        /// Log file format: each line = "[yyyy-MM-dd HH:mm:ss] message"
+        /// On load the file is pruned to only keep the last 7 days.
+        /// </summary>
         private void LogMessage(string message)
         {
-            string timestamp = DateTime.Now.ToString("HH:mm:ss");
-            txtHistory.AppendText($"[{timestamp}] {message}\n");
+            // UI display uses short time as before
+            string displayTimestamp = DateTime.Now.ToString("HH:mm:ss");
+            txtHistory.AppendText($"[{displayTimestamp}] {message}\n");
             txtHistory.ScrollToEnd();
+
+            // Persist full timestamp + message to file
+            try
+            {
+                AppendToLogFile(message);
+            }
+            catch
+            {
+                // best-effort — do not crash UI if logging fails
+            }
+        }
+
+        /// <summary>
+        /// Reads the persisted log file, removes entries older than 7 days, writes the pruned file,
+        /// and displays the remaining entries in the txtHistory control.
+        /// </summary>
+        private void LoadAndPruneLogFile()
+        {
+            try
+            {
+                if (!Directory.Exists(logDirectory))
+                    Directory.CreateDirectory(logDirectory);
+
+                if (!File.Exists(logFilePath))
+                    return;
+
+                string[] allLines;
+                lock (logFileLock)
+                {
+                    allLines = File.ReadAllLines(logFilePath);
+                }
+
+                var keepLines = new System.Collections.Generic.List<string>();
+                DateTime cutoff = DateTime.Now.AddDays(-7);
+
+                foreach (var line in allLines)
+                {
+                    // Expect format: "[yyyy-MM-dd HH:mm:ss] message"
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
+                    int closeIdx = line.IndexOf(']');
+                    if (line.StartsWith("[") && closeIdx > 1)
+                    {
+                        string tsPart = line.Substring(1, closeIdx - 1);
+                        if (DateTime.TryParseExact(tsPart, "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime ts))
+                        {
+                            if (ts >= cutoff)
+                            {
+                                keepLines.Add(line);
+                            }
+                            // else skip (older than 7 days)
+                            continue;
+                        }
+                    }
+
+                    // If we can't parse the timestamp, keep the line (conservative)
+                    keepLines.Add(line);
+                }
+
+                // Overwrite file with pruned lines
+                lock (logFileLock)
+                {
+                    File.WriteAllLines(logFilePath, keepLines);
+                }
+
+                // Display kept lines in UI (clear existing)
+                txtHistory.Clear();
+                foreach (var line in keepLines)
+                {
+                    // Parse again to show only HH:mm:ss as UI did before
+                    int closeIdx = line.IndexOf(']');
+                    string messagePart = line;
+                    DateTime? ts = null;
+                    if (line.StartsWith("[") && closeIdx > 1)
+                    {
+                        string tsPart = line.Substring(1, closeIdx - 1);
+                        if (DateTime.TryParseExact(tsPart, "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime parsed))
+                        {
+                            ts = parsed;
+                            messagePart = line.Substring(closeIdx + 2); // skip "] "
+                        }
+                    }
+
+                    string displayTime = ts?.ToString("HH:mm:ss") ?? DateTime.Now.ToString("HH:mm:ss");
+                    txtHistory.AppendText($"[{displayTime}] {messagePart}\n");
+                }
+
+                txtHistory.ScrollToEnd();
+            }
+            catch
+            {
+                // best-effort; don't prevent window from loading
+            }
+        }
+
+        /// <summary>
+        /// Appends a single log line to the log file in a thread-safe manner.
+        /// Format: "[yyyy-MM-dd HH:mm:ss] message"
+        /// </summary>
+        private void AppendToLogFile(string message)
+        {
+            try
+            {
+                lock (logFileLock)
+                {
+                    if (!Directory.Exists(logDirectory))
+                        Directory.CreateDirectory(logDirectory);
+
+                    string line = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {message}";
+                    File.AppendAllLines(logFilePath, new[] { line });
+                }
+            }
+            catch
+            {
+                // best-effort
+            }
         }
     }
 }

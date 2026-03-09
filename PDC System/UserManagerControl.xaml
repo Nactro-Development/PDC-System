@@ -510,30 +510,7 @@
                                       VerticalAlignment="Center"
                                       Margin="0,8"/>
 
-                                            <!-- Admin (Highlighted) -->
-                                            <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                                    Background="{DynamicResource Background}"
-                                    CornerRadius="6"
-                                    Padding="8"
-                                                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
-                                    Margin="0,8">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="235"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <TextBlock Grid.Column="0"
-                                               Text="🔧 System Administrator"
-                                               Foreground="White"
-                                               FontWeight="SemiBold"
-                                               FontSize="13"
-                                               VerticalAlignment="Center"/>
-                                                    <CheckBox Grid.Column="1"
-                                              x:Name="ChkIsAdmin"
-                                              VerticalAlignment="Center"/>
-                                                </Grid>
-                                            </Border>
+                                            
 
                                         </Grid>
 

@@ -7,12 +7,44 @@ namespace PDC_System
     {
         public Customerinfo Customer { get; private set; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        private readonly bool _isEditMode;
+
+#pragma warning disable CS8618
         public AddCustomerWindow()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8618
         {
             InitializeComponent();
         }
+
+        // Edit mode constructor
+#pragma warning disable CS8618
+        public AddCustomerWindow(Customerinfo existingCustomer) : this()
+#pragma warning restore CS8618
+        {
+            _isEditMode = true;
+
+            // Pre-fill all fields with existing customer data
+            NameTextBox.Text = existingCustomer.Name;
+            AddressTextBox.Text = existingCustomer.Address;
+            ContactNoTextBox.Text = existingCustomer.ContactNo;
+            EmailTextBox.Text = existingCustomer.Email;
+
+            if (existingCustomer.Type?.ToLower() == "company")
+            {
+                CP.IsChecked = true;
+                CompanyTextBox.Text = existingCustomer.companyname;
+                CompanyLabel.Visibility = Visibility.Visible;
+                CompanyTextBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                PersonRB.IsChecked = true;
+            }
+
+            // Update title to reflect edit mode
+            this.Title = "Edit Customer";
+        }
+
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             // ✅ Validate Name field
@@ -53,7 +85,7 @@ namespace PDC_System
                 ContactNo = ContactNoTextBox.Text,
                 Email = EmailTextBox.Text,
                 Type = CP.IsChecked == true ? "Company" : PersonRB.IsChecked == true ? "Person" : "",
-                companyname = CP.IsChecked == true ? CompanyTextBox.Text : null // Save only if Company selected
+                companyname = CP.IsChecked == true ? CompanyTextBox.Text : null
             };
             DialogResult = true;
         }
@@ -73,7 +105,7 @@ namespace PDC_System
             {
                 CompanyLabel.Visibility = Visibility.Collapsed;
                 CompanyTextBox.Visibility = Visibility.Collapsed;
-                CompanyTextBox.Text = string.Empty; // Clear the text
+                CompanyTextBox.Text = string.Empty;
             }
         }
 
@@ -84,25 +116,20 @@ namespace PDC_System
             this.Close();
         }
 
-
         #endregion
-
 
         private void ContactNoTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
-            // Allow only digits
             e.Handled = !char.IsDigit(e.Text, 0);
         }
 
         private void ContactNoTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // Ensure the text length does not exceed 10 characters
             if (ContactNoTextBox.Text.Length > 10)
             {
                 ContactNoTextBox.Text = ContactNoTextBox.Text.Substring(0, 10);
-                ContactNoTextBox.SelectionStart = ContactNoTextBox.Text.Length; // Keep the cursor at the end
+                ContactNoTextBox.SelectionStart = ContactNoTextBox.Text.Length;
             }
         }
-
     }
 }

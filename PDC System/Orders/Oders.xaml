@@ -4,135 +4,147 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PDC_System.Orders"
-             mc:Ignorable="d" 
-             >
+             mc:Ignorable="d">
 
     <UserControl.Resources>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Hidden">
-        
-    <Grid HorizontalAlignment="Center" >
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
-
-
-            <!-- TITLE -->
-            <!-- TITLE -->
-            <StackPanel Grid.Row="0">
-
-                <TextBlock Text="Orders" 
-       FontSize="20" 
-       FontWeight="SemiBold" 
-       Foreground="{DynamicResource Forground}"                        
-       TextAlignment="Left" Margin="0,0,0,5" />
-
-                <TextBlock Text="• View and manage all orders." 
-       FontSize="12" 
-       FontWeight="Normal" 
-       Foreground="#FF7D7D7D"
-       TextAlignment="Left" />
-
-                <TextBlock Text="• Add new orders using the 'Add Order' button." 
-       FontSize="12" 
-       FontWeight="Normal" 
-       Foreground="#FF7D7D7D"
-       TextAlignment="Left" />
-
-                <TextBlock Text="• View or delete existing orders from the action column." 
-       FontSize="12" 
-       FontWeight="Normal" 
-       Foreground="#FF7D7D7D"
-       TextAlignment="Left" Padding="0,0,0,18"/>
-
-            </StackPanel>
-
-            <StackPanel Grid.Row="1">
+        <Grid HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
 
-            <StackPanel Grid.Row="1">
-                <Button x:Name="AddOrderButton" Style="{StaticResource ActionButton}" Content="Add Order" HorizontalAlignment="Left" Margin="0,10,10,10" Click="AddOrderButton_Click" Width="150"/>
-            </StackPanel>
-           
-            
-                <StackPanel Grid.Row="3">
+            <!-- ROW 0: TITLE -->
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-               
+                <TextBlock Grid.Row="0"
+                           Text="Orders" 
+                           FontSize="20" 
+                           FontWeight="SemiBold" 
+                           Foreground="{DynamicResource Forground}"                        
+                           TextAlignment="Left"
+                           Margin="0,0,0,5" />
 
-                    <StackPanel>
-                        <DataGrid x:Name="OrdersDataGrid" BorderBrush="{x:Null}" HeadersVisibility="Column" IsReadOnly="False"
-               Background="Transparent"
-               RowBackground="White"
-               AlternatingRowBackground="#f0f0f0"
-               SnapsToDevicePixels="True"
-               Height="500"
-              
-               AutoGenerateColumns="False"
-               CanUserResizeColumns="False"
-               CellStyle="{StaticResource DataGridCellStyle}"
-               Style="{StaticResource DataGridStyle}"
-               ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-               RowStyle="{StaticResource DataGridRowStyle}">
+                <TextBlock Grid.Row="1"
+                           Text="• View and manage all orders." 
+                           FontSize="12" 
+                           FontWeight="Normal" 
+                           Foreground="#FF7D7D7D"
+                           TextAlignment="Left" />
 
-                                <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding CreateDate, StringFormat='yyyy/MM/dd hh:mm tt'}" Width="*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-                                <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat='yyyy/MM/dd hh:mm tt'}" Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-                                <DataGridTextColumn Header="Contact No:Countdown" Binding="{Binding Countdown}" Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-                                <DataGridTextColumn Header="Customer Name" Binding="{Binding CustomerName}" Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-                                <DataGridTextColumn Header="Customer Description" Binding="{Binding Description}" Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-                                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-                                    <DataGridTemplateColumn Header="Action" Width="2*">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
-                                                <!-- Show "Mark as Finished" if the order is not finished -->
-                                                <Button Width="100" Style="{StaticResource ActionButton}" Content="Mark as Finished" 
-Click="MarkAsFinished_Click" 
-Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}" />
-                                                <!-- Show "Revert" if the order is finished -->
-                                                <Button Width="80" Style="{StaticResource NavigationButtonStyle}" Content="Revert" 
-Click="Revert_Click" 
-Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                            </StackPanel>
-                                            <!-- Pass the row data through Tag -->
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Action" Width="2*">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  >
-                                                <Button   Content="Delete"  
-                                                      Click="DeleteOrders_Click" 
-                                                      Height="30" 
-                                                      Width="60" 
-                                                      FontSize="10" 
-                                                      Style="{StaticResource DeleteActionButton}"/>
-                                            </StackPanel>
+                <TextBlock Grid.Row="2"
+                           Text="• Add new orders using the 'Add Order' button." 
+                           FontSize="12" 
+                           FontWeight="Normal" 
+                           Foreground="#FF7D7D7D"
+                           TextAlignment="Left" />
 
-                                    
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-    
-        </StackPanel>
-
-               
-                    
-            </StackPanel>
+                <TextBlock Grid.Row="3"
+                           Text="• View or delete existing orders from the action column." 
+                           FontSize="12" 
+                           FontWeight="Normal" 
+                           Foreground="#FF7D7D7D"
+                           TextAlignment="Left"
+                           Padding="0,0,0,18"/>
+            </Grid>
 
 
-            
-        </StackPanel>
-        
+            <!-- ROW 1: ADD BUTTON -->
+            <Grid Grid.Row="1">
+                <Button x:Name="AddOrderButton"
+                        Style="{StaticResource ActionButton}"
+                        Content="Add Order"
+                        HorizontalAlignment="Left"
+                        Margin="0,10,10,10"
+                        Click="AddOrderButton_Click"
+                        Width="150"/>
+            </Grid>
 
-    </Grid>
+
+            <!-- ROW 2: DATAGRID -->
+            <DataGrid Grid.Row="2"
+                      x:Name="OrdersDataGrid"
+                      BorderBrush="{x:Null}"
+                      HeadersVisibility="Column"
+                      Background="Transparent"
+                      RowBackground="White"
+                      AlternatingRowBackground="#f0f0f0"
+                      SnapsToDevicePixels="True"
+                      Height="auto"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="False"
+                      CellStyle="{StaticResource DataGridCellStyle}"
+                      Style="{StaticResource DataGridStyle}"
+                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                      RowStyle="{StaticResource DataGridRowStyle}">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Date"                 Binding="{Binding CreateDate, StringFormat='yyyy/MM/dd hh:mm tt'}" Width="*"  ElementStyle="{StaticResource DataGridColumnsStyle}"/>
+                    <DataGridTextColumn Header="Due Date"             Binding="{Binding DueDate, StringFormat='yyyy/MM/dd hh:mm tt'}"    Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
+                    <DataGridTextColumn Header="Contact No:Countdown" Binding="{Binding Countdown}"                                      Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
+                    <DataGridTextColumn Header="Customer Name"        Binding="{Binding CustomerName}"                                   Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
+                    <DataGridTextColumn Header="Customer Description" Binding="{Binding Description}"                                    Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
+                    <DataGridTextColumn Header="Notes"                Binding="{Binding Notes}"                                          Width="2*" ElementStyle="{StaticResource DataGridColumnsStyle}"/>
+
+                    <!-- Action: Mark as Finished / Revert -->
+                    <DataGridTemplateColumn Header="Action" Width="2*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Button Grid.Row="0"
+                                            Width="100"
+                                            Style="{StaticResource ActionButton}"
+                                            Content="Mark as Finished"
+                                            Click="MarkAsFinished_Click"
+                                            Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}" />
+
+                                    <Button Grid.Row="1"
+                                            Width="80"
+                                            Style="{StaticResource NavigationButtonStyle}"
+                                            Content="Revert"
+                                            Click="Revert_Click"
+                                            Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Action: Delete -->
+                    <DataGridTemplateColumn Header="Action" Width="2*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button Content="Delete"
+                                            Click="DeleteOrders_Click"
+                                            Height="30"
+                                            Width="60"
+                                            FontSize="10"
+                                            Style="{StaticResource DeleteActionButton}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </Grid>
     </ScrollViewer>
 </UserControl>

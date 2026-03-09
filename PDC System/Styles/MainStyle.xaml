@@ -26,6 +26,8 @@
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="GridLinesVisibility" Value="None"/>
         <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        
         <Setter Property="CanUserDeleteRows" Value="False"/>
         
     </Style>
@@ -212,23 +214,21 @@
                     Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
                     ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
                     ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
-                        <TextBox Name="PART_EditableTextBox" Margin="5,3,23,3"                     
+                        <TextBox Name="PART_EditableTextBox" Margin="5,3,23,3"
                                          IsReadOnly="{TemplateBinding IsReadOnly}"
                                          Visibility="Hidden"
-                                         Background="Transparent" 
+                                         Background="Transparent"
                                  Foreground="{DynamicResource Forground}"
-                                 
-                                 
                                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                                         Focusable="True">  
+                                         Focusable="True"
+                                         Cursor="IBeam">
                             <TextBox.Template>
                                 <ControlTemplate TargetType="TextBox">
-                                    <Border CornerRadius="5" 
-                        Background="{TemplateBinding Background}" 
-                                            
-                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                    <Border CornerRadius="5"
+                        Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="0"
-                        Name="PART_ContentHost" Focusable="False" />        
+                        Name="PART_ContentHost" Focusable="False" />
                                 </ControlTemplate>
                             </TextBox.Template>
                         </TextBox>
@@ -825,16 +825,69 @@
 
 
     <Style x:Key="LeftNavigation" TargetType="Button">
-        <Setter Property="Background" Value="#FF1469FF"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Background" Value="#0660FE"/>
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Width" Value="25" />
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontFamily" Value="Poppins"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Template">
 
+
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+             BorderThickness="0"
+             CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <!-- Change background and cursor on mouse hover -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#FF1469FF"/>
+
+                <!-- Use a custom cursor -->
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="RightNavigation" TargetType="Button">
-        <Setter Property="Background" Value="#FF1469FF"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Background" Value="#0660FE"/>
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Width" Value="25" />
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontFamily" Value="Poppins"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Template">
+
+
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+             BorderThickness="0"
+             CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <!-- Change background and cursor on mouse hover -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#FF1469FF"/>
+
+                <!-- Use a custom cursor -->
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="MonthText" TargetType="TextBlock">

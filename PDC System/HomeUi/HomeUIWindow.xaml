@@ -242,6 +242,7 @@
                       ItemsSource="{Binding UpcomingBirthdays}"
                       AlternatingRowBackground="#f0f0f0"
                       SnapsToDevicePixels="True"
+                                    IsReadOnly="True"
                       AutoGenerateColumns="False"
                       CanUserResizeColumns="False"
                       VerticalScrollBarVisibility="Auto"

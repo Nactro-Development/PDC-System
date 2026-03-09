@@ -5,176 +5,221 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PDC_System"
              mc:Ignorable="d"
-              xmlns:cal="clr-namespace:ModernCalendarLib;assembly=ModernCalendarLib"
+             xmlns:cal="clr-namespace:ModernCalendarLib;assembly=ModernCalendarLib"
              MinWidth="1004" MinHeight="660">
 
     <UserControl.Resources>
-        <!-- Add the converter here -->
         <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-
     <Grid>
-
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
 
+        <!-- ROW 0: TITLE -->
+        <Grid Grid.Row="0" Margin="0,0,0,18">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="Job Cards" 
+                       FontSize="20" 
+                       FontWeight="SemiBold" 
+                       Foreground="{DynamicResource Forground}"                        
+                       TextAlignment="Left" 
+                       Margin="0,0,0,5" />
+
+            <TextBlock Grid.Row="1"
+                       Text="• View and manage all job cards." 
+                       FontSize="12" 
+                       FontWeight="Normal" 
+                       Foreground="#FF7D7D7D"
+                       TextAlignment="Left" />
+
+            <TextBlock Grid.Row="2"
+                       Text="• Add new job cards using the 'Add Job' button." 
+                       FontSize="12" 
+                       FontWeight="Normal" 
+                       Foreground="#FF7D7D7D"
+                       TextAlignment="Left" />
+
+            <TextBlock Grid.Row="3"
+                       Text="• View or delete existing job cards from the action column." 
+                       FontSize="12" 
+                       FontWeight="Normal" 
+                       Foreground="#FF7D7D7D"
+                       TextAlignment="Left" />
+        </Grid>
 
 
-        <!-- TITLE -->
-        <!-- TITLE -->
-        <StackPanel Grid.Row="0">
-
-            <TextBlock Text="Job Cards" 
-                   FontSize="20" 
-                   FontWeight="SemiBold" 
-                   Foreground="{DynamicResource Forground}"                        
-                   TextAlignment="Left" Margin="0,0,0,5" />
-
-            <TextBlock Text="• View and manage all job cards." 
-                   FontSize="12" 
-                   FontWeight="Normal" 
-                   Foreground="#FF7D7D7D"
-                   TextAlignment="Left" />
-
-            <TextBlock Text="• Add new job cards using the 'Add Job' button." 
-                   FontSize="12" 
-                   FontWeight="Normal" 
-                   Foreground="#FF7D7D7D"
-                   TextAlignment="Left" />
-
-            <TextBlock Text="• View or delete existing job cards from the action column." 
-                   FontSize="12" 
-                   FontWeight="Normal" 
-                   Foreground="#FF7D7D7D"
-                   TextAlignment="Left" Padding="0,0,0,18"/>
-
-        </StackPanel>
+        <!-- ROW 1: SEARCH BOX -->
+        <Grid Grid.Row="1" Margin="0,10,0,10">
+            <TextBox HorizontalAlignment="Left"
+                     Name="NameAutoCompleteBox1"
+                     ToolTip="Search by Employee Name or ID"
+                     Height="35"
+                     Style="{DynamicResource OutsourceSerchBar}"
+                     Width="300"
+                     TextChanged="SearchBox_TextChanged2" />
+        </Grid>
 
 
-        <StackPanel Grid.Row="1">
-            <TextBox Margin="0,10,0,10" HorizontalAlignment="Left" Grid.Row="0" Name="NameAutoCompleteBox1" ToolTip="Search by Employee Name or ID" Height="35" Style="{DynamicResource OutsourceSerchBar}" Width="300" TextChanged="SearchBox_TextChanged2" />
-        </StackPanel>
+        <!-- ROW 2: DATE FILTER -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label Grid.Column="0"
+                   Content="From:"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource Forground}"/>
 
-            <Label Content="From:" VerticalAlignment="Center" Foreground="White"/>
-
-            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2" Height="35" CornerRadius="5">
+            <Border Grid.Column="1"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="2"
+                    Height="35"
+                    CornerRadius="5">
                 <cal:CustomDatePicker x:Name="StartDatePicker" Width="250"/>
             </Border>
-            <Label Content="To:" VerticalAlignment="Center" Foreground="White"/>
-            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2" Height="35" CornerRadius="5">
+
+            <Label Grid.Column="2"
+                   Content="To:"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource Forground}"/>
+
+            <Border Grid.Column="3"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="2"
+                    Height="35"
+                    CornerRadius="5">
                 <cal:CustomDatePicker x:Name="EndDatePicker" Width="250"/>
             </Border>
 
+            <Button Grid.Column="4"
+                    Content="Search"
+                    Click="Search_Click"
+                    Margin="5"
+                    Height="35"
+                    Style="{StaticResource ActionButton}" />
+
+            <Button Grid.Column="5"
+                    Content="Reset"
+                    Click="Reset_Click"
+                    Margin="5"
+                    Height="35"
+                    Style="{StaticResource NavigationButtonStyle}" />
+        </Grid>
 
 
+        <!-- ROW 3: DATA GRID AREA -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <Button Content="Search" Click="Search_Click" Margin="5" Width="150" Height="35"  Style="{StaticResource ActionButton}" />
-            <Button Content="Reset" Click="Reset_Click" Margin="5" Width="80" Height="35"  Style="{StaticResource NavigationButtonStyle}" />
+            <!-- Toolbar: Add Job + Mini Widget -->
+            <Grid Grid.Row="0" Margin="10,10,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        </StackPanel>
+                <Button Grid.Column="0"
+                        Content="+ Add Job"
+                        Click="AddJobCard_Click"
+                        Margin="0,0,10,0"
+                        Width="150"
+                        Height="30"
+                        Style="{StaticResource ActionButton}" />
 
+                <CheckBox Grid.Column="1"
+                          x:Name="MiniWidgetCheckBox"
+                          VerticalAlignment="Center"
+                          Checked="MiniWidgetCheckBox_CheckedChanged"
+                          Unchecked="MiniWidgetCheckBox_CheckedChanged"/>
 
+                <TextBlock Grid.Column="2"
+                           VerticalAlignment="Center"
+                           Text="Mini Widget"
+                           FontSize="12"
+                           Foreground="{DynamicResource Forground}"
+                           Margin="5,0,0,0"/>
+            </Grid>
 
+            <!-- DataGrid -->
+            <DataGrid Grid.Row="1"
+                      x:Name="JobCardDataGrid"
+                      Margin="10"
+                      Background="Transparent"
+                      SnapsToDevicePixels="True"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="False"
+                      ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      CellStyle="{StaticResource DataGridCellStyle}"
+                      Style="{StaticResource DataGridStyle}"
+                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                      RowStyle="{StaticResource DataGridRowStyle}"
+                      PreviewMouseLeftButtonDown="JobCardDataGrid_PreviewMouseLeftButtonDown">
 
+                <DataGrid.Columns>
 
+                    <DataGridTemplateColumn Header="Seen" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSeen, UpdateSourceTrigger=PropertyChanged}"
+                                          Visibility="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, 
+                                                       Path=IsSelected, 
+                                                       Converter={StaticResource BooleanToVisibilityConverter}}"
+                                          LostFocus="CheckBox_LostFocus" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-        <StackPanel Grid.Row="3">
-            <Border Background="Transparent" CornerRadius="30" Height="483" >
-                <StackPanel Margin="10" VerticalAlignment="Top">
+                    <DataGridTextColumn Header="Date And Time"   Binding="{Binding JobCardDate}"    Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
+                    <DataGridTextColumn Header="Customer Name"   Binding="{Binding Customer_Name}"  Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
+                    <DataGridTextColumn Header="Description"     Binding="{Binding Description}"    Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
+                    <DataGridTextColumn Header="Type"            Binding="{Binding Type}"           Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
 
+                    <DataGridTemplateColumn Header="Action" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Margin="3" Content="View"   Style="{DynamicResource ActionButton}"         Click="OpenJobCardButton_Click"/>
+                                    <Button Grid.Column="1" Margin="3" Content="Edit"   Style="{DynamicResource EditActionButton}"     Click="EditJob_Click"/>
+                                    <Button Grid.Column="2" Margin="3" Content="Delete" Style="{DynamicResource NavigationButtonStyle}" Click="DeleteJob_Click"/>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
+                </DataGrid.Columns>
+            </DataGrid>
 
+        </Grid>
 
-
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="+ Add Job" Click="AddJobCard_Click" HorizontalAlignment="Right" Margin="10" Width="150"  Style="{StaticResource ActionButton}" Height="30"/>
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox x:Name="MiniWidgetCheckBox" 
-          Content="Show Mini Widget" 
-          Checked="MiniWidgetCheckBox_CheckedChanged"
-          Unchecked="MiniWidgetCheckBox_CheckedChanged"/>
-                            <TextBlock VerticalAlignment="Center" Text="Mini Widget" FontSize="12" Foreground="{DynamicResource Forground}" Margin="20,0,0,0"/>
-                        </StackPanel>
-
-                    </StackPanel>
-
-
-
-                    <DataGrid x:Name="JobCardDataGrid"
-
-Background="Transparent"
-RowBackground="White"
-AlternatingRowBackground="#f0f0f0"
-SnapsToDevicePixels="True"
-AutoGenerateColumns="False"
-ItemsSource="{Binding UpcomingBirthdays}"
-CanUserResizeColumns="False"
-ScrollViewer.CanContentScroll="True"
-ScrollViewer.VerticalScrollBarVisibility="Hidden"
-Height="500"
-CellStyle="{StaticResource DataGridCellStyle}"
-Style="{StaticResource DataGridStyle}"
-ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-RowStyle="{StaticResource DataGridRowStyle}"
-PreviewMouseLeftButtonDown="JobCardDataGrid_PreviewMouseLeftButtonDown">
-
-                        <DataGrid.Columns>
-                            <!-- Action/Edit button -->
-                            <DataGridTemplateColumn Header="Seen" Width="80">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox  IsChecked="{Binding IsSeen, UpdateSourceTrigger=PropertyChanged}"
-Visibility="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, 
-                   Path=IsSelected, 
-                   Converter={StaticResource BooleanToVisibilityConverter}}"
-LostFocus="CheckBox_LostFocus" />
-
-
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTextColumn Header="Date And Time" Binding="{Binding JobCardDate}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
-                            <DataGridTextColumn Header="Customer Name" Binding="{Binding Customer_Name}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
-                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
-                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
-
-                            <DataGridTemplateColumn Header="Action" Width="auto">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Margin="3" Content="View"  Style="{DynamicResource ActionButton}" Click="OpenJobCardButton_Click"/>
-                                            <Button Margin="3" Content="Delete" Style="{DynamicResource NavigationButtonStyle}" Click="DeleteJob_Click"/>
-                                        </StackPanel>
-
-
-
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-
-                        </DataGrid.Columns>
-                    </DataGrid>
-
-
-
-
-
-
-
-
-
-                </StackPanel>
-            </Border>
-        </StackPanel>
     </Grid>
 </UserControl>

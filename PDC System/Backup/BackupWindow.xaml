@@ -23,11 +23,8 @@
     <!-- Main container grid -->
     <Grid x:Name="MainGrid">
         <!-- Outer border with drop shadow effect -->
-        <Border CornerRadius="10" BorderBrush="White" BorderThickness="0.5" Margin="5" x:Name="BorderBackgroud">
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" Opacity="0.20" BlurRadius="8"/>
-            </Border.Effect>
-
+        <Border CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"  x:Name="BorderBackgroud">
+           
             <StackPanel Margin="10">
                 <Grid>
                     <Border CornerRadius="10" Margin="8">
@@ -47,10 +44,10 @@
 
                             <!-- Close button in top-right -->
                             <StackPanel Grid.Row="0" HorizontalAlignment="Right">
-                                <Button shell:WindowChrome.IsHitTestVisibleInChrome="True" Width="20" Height="20"
-                                        HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource BtnCloseInStyle}" 
+                                <Button shell:WindowChrome.IsHitTestVisibleInChrome="True" Width="25" Height="25"
+                                        HorizontalAlignment="Center" Content="X" VerticalAlignment="Center" Style="{StaticResource NavigationButtonStyle}" 
                                         Click="btnClose_Click">
-                                    <TextBlock Text="X" TextAlignment="Center" FontWeight="Regular" FontSize="10" VerticalAlignment="Center"/>
+                                    
                                 </Button>
                             </StackPanel>
 
@@ -58,67 +55,73 @@
                             <!-- Backup and restore buttons section -->
                             <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Backup and Restore" Margin="10" FontSize="24" FontWeight="Bold" TextAlignment="Center" FontFamily="DM Sans 14pt"/>
-                                <TextBlock Text="Manage your data with ease and security. Backup, restore, and clear your data with a single click." 
+                                <TextBlock Text="Manage your data with ease and security. Backup, restore." 
                                            TextAlignment="Center" TextWrapping="Wrap" Width="500" Margin="0,10,0,40" FontSize="18" FontWeight="Medium" FontFamily="DM Sans 12pt"/>
-                                <Button Width="300" Height="40" Click="SaveAndBackup_Click" Style="{StaticResource BackuoStyle}" Margin="0,0,0,10">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="/Assets/Asse_9.png" Width="20" Height="20" HorizontalAlignment="Center"/>
-                                        <TextBlock Margin="10,0,0,0" Text="Backup" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                              
+                                <!-- Auto-backup settings -->
+                                <Border Width="500"  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2" Padding="10" Margin="0,0,0,15" CornerRadius="6" Background="{DynamicResource Background}">
+                                    <StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8" >
+                                            <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Forground}" Text="Enable Auto Backup" />
+                                            <CheckBox x:Name="chkAutoBackup" Content="Enable Auto Backup"  FontSize="14" Margin="4.6,0,0,0"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
+                                            <TextBlock Text="Interval (minutes):" VerticalAlignment="Center" FontSize="13" Margin="0,0,8,0"/>
+                                            <TextBox x:Name="txtAutoBackupInterval" Width="100" Style="{StaticResource TextBoxStyle}" VerticalContentAlignment="Center"/>
+                                        </StackPanel>
+                                        <Button x:Name="btnSaveAutoBackupSettings" Width="150" Height="36" Click="SaveAutoBackupSettings_Click" Style="{StaticResource BackuoStyle}">
+                                            <TextBlock Text="Save Settings" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
                                     </StackPanel>
-                                </Button>
+                                </Border>
 
                                 <!-- Custom Save Location Section -->
                                 <TextBlock Text="Custom Backup Location" FontSize="14" FontWeight="SemiBold" 
-                                           FontFamily="DM Sans 12pt" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+             FontFamily="DM Sans 12pt" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                                 <Grid Width="500" Margin="0,0,0,15">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="txtCustomBackupPath" Grid.Column="0" 
-                                             IsReadOnly="True" Height="36"
-                                             Style="{StaticResource RoundedTextBox}"
-                                             VerticalContentAlignment="Center"
-                                             Text="No custom location set"/>
+               IsReadOnly="True" Height="36"
+               Style="{StaticResource TextBoxStyle}"
+               VerticalContentAlignment="Center"
+               Text="No custom location set"/>
                                     <Button Grid.Column="1" Width="100" Height="36" Margin="8,0,0,0"
-                                            Click="BrowseBackupLocation_Click"
-                                            Style="{StaticResource BackuoStyle}"
-                                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+              Click="BrowseBackupLocation_Click"
+              Style="{StaticResource BackuoStyle}"
+              shell:WindowChrome.IsHitTestVisibleInChrome="True">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="Browse" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                 </Grid>
 
-                                <!-- Backup button -->
 
+                                <Button Width="300" Height="40" Click="SaveAndBackup_Click" Style="{StaticResource BackuoStyle}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="/Assets/Asse_9.png" Width="20" Height="20" HorizontalAlignment="Center"/>
+                                        <TextBlock Margin="10,0,0,0" Text="Backup" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
 
                                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" >
-                                    <Button Width="300" Height="40" Click="Restore_Click" Margin="10" Style="{StaticResource RestoreStyle}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image x:Name="RestoreButtonImage" Width="20" Height="20" HorizontalAlignment="Center"/>
-                                            <TextBlock Margin="10,0,0,0" Text="Restore" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                        </StackPanel>
+                                    <Button Width="150" Height="40" Content="Restore" Click="Restore_Click" Margin="10" Style="{StaticResource NavigationButtonStyle}"/>
+                                    <Button Width="40" Height="40" Click="CustomRestore_Click" Content="📄︎" FontSize="15" Margin="10" Style="{StaticResource NavigationButtonStyle}">
+                                    
                                     </Button>
-
-                                    <!-- Custom Restore Location Section -->
-                                    <Button Width="50" Height="40" Click="CustomRestore_Click" Margin="10"
-            Style="{StaticResource RestoreStyle}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Width="20" Height="20" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-
                                 </StackPanel>
-
-                                <!-- Restore button (default - last backup) -->
 
                             </StackPanel>
 
                             <!-- Drive size info and log view -->
                             <StackPanel Grid.Row="3" Width="600">
                                 <!-- Log label -->
-                                <TextBlock Text="Log View" Margin="10,5,0,0" FontSize="20" FontWeight="Bold" FontFamily="DM Sans 14pt"/>
+                                <TextBlock Text="Backup Log View" Margin="10,5,0,0" FontSize="20" FontWeight="Bold" FontFamily="DM Sans 14pt"/>
 
                                 <!-- Log display textbox -->
                                 <TextBox x:Name="txtHistory" 
@@ -126,7 +129,7 @@
                                          VerticalAlignment="Bottom"
                                          Height="150"
                                          Margin="10"
-                                         Style="{StaticResource RoundedTextBox}" 
+                                         Style="{StaticResource TextBoxStyle}" 
                                          IsReadOnly="True"
                                          TextWrapping="Wrap"
                                          VerticalScrollBarVisibility="Hidden"/>

@@ -1,0 +1,139 @@
+﻿<Window x:Class="PDC_System.Payroll_Details.EditEpfWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PDC_System.Payroll_Details"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="{DynamicResource Background}"
+        Title="EditEpfWindow" Height="450" Width="450"   xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        WindowStartupLocation="CenterScreen">
+
+
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="32"
+               CornerRadius="10"
+                         
+               ResizeBorderThickness="6"
+               GlassFrameThickness="0"
+               NonClientFrameEdges="None"/>
+    </shell:WindowChrome.WindowChrome>
+
+
+    <Grid>
+
+        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2" CornerRadius="6" >
+
+            <Grid>
+
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+
+
+                <Border Margin="5"  x:Name="TitleBar" Grid.Row="0"
+Background="{DynamicResource Background}" 
+>
+                    <DockPanel>
+                        <!-- App Logo -->
+                        <Image Source="/Assets/MainLogo.png"  Height="20" Width="20" Margin="8,0"/>
+                        <!-- App Title -->
+                        <TextBlock x:Name="PDCtitel" Text="EPF Settings" Foreground="{DynamicResource Forground}"  VerticalAlignment="Center" Margin="8,0"/>
+                        <!-- Control Panel -->
+
+
+
+                        <!-- Title bar buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="Minimize" Content="—" Width="25" Height="25" Click="Minimize_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}"/>
+                            <Button x:Name="Maximize" Content="🗖" Width="25" Height="25" Click="Maximize_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}" />
+                            <Button x:Name="Colose" Content="🗙" Width="25" Height="25" Click="Close_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}" />
+                        </StackPanel>
+
+
+
+                    </DockPanel>
+                </Border>
+
+
+                <Grid Grid.Row="1" Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Employee EPF -->
+                    <Label Grid.Row="0" Grid.Column="0"
+           Foreground="{DynamicResource Forground}"
+           Content="Employee EPF (%):"
+           VerticalAlignment="Center"
+           Margin="0,0,0,12"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+             Style="{DynamicResource TextBoxStyle}"
+             x:Name="EmployeeTextBox"
+             VerticalAlignment="Center"
+             Margin="0,0,0,12"/>
+
+                    <!-- Employer EPF -->
+                    <Label Grid.Row="1" Grid.Column="0"
+           Foreground="{DynamicResource Forground}"
+           Content="Employer EPF (%):"
+           VerticalAlignment="Center"
+           Margin="0,0,0,12"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+             Style="{DynamicResource TextBoxStyle}"
+             x:Name="EmployerTextBox"
+             VerticalAlignment="Center"
+             Margin="0,0,0,12"/>
+
+                    <!-- Buttons -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,8,0,0">
+                        <Button x:Name="SaveButton"
+                Style="{DynamicResource ActionButton}"
+                Content="Save"
+                Width="80"
+                Margin="0,0,8,0"
+                Click="Save_Click"/>
+                        <Button Content="Cancel"
+                Style="{DynamicResource DeleteActionButton}"
+                Width="80"
+                Click="Cancel_Click"/>
+                    </StackPanel>
+                </Grid>
+                
+
+
+
+            </Grid>
+        </Border>
+
+    </Grid>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</Window>

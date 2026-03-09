@@ -13,7 +13,7 @@ namespace PDC_System
     public partial class Customers : UserControl
     {
         private List<Customerinfo> customers = new List<Customerinfo>();
-        
+
         private readonly string saversFolder;
         private readonly string jsonFilePath;
         private readonly string jsonFilePath2;
@@ -22,7 +22,6 @@ namespace PDC_System
         {
             InitializeComponent();
 
-            // Set current working directory to a 'Savers' folder
             saversFolder = Path.Combine(Directory.GetCurrentDirectory(), "Savers");
             if (!Directory.Exists(saversFolder))
             {
@@ -42,7 +41,7 @@ namespace PDC_System
                 customers = JsonConvert.DeserializeObject<List<Customerinfo>>(File.ReadAllText(jsonFilePath));
                 CustomerDataGrid.ItemsSource = customers;
 
-                UpdateCustomerSummary(); // ADD THIS
+                UpdateCustomerSummary();
             }
         }
 
@@ -53,32 +52,54 @@ namespace PDC_System
             {
                 customers.Add(addCustomerWindow.Customer);
                 CustomerDataGrid.Items.Refresh();
-                UpdateCustomerSummary(); // ADD THIS
+                UpdateCustomerSummary();
                 File.WriteAllText(jsonFilePath, JsonConvert.SerializeObject(customers, Formatting.Indented));
             }
         }
 
-       
+        private void EditCustomer_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedCustomer = CustomerDataGrid.SelectedItem as Customerinfo;
+            if (selectedCustomer == null)
+            {
+                CustomMessageBox.Show("Please select a customer to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning, Application.Current.MainWindow);
+                return;
+            }
+
+            var editWindow = new AddCustomerWindow(selectedCustomer);
+            if (editWindow.ShowDialog() == true)
+            {
+                // Update the existing customer's data in-place
+                int index = customers.IndexOf(selectedCustomer);
+                customers[index] = editWindow.Customer;
+
+                CustomerDataGrid.Items.Refresh();
+                UpdateCustomerSummary();
+                File.WriteAllText(jsonFilePath, JsonConvert.SerializeObject(customers, Formatting.Indented));
+            }
+        }
 
         private void DeleteCustomer_Click(object sender, RoutedEventArgs e)
         {
             var selectedCustomer = CustomerDataGrid.SelectedItem as Customerinfo;
             if (selectedCustomer != null)
             {
-                var confirmationDialog = new ConfirmationDialogCustomer(); // Assuming you have this dialog class
-                confirmationDialog.Owner = Application.Current.MainWindow;
-                confirmationDialog.ShowDialog();
+                var result = CustomMessageBox.Show(
+                    "Are you sure you want to delete this customer?",
+                    "Confirm Delete",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning,
+                    Application.Current.MainWindow);
 
-                if (confirmationDialog.IsConfirmed)
+                if (result == MessageBoxResult.Yes)
                 {
                     customers.Remove(selectedCustomer);
                     CustomerDataGrid.Items.Refresh();
-                    UpdateCustomerSummary(); // ADD THIS
+                    UpdateCustomerSummary();
                     File.WriteAllText(jsonFilePath, JsonConvert.SerializeObject(customers, Formatting.Indented));
                 }
             }
         }
-
 
         private void UpdateCustomerSummary()
         {
@@ -93,7 +114,5 @@ namespace PDC_System
             TotalCustomersTxt.Text = totalCustomers.ToString();
             TotalCompaniesTxt.Text = totalCompanies.ToString();
         }
-
-
     }
 }

@@ -346,5 +346,53 @@ namespace PDC_System.Properties {
                 this["SystemAppPassword"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CustomBackupPath {
+            get {
+                return ((string)(this["CustomBackupPath"]));
+            }
+            set {
+                this["CustomBackupPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoBackupEnabled {
+            get {
+                return ((bool)(this["AutoBackupEnabled"]));
+            }
+            set {
+                this["AutoBackupEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoBackupUseInterval {
+            get {
+                return ((bool)(this["AutoBackupUseInterval"]));
+            }
+            set {
+                this["AutoBackupUseInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int AutoBackupIntervalMinutes {
+            get {
+                return ((int)(this["AutoBackupIntervalMinutes"]));
+            }
+            set {
+                this["AutoBackupIntervalMinutes"] = value;
+            }
+        }
     }
 }

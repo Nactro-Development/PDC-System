@@ -448,7 +448,7 @@ namespace PDC_System
                 PlateQuantitiy = PlateQuantityTextBox.Text,
                 ScreenshotPath = finalScreenshotPath,
                 Type = selectedPrintingType,
-
+                IsSeen = false,
             };
 
             this.DialogResult = true;

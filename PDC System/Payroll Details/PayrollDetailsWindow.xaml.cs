@@ -65,13 +65,14 @@ namespace PDC_System.Payroll_Details
         {
             var data = list.Select(h => new
             {
-                h.EmployeeId,
-                h.EmployeeName,
-                h.Month,
-                h.BasicSalary,
-                EmployeeContribution = h.EmployeeAmount,
-                EmployerContribution = h.EmployerAmount,
-                TotalEPF = h.EmployeeAmount + h.EmployerAmount
+                EmployeeId = h.EmployeeId,
+                EmployeeName = h.EmployeeName,
+                Month = h.Month,
+                BasicSalary = h.BasicSalary,
+                // Use property names that match the XAML bindings
+                EmployeeAmount = h.EmployeeAmount,
+                EmployerAmount = h.EmployerAmount,
+                Total = h.EmployeeAmount + h.EmployerAmount
             }).ToList();
 
             EPFCombinedGrid.ItemsSource = data;
@@ -79,6 +80,75 @@ namespace PDC_System.Payroll_Details
             TotalEmployeeTxt.Text = list.Sum(x => x.EmployeeAmount).ToString("N2");
             TotalEmployerTxt.Text = list.Sum(x => x.EmployerAmount).ToString("N2");
             TotalEPFTxt.Text = list.Sum(x => x.EmployeeAmount + x.EmployerAmount).ToString("N2");
+        }
+
+
+       
+            private void EditETFs_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new EditEpfWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                // Settings changed and saved. Reload EPF data from disk and refresh UI.
+
+                try
+                {
+                    // 1) Reload EPF records (Savers/EPF.json) used by EPFGrid
+                    if (File.Exists(EPFFile))
+                    {
+                        string epfJson = File.ReadAllText(EPFFile);
+                        etfs = JsonConvert.DeserializeObject<List<EPF>>(epfJson) ?? new List<EPF>();
+                        EPFGrid.ItemsSource = etfs;
+                        EPFGrid.Items.Refresh();
+                    }
+                    else
+                    {
+                        etfs = new List<EPF>();
+                        EPFGrid.ItemsSource = etfs;
+                        EPFGrid.Items.Refresh();
+                    }
+
+                    // 2) Reload EPF history (Savers/EPFHistory.json) used by EPFCombinedGrid & totals
+                    string epfHistoryPath = "Savers/EPFHistory.json";
+                    if (File.Exists(epfHistoryPath))
+                    {
+                        string json = File.ReadAllText(epfHistoryPath);
+                        epfHistoryList = JsonConvert.DeserializeObject<List<EPFHistory>>(json) ?? new List<EPFHistory>();
+                    }
+                    else
+                    {
+                        epfHistoryList = new List<EPFHistory>();
+                    }
+
+                    // Repopulate combined grid and totals
+                    LoadEPFGrid(epfHistoryList);
+
+                    // 3) Also update displayed percentages (if you want to show current settings)
+                    // Keep the percent display as before but also show numeric totals from history
+                    try
+                    {
+                        // if you prefer to show percent instead of totals in those labels, adjust accordingly.
+                        // Here we set both: percent text (for settings) and totals are already set by LoadEPFGrid.
+                        // Example: show percent in small label (reuse existing TotalEmployeeTxt/TotalEmployerTxt if desired)
+                        TotalEmployeeTxt.Text = Properties.Settings.Default.EPFEmployee.ToString("N2") + " %";
+                        TotalEmployerTxt.Text = Properties.Settings.Default.EPFEmployer.ToString("N2") + " %";
+                    }
+                    catch
+                    {
+                        // ignore formatting errors
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Non-fatal — user should be notified if refresh fails
+                    CustomMessageBox.Show($"EPF values saved but failed to refresh UI: {ex.Message}", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
         }
 
 
@@ -379,6 +449,29 @@ namespace PDC_System.Payroll_Details
             CustomMessageBox.Show("Earning deleted successfully!");
             UpdateEarningSummary();
         }
+
+
+        private void EditLoan_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the loan from the clicked row's DataContext
+            var button = sender as Button;
+            var selectedLoan = button?.DataContext as Loan;
+
+            if (selectedLoan == null)
+            {
+                CustomMessageBox.Show("Select a loan to edit.");
+                return;
+            }
+
+            var editWindow = new AddLoanWindow(selectedLoan);
+            editWindow.LoanSaved += (updatedLoan) =>
+            {
+                // Reload from file to reflect updated data
+                LoadLoans();
+            };
+            editWindow.ShowDialog();
+        }
+
 
 
 

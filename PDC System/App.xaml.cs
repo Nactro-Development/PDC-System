@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Threading; // add this for DispatcherTimer
 using System.Diagnostics;
+using PDC_System.Backup; // Add this using directive
 
 namespace PDC_System
 {
@@ -52,6 +53,9 @@ namespace PDC_System
 
 
             Console.WriteLine($"✅ Timer started with {intervalSeconds} second interval");
+
+            // Start auto-backup scheduler (reads user settings)
+            AutoBackupScheduler.Initialize();
         }
 
         /// <summary>

@@ -10,9 +10,6 @@ using static PDC_System.QuotationWindow;
 
 namespace PDC_System
 {
-    /// <summary>
-    /// Interaction logic for Jobs.xaml
-    /// </summary>
     public partial class Jobs : UserControl
     {
         private List<JobCard> jobCards = new List<JobCard>();
@@ -26,7 +23,6 @@ namespace PDC_System
         {
             InitializeComponent();
 
-            // Ensure Savers folder exists
             if (!Directory.Exists(saversFolder))
                 Directory.CreateDirectory(saversFolder);
 
@@ -36,7 +32,6 @@ namespace PDC_System
             LoadData();
             JobCardDataGrid.Items.Refresh();
 
-            // Load Mini Widget checkbox state from settings
             LoadMiniWidgetCheckBoxState();
         }
 
@@ -45,10 +40,7 @@ namespace PDC_System
             if (File.Exists(jobCardsFile))
             {
                 jobCards = JsonConvert.DeserializeObject<List<JobCard>>(File.ReadAllText(jobCardsFile));
-
-                // Sort by date descending (latest first)
                 jobCards = jobCards.OrderByDescending(j => j.JobCardDate).ToList();
-
                 JobCardDataGrid.ItemsSource = jobCards;
             }
 
@@ -60,19 +52,13 @@ namespace PDC_System
 
         private void LoadMiniWidgetCheckBoxState()
         {
-            // Load the checkbox state from settings
             bool isChecked = Properties.Settings.Default.MiniWidgetCheckBoxState;
 
-            // Assuming your checkbox is named MiniWidgetCheckBox in XAML
             if (MiniWidgetCheckBox != null)
             {
                 MiniWidgetCheckBox.IsChecked = isChecked;
-
-                // Show or hide the Mini Widget Window based on the saved state
                 if (isChecked)
-                {
                     ShowMiniWidgetWindow();
-                }
             }
         }
 
@@ -81,26 +67,18 @@ namespace PDC_System
             if (MiniWidgetCheckBox != null)
             {
                 bool isChecked = MiniWidgetCheckBox.IsChecked == true;
-
-                // Save the checkbox state to settings
                 Properties.Settings.Default.MiniWidgetCheckBoxState = isChecked;
                 Properties.Settings.Default.Save();
 
-                // Show or hide the Mini Widget Window
                 if (isChecked)
-                {
                     ShowMiniWidgetWindow();
-                }
                 else
-                {
                     HideMiniWidgetWindow();
-                }
             }
         }
 
         private void ShowMiniWidgetWindow()
         {
-            // Check if the window is already open
             var existingWindow = Application.Current.Windows.OfType<MiniWidgetWindow>().FirstOrDefault();
             if (existingWindow == null)
             {
@@ -111,7 +89,6 @@ namespace PDC_System
 
         private void HideMiniWidgetWindow()
         {
-            // Find and close the Mini Widget Window
             var existingWindow = Application.Current.Windows.OfType<MiniWidgetWindow>().FirstOrDefault();
             existingWindow?.Close();
         }
@@ -121,10 +98,34 @@ namespace PDC_System
             var addJobCardWindow = new AddJobCardWindow(customers);
             if (addJobCardWindow.ShowDialog() == true)
             {
-                jobCards.Add(addJobCardWindow.JobCard);
-                jobCards.Reverse();
+                jobCards.Insert(0, addJobCardWindow.JobCard);
                 JobCardDataGrid.Items.Refresh();
                 File.WriteAllText(jobCardsFile, JsonConvert.SerializeObject(jobCards));
+            }
+        }
+
+        private void EditJob_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the JobCard from the clicked row's DataContext
+            var button = sender as Button;
+            var selectedJob = button?.DataContext as JobCard;
+
+            if (selectedJob == null)
+                selectedJob = JobCardDataGrid.SelectedItem as JobCard;
+
+            if (selectedJob == null)
+            {
+                NotificationHelper.ShowNotification("Error", "Please select a job card to edit.");
+                return;
+            }
+
+            var editWindow = new AddJobCardWindow(customers, selectedJob);
+            if (editWindow.ShowDialog() == true)
+            {
+                // The existing JobCard object was updated in place — just save & refresh
+                File.WriteAllText(jobCardsFile, JsonConvert.SerializeObject(jobCards));
+                JobCardDataGrid.Items.Refresh();
+                NotificationHelper.ShowNotification("Success", "Job card updated successfully.");
             }
         }
 

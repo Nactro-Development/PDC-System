@@ -5,149 +5,182 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PDC_System.Outsourcing"
              mc:Ignorable="d" 
-              MinWidth="1004" MinHeight="660">
-    <ScrollViewer VerticalScrollBarVisibility="Hidden" >
-        <Grid  Height="Auto">
+             MinWidth="1004" MinHeight="660">
+
+    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
 
-
-
-
-
-            <Grid>
+            <!-- ROW 0: TITLE -->
+            <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- TITLE -->
-                <StackPanel Grid.Row="0">
+                <TextBlock Grid.Row="0"
+                           Text="Outsourcing" 
+                           FontSize="20" 
+                           FontWeight="SemiBold" 
+                           Foreground="{DynamicResource Forground}"                        
+                           TextAlignment="Left"
+                           Margin="0,0,0,5" />
 
-                    <TextBlock Text="Outsourcing" 
-       FontSize="20" 
-       FontWeight="SemiBold" 
-       Foreground="{DynamicResource Forground}"                        
-       TextAlignment="Left" Margin="0,0,0,5" />
+                <TextBlock Grid.Row="1"
+                           Text="• View and manage all outsourcing records." 
+                           FontSize="12" 
+                           FontWeight="Normal" 
+                           Foreground="#FF7D7D7D"
+                           TextAlignment="Left" />
 
-                    <TextBlock Text="• View and manage all outsourcing records." 
-       FontSize="12" 
-       FontWeight="Normal" 
-       Foreground="#FF7D7D7D"
-       TextAlignment="Left" />
+                <TextBlock Grid.Row="2"
+                           Text="• Add new outsourcing entries using the 'Add Outsourcing' button." 
+                           FontSize="12" 
+                           FontWeight="Normal" 
+                           Foreground="#FF7D7D7D"
+                           TextAlignment="Left" />
 
-                    <TextBlock Text="• Add new outsourcing entries using the 'Add Outsourcing' button." 
-       FontSize="12" 
-       FontWeight="Normal" 
-       Foreground="#FF7D7D7D"
-       TextAlignment="Left" />
-
-                    <TextBlock Text="• Edit or delete existing outsourcing records from the action column." 
-       FontSize="12" 
-       FontWeight="Normal" 
-       Foreground="#FF7D7D7D"
-       TextAlignment="Left" Padding="0,0,0,18"/>
-
-                </StackPanel>
-
-
-
-
-                <StackPanel Grid.Row="2" Height="auto" >
-
-                    <Grid Margin="0,10,0,10" >
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <ComboBox x:Name="TypeComboBox" Style="{StaticResource ComboBoxFlatStyle}" Width="150" HorizontalAlignment="Left" Height="35" SelectionChanged="TypeComboBox_SelectionChanged" Margin="0,0,29.6,0" />
-                            <TextBox  x:Name="SearchTextBox" Height="35" Style="{DynamicResource OutsourceSerchBar}" Width="300" TextChanged="SearchTextBox_TextChanged"  />
-                        </StackPanel>
-
-                        <!-- ComboBox for Type filter -->
-                        <StackPanel HorizontalAlignment="Right">
-                            <Button  Style="{StaticResource ActionButton}" Click="Outsourcing_Click" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center" >
-                                <StackPanel Margin="3" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Text="+" VerticalAlignment="Center" FontSize="18" Margin="0,0,10,0"/>
-                                    <TextBlock Text="Add Outsourcing" VerticalAlignment="Center" FontSize="12"/>
-
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-
-
-                        <!-- TextBox for Name search -->
-
-                    </Grid>
-
-                    <Grid Background="Transparent">
-
-
-
-
-
-                        <DataGrid x:Name="OutsourcingDataGrid" BorderBrush="{x:Null}" HeadersVisibility="Column" IsReadOnly="False"
-                           Background="Transparent"
-                           RowBackground="White"
-                           AlternatingRowBackground="#f0f0f0"
-                           SnapsToDevicePixels="True"
-                           Height="500"
-                           PreviewMouseWheel="OutsourcingDataGrid_PreviewMouseWheel"
-                           AutoGenerateColumns="False"
-                           CanUserResizeColumns="False"
-                           CellStyle="{StaticResource DataGridCellStyle}"
-                           Style="{StaticResource DataGridStyle}"
-                           ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-                           RowStyle="{StaticResource DataGridRowStyle}">
-
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" ElementStyle="{StaticResource NameColumnStyle}"/>
-                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="2*" ElementStyle="{StaticResource EmailColumnStyle}"/>
-                                <DataGridTextColumn Header="Contact No:" Binding="{Binding ContactNo}" Width="2*" ElementStyle="{StaticResource ContactColumnStyle}"/>
-                                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="2*" ElementStyle="{StaticResource TypeColumnStyle}"/>
-                                <DataGridTemplateColumn Header="Action" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center">
-
-                                                <Button Background="Transparent" Width="20" Click="EditButton_Click" Height="20" Tag="{Binding}" Margin="0,0,10,0">
-                                                    <StackPanel>
-                                                        <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Assets/Edit.png" Width="14"/>
-
-                                                    </StackPanel>
-                                                </Button>
-
-                                                <Button Background="Transparent" Width="20" Click="DeleteButton_Click" Height="20" Tag="{Binding}" Margin="10,0,0,0">
-                                                    <StackPanel>
-                                                        <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Assets/Delete.png" Width="14"/>
-                                                    </StackPanel>
-                                                </Button>
-                                            </StackPanel>
-                                            <!-- Pass the row data through Tag -->
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
-                    
-                    
-
-                </StackPanel>
-
-
-
-                <StackPanel Grid.Row="4"  Orientation="Horizontal" HorizontalAlignment="Right" >
-                    <Button Content="Previous" Click="PrevPage_Click" Style="{StaticResource NavigationButtonStyle}" Margin="5"/>
-                    <Button Content="Next" Click="NextPage_Click" Style="{StaticResource NavigationButtonStyle}" Margin="5"/>
-                </StackPanel>
-
-
+                <TextBlock Grid.Row="3"
+                           Text="• Edit or delete existing outsourcing records from the action column." 
+                           FontSize="12" 
+                           FontWeight="Normal" 
+                           Foreground="#FF7D7D7D"
+                           TextAlignment="Left"
+                           Padding="0,0,0,18"/>
             </Grid>
 
 
+            <!-- ROW 1: TOOLBAR (Search + Filter + Add Button) -->
+            <Grid Grid.Row="1" Margin="0,10,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox Grid.Column="0"
+                          x:Name="TypeComboBox"
+                          Style="{StaticResource ComboBoxFlatStyle}"
+                          Width="150"
+                          Height="35"
+                          Margin="0,0,10,0"
+                          SelectionChanged="TypeComboBox_SelectionChanged" />
+
+                <TextBox Grid.Column="1"
+                         x:Name="SearchTextBox"
+                         Height="35"
+                         Style="{DynamicResource OutsourceSerchBar}"
+                         Width="300"
+                         TextChanged="SearchTextBox_TextChanged" />
+
+                <Button Grid.Column="3"
+                        Style="{StaticResource ActionButton}"
+                        Click="Outsourcing_Click"
+                        Width="150"
+                        VerticalAlignment="Center">
+                    <Grid Margin="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   Text="+"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Margin="0,0,10,0"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="Add Outsourcing"
+                                   VerticalAlignment="Center"
+                                   FontSize="12"/>
+                    </Grid>
+                </Button>
+            </Grid>
 
 
+            <!-- ROW 2: DATAGRID -->
+            <DataGrid Grid.Row="2"
+                      x:Name="OutsourcingDataGrid"
+                      BorderBrush="{x:Null}"
+                      HeadersVisibility="Column"
+                      Background="Transparent"
+                      RowBackground="White"
+                      AlternatingRowBackground="#f0f0f0"
+                      SnapsToDevicePixels="True"
+                      Height="auto"
+                      PreviewMouseWheel="OutsourcingDataGrid_PreviewMouseWheel"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="False"
+                      CellStyle="{StaticResource DataGridCellStyle}"
+                      Style="{StaticResource DataGridStyle}"
+                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                      RowStyle="{StaticResource DataGridRowStyle}">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name"       Binding="{Binding Name}"      Width="*"  ElementStyle="{StaticResource NameColumnStyle}"/>
+                    <DataGridTextColumn Header="Email"      Binding="{Binding Email}"      Width="2*" ElementStyle="{StaticResource EmailColumnStyle}"/>
+                    <DataGridTextColumn Header="Contact No" Binding="{Binding ContactNo}"  Width="2*" ElementStyle="{StaticResource ContactColumnStyle}"/>
+                    <DataGridTextColumn Header="Type"       Binding="{Binding Type}"       Width="2*" ElementStyle="{StaticResource TypeColumnStyle}"/>
+
+                    <DataGridTemplateColumn Header="Action" Width="2*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Grid.Column="0"
+                                            Style="{DynamicResource EditActionButton}"
+                                            Content="Edit"
+                                            Width="70"
+                                            Click="EditButton_Click"
+                                            Tag="{Binding}"
+                                            Margin="0,0,10,0"/>
+
+                                    <Button Grid.Column="1"
+                                            Content="Delete"
+                                            Style="{DynamicResource DeleteActionButton}"
+                                            Width="70"
+                                            Click="DeleteButton_Click"
+                                            Tag="{Binding}"
+                                            Margin="10,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
 
 
+            <!-- ROW 3: PAGINATION -->
+            <Grid Grid.Row="3" HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="Previous"
+                        Click="PrevPage_Click"
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Margin="5"/>
+
+                <Button Grid.Column="1"
+                        Content="Next"
+                        Click="NextPage_Click"
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Margin="5"/>
+            </Grid>
 
         </Grid>
     </ScrollViewer>

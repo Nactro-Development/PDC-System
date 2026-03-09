@@ -103,7 +103,7 @@ namespace PDC_System
                         jobCards = JsonConvert.DeserializeObject<List<JobCard>>(json) ?? new List<JobCard>();
                     }
 
-                    jobCards.Add(jobCard);
+                    jobCards.Insert(0, jobCard);
                     File.WriteAllText(jobCardFile, JsonConvert.SerializeObject(jobCards, Formatting.Indented));
                 }
 

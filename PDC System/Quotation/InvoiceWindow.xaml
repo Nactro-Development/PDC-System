@@ -68,7 +68,8 @@ Background="{DynamicResource Background}"
 
                             <ComboBox x:Name="CustomerComboBox"
                        Visibility="Collapsed"
-                       Height="30"
+                                      Style="{DynamicResource ComboBoxFlatStyle}"
+                     
                        Margin="0,0,0,5"
                        SelectionChanged="CustomerComboBox_SelectionChanged"/>
 
@@ -96,7 +97,7 @@ Background="{DynamicResource Background}"
                                 <TextBlock Text="Email:" FontWeight="Bold"/>
                                 <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmailTextBox"
                           Margin="0,5,0,0"
-                          Height="30"
+                
                           Width="300"
                           HorizontalAlignment="Left"
                           Visibility="Collapsed"/>
@@ -106,7 +107,7 @@ Background="{DynamicResource Background}"
                             <!-- Total Amount -->
                             <TextBlock Text="Total Amount:" FontWeight="Bold" Margin="0,5,0,5"/>
                             <TextBox Style="{DynamicResource TextBoxStyle}" Name="TotalTextBox"
-                      Height="30"
+                     
                       FontWeight="Bold"
                       IsReadOnly="True"
                       Margin="0,0,0,10"/>

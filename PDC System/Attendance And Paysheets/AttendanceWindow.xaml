@@ -109,6 +109,7 @@ Visibility="Collapsed" />
           AlternatingRowBackground="#f0f0f0"
           SnapsToDevicePixels="True"
           AutoGenerateColumns="False"
+                                      
           ItemsSource="{Binding UpcomingBirthdays}"
           CanUserResizeColumns="False"
           CellStyle="{StaticResource DataGridCellStyle}"
@@ -437,6 +438,7 @@ Background="Transparent"
 RowBackground="White"
 AlternatingRowBackground="#f0f0f0"
 SnapsToDevicePixels="True"
+                                    
 Foreground="{DynamicResource Forground}"
 AutoGenerateColumns="False"
 ItemsSource="{Binding UpcomingBirthdays}"

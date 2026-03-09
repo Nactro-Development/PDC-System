@@ -70,7 +70,7 @@
                     <Button Click="AddQuotation_Click" Content="Add Quotation" Width="120" Style="{DynamicResource ActionButton}"/>
 
                     <DataGrid x:Name="QuotationGrid"
-          BorderBrush="{x:Null}" HeadersVisibility="Column" IsReadOnly="False"
+          BorderBrush="{x:Null}" HeadersVisibility="Column"
                            Background="Transparent"
                            RowBackground="White"
                            AlternatingRowBackground="#f0f0f0"
@@ -91,14 +91,14 @@
                             <DataGridTextColumn Header="Issue Date" Binding="{Binding IssueDate}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
                             <DataGridTextColumn Header="Valid Date" Binding="{Binding ValidDate}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
 
-                            <DataGridTemplateColumn Header="Actions">
+                            <DataGridTemplateColumn Width="auto" Header="Actions">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="✎ Edit"  Style="{DynamicResource ActionButton}" Click="EditQuotation_Click"/>
+                                            <Button Content="✎ Edit" Width="80"  Style="{DynamicResource EditActionButton}" Click="EditQuotation_Click"/>
 
-                                            <Button Content=" 🗋 Invoice" Style="{DynamicResource ActionButton}" Click="Invoice_Click"/>
-                                            <Button Content=" ☒ Delete" Style="{DynamicResource NavigationButtonStyle}" Click="DeleteQuotation_Click"/>
+                                            <Button Width="80" Content=" 🗋 Invoice" Style="{DynamicResource ActionButton}" Click="Invoice_Click" Margin="8,0,8,0"/>
+                                            <Button Width="80" Content=" ☒ Delete" Style="{DynamicResource NavigationButtonStyle}" Click="DeleteQuotation_Click"/>
                                         </StackPanel>
 
                                     </DataTemplate>
@@ -121,7 +121,7 @@
                     Style="{DynamicResource ActionButton}"
         Click="OpenManualInvoice_Click"/>
 
-                    <DataGrid x:Name="InvoiceGrid"  BorderBrush="{x:Null}" HeadersVisibility="Column" IsReadOnly="False"
+                    <DataGrid x:Name="InvoiceGrid"  BorderBrush="{x:Null}" HeadersVisibility="Column"
                   Background="Transparent"
                   RowBackground="White"
                   AlternatingRowBackground="#f0f0f0"
@@ -136,17 +136,17 @@
                   RowStyle="{StaticResource DataGridRowStyle}" Margin="10">
 
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Invoice No" Binding="{Binding InvoiceNo}" Width="100"/>
-                            <DataGridTextColumn Header="Customer" Binding="{Binding CustomerDetails}" Width="250"/>
-                            <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount}" Width="120"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                            <DataGridTextColumn Header="Invoice No" Binding="{Binding InvoiceNo}" ElementStyle="{DynamicResource DataGridColumnsStyle}" Width="100"/>
+                            <DataGridTextColumn Header="Customer" Binding="{Binding CustomerDetails}" ElementStyle="{DynamicResource DataGridColumnsStyle}" Width="250"/>
+                            <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount}" ElementStyle="{DynamicResource DataGridColumnsStyle}" Width="120"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" ElementStyle="{DynamicResource DataGridColumnsStyle}" Width="120"/>
 
-                            <DataGridTemplateColumn Header="Actions" Width="200">
+                            <DataGridTemplateColumn Header="Actions" Width="250">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Style="{DynamicResource ActionButton}" Content="✎ View/Edit" Click="EditInvoice_Click"/>
-                                            <Button Style="{DynamicResource NavigationButtonStyle}" Content="☒ Delete" Click="DeleteInvoice_Click"/>
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+                                            <Button Style="{DynamicResource ActionButton}" Width="100" Content="✎ View/Edit" Click="EditInvoice_Click"/>
+                                            <Button Style="{DynamicResource NavigationButtonStyle}" Width="80" Content="☒ Delete" Click="DeleteInvoice_Click" Margin="8,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
