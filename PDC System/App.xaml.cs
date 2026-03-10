@@ -4,6 +4,10 @@ using PDC_System.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Linq;
+
+using System.Threading;
 using QuestPDF.Infrastructure;
 using System.Text;
 using System.Windows;
@@ -16,8 +20,8 @@ namespace PDC_System
     public partial class App : Application
     {
 
-
-
+        private static Mutex _mutex;
+        private static EventWaitHandle _showWindowEvent;
         private DispatcherTimer appTimer; // Timer variable
         private static readonly string CrashLogPath =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash_log.txt");
@@ -27,9 +31,9 @@ namespace PDC_System
             SQLitePCL.Batteries.Init();  // REQUIRED
             base.OnStartup(e);
 
-            QuestPDF.Settings.License = LicenseType.Community; // ✅ Add this line
+            QuestPDF.Settings.License = LicenseType.Community;
 
-            // 🛡️ Global exception handlers for auto-restart
+            // 🛡️ Global exception handlers — NO auto-restart on minor errors
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
@@ -40,13 +44,76 @@ namespace PDC_System
             ThemeManager.UpdateAllWindows();
             CleanupOldHistory();
 
-
             if (PDC_System.Properties.Settings.Default.UpgradeRequired)
             {
                 PDC_System.Properties.Settings.Default.Upgrade();
                 PDC_System.Properties.Settings.Default.UpgradeRequired = false;
                 PDC_System.Properties.Settings.Default.Save();
             }
+
+            bool createdNew;
+
+            _mutex = new Mutex(true, "PDC_System_Single_Instance", out createdNew);
+
+            _showWindowEvent = new EventWaitHandle(false, EventResetMode.AutoReset, "PDC_System_Show_Window");
+
+            if (!createdNew)
+            {
+                // ✅ Signal existing instance to come to foreground
+                try
+                {
+                    _showWindowEvent?.Set();
+                }
+                catch { /* ignore */ }
+
+                Shutdown();
+                return;
+            }
+
+            // ✅ Listen for signal from second instance — bring window to foreground
+            ThreadPool.RegisterWaitForSingleObject(
+    _showWindowEvent,
+    (state, timedOut) =>
+    {
+        try
+        {
+            Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    // ✅ MainWindow වෙනුවට Home window එක හොයනවා
+                    var window = Current.Windows
+                        .OfType<Home>() // ← ඔබේ Home window class name එක
+                        .FirstOrDefault();
+
+                    if (window != null)
+                    {
+                        window.Show();
+
+                        if (window.WindowState == WindowState.Minimized)
+                            window.WindowState = WindowState.Normal;
+
+                        window.Activate();
+                        window.Topmost = true;
+                        window.Topmost = false;
+                        window.Focus();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogCrash("ShowWindow_Callback_UI", ex);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            LogCrash("ShowWindow_Callback", ex);
+        }
+    },
+    null,
+    -1,
+    false);
+
 
 
 
@@ -60,25 +127,32 @@ namespace PDC_System
             appTimer.Tick += AppTimer_Tick2;
             appTimer.Start();
 
-
-            Console.WriteLine($"✅ Timer started with {intervalSeconds} second interval");
+            Console.WriteLine($"✅ Timer started with {intervalSeconds} minute interval");
 
             // Start auto-backup scheduler (reads user settings)
             AutoBackupScheduler.Initialize();
         }
 
         /// <summary>
-        /// UI thread exceptions
+        /// UI thread exceptions — handle gracefully, DO NOT restart for minor errors
         /// </summary>
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             LogCrash("DispatcherUnhandledException", e.Exception);
+
+            // ✅ Mark as handled so app continues running
             e.Handled = true;
-            RestartApplication();
+
+            // ✅ Only restart for truly fatal errors (OutOfMemory, StackOverflow, etc.)
+            if (e.Exception is OutOfMemoryException || e.Exception is StackOverflowException)
+            {
+                RestartApplication();
+            }
+            // ❌ DO NOT call RestartApplication() for all exceptions — causes restart loop
         }
 
         /// <summary>
-        /// Non-UI thread exceptions
+        /// Non-UI thread exceptions — truly unrecoverable, safe to restart
         /// </summary>
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -86,17 +160,23 @@ namespace PDC_System
             {
                 LogCrash("UnhandledException", ex);
             }
-            RestartApplication();
+
+            // ✅ Only restart if it is truly terminating
+            if (e.IsTerminating)
+            {
+                RestartApplication();
+            }
         }
 
         /// <summary>
-        /// Unobserved Task exceptions
+        /// Unobserved Task exceptions — observe and log, DO NOT restart
         /// </summary>
         private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
         {
             LogCrash("UnobservedTaskException", e.Exception);
+
+            // ✅ Mark as observed so app doesn't crash — DO NOT restart
             e.SetObserved();
-            RestartApplication();
         }
 
         /// <summary>
@@ -120,7 +200,7 @@ namespace PDC_System
         }
 
         /// <summary>
-        /// App එක close කරලා නැවත start කරයි
+        /// App එක close කරලා නැවත start කරයි — FATAL errors විතරකට call කරන්න
         /// </summary>
         private static void RestartApplication()
         {
@@ -157,27 +237,25 @@ namespace PDC_System
                 if (settingsWindow != null)
                 {
                     settingsWindow.BtnLoad_Click();
-                    NotificationHelper.ShowNotification("PDC System!", "IVMS Calclulate Complte!");
-
+                    NotificationHelper.ShowNotification("PDC System!", "IVMS Calculate Complete!");
                 }
                 else
                 {
                     var backgroundSettings = new SettingsWindow();
                     backgroundSettings.Visibility = Visibility.Hidden;
-
                     backgroundSettings.BtnLoad_Click();
                     backgroundSettings.Close();
-                    NotificationHelper.ShowNotification("PDC System!", "IVMS Calclulate Complte!");
-
+                    NotificationHelper.ShowNotification("PDC System!", "IVMS Calculate Complete!");
                 }
             }
             catch (Exception ex)
             {
+                // ✅ Log only — DO NOT crash or restart
+                LogCrash("AppTimer_Tick", ex);
                 CustomMessageBox.Show("❌ Timer error: " + ex.Message,
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
 
         private void AppTimer_Tick2(object? sender, EventArgs e)
         {
@@ -191,25 +269,18 @@ namespace PDC_System
 
                 // 💾 Save refreshed data
                 manager.SaveAllAttendanceRecords(records);
-                NotificationHelper.ShowNotification("PDC System!", "Attendance Calclulate Complte!");
-                // 💬 Optional on-screen message
-
+                NotificationHelper.ShowNotification("PDC System!", "Attendance Calculate Complete!");
             }
             catch (Exception ex)
             {
+                // ✅ Log only — DO NOT crash or restart
+                LogCrash("AppTimer_Tick2", ex);
                 CustomMessageBox.Show("❌ Auto-refresh failed:\n" + ex.Message,
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
         }
-
-
-
-
-
-
-
 
         private void CleanupOldHistory()
         {
@@ -243,6 +314,12 @@ namespace PDC_System
             {
                 Console.WriteLine("Error cleaning up history: " + ex.Message);
             }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            _mutex?.ReleaseMutex();
+            base.OnExit(e);
         }
     }
 }
