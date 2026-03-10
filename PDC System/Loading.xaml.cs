@@ -99,14 +99,14 @@ namespace PDC_System
             if (ok)
             {
                 icon.Text = "✅";
-                icon.Foreground = Brushes.LimeGreen;
-                text.Foreground = Brushes.LimeGreen;
+                icon.Foreground = Brushes.Gray;
+                text.Foreground = Brushes.Gray;
             }
             else
             {
                 icon.Text = "❌";
-                icon.Foreground = Brushes.Red;
-                text.Foreground = Brushes.Red;
+                icon.Foreground = Brushes.Gray;
+                text.Foreground = Brushes.Gray;
             }
         }
 
@@ -129,6 +129,7 @@ namespace PDC_System
         private async Task<bool> RunStartupChecksAsync()
         {
             RecheckButton.Visibility = Visibility.Collapsed;
+            SkipButton.Visibility = Visibility.Collapsed; // Hide initially
 
             IvmsIcon.Text = "⏳";
             SqlIcon.Text = "⏳";
@@ -151,10 +152,29 @@ namespace PDC_System
             if (!allOk)
             {
                 RecheckButton.Visibility = Visibility.Visible;
+                SkipButton.Visibility = Visibility.Visible; // Show Skip button
             }
 
             return allOk;
         }
+
+
+        private void SkipButton_Click(object sender, RoutedEventArgs e)
+        {
+            var users = UserService.Load();
+            var user = users.FirstOrDefault(u => u.Username == UserName.Text);
+
+            if (user != null)
+            {
+                new Home(user).Show();
+                Close();
+            }
+            else
+            {
+                CustomMessageBox.Show("Invalid user for skip.");
+            }
+        }
+
 
 
 

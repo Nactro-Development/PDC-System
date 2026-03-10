@@ -6,8 +6,6 @@
         xmlns:local="clr-namespace:PDC_System"
         mc:Ignorable="d"
         WindowStyle="None"
-        
-        
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         Background="Transparent"
         x:Name="LoadingWindow"
@@ -16,174 +14,280 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Foreground="{DynamicResource Forground}"
-        
-        Title="Loading" Height="450" Width="750">
+        Title="Loading" Height="500" Width="800">
+
     <Window.Effect>
-        <DropShadowEffect ShadowDepth="0" Opacity="0.505" BlurRadius="8"/>
+        <DropShadowEffect ShadowDepth="0" Opacity="0.4" BlurRadius="20"/>
     </Window.Effect>
-    <Grid >
-        
-        
-        <Border Margin="8" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2" x:Name="LoadingB" Background="{DynamicResource ThemeBackground}" CornerRadius="10"/>
+
+    <Grid>
+        <!-- Background Border -->
 
 
-        <Grid x:Name="MainGrid" >
 
+        <Border  Margin="8"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1.5"
+                x:Name="LoadingB"
+                Background="{DynamicResource ThemeBackground}"
+                CornerRadius="12"/>
+
+        <!-- Main Layout -->
+        <Grid x:Name="MainGrid" Margin="8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-
-
-
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
 
-            <StackPanel HorizontalAlignment="Left" Margin="30
-                        " >
-                <Button Click="closeButton_Click" Content="X" Width="25" Style="{DynamicResource ActionButton}" />
-            </StackPanel>
 
 
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                
-                <StackPanel Margin="0,0,0,30" HorizontalAlignment="Left">
-                    <Grid >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
+            <!-- ═══════════════════════════════════ -->
+            <!-- LEFT PANEL - Login Form             -->
+            <!-- ═══════════════════════════════════ -->
+            <Grid Grid.Column="0" Grid.Row="0">
 
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
+                <Grid.Background>
+                    <DrawingBrush TileMode="Tile"
+Viewport="0,0,30,30"
+ViewportUnits="Absolute"
+Stretch="None">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing Brush="{DynamicResource ThemeBackgroundDotsColor}">
+                                <GeometryDrawing.Geometry>
+                                    <EllipseGeometry
+      Center="3,3"
+      RadiusX="1"
+      RadiusY="1"/>
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Grid.Background>
+                <!-- Close Button -->
 
-                        <Image HorizontalAlignment="Left" Grid.Column="0" Source="/Assets/MainLogo.png" Width="50"/>
-                        <StackPanel Margin="8,0,0,0" Grid.Column="1" Height="50" Grid.Row="1" Orientation="Vertical">
-                            <TextBlock  Text="PRIYANTHA" FontSize="24" TextAlignment="Left" FontWeight="Bold" Padding="0,2,0,0" />
-                            <TextBlock  Text="DIE CUTTING" FontSize="15" Height="20" TextAlignment="Left" FontWeight="Bold" Padding="0,0,0,0" />
 
-                     
+                <!-- Login Form (vertically centered) -->
+                <StackPanel
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center" Width="256"
+                           >
+
+                    <!-- Logo + Brand -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,0,20">
+
+                        <Image Source="/Assets/MainLogo.png"
+                                   Width="35" Height="35"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                        <StackPanel Margin="12,0,0,0"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="PRIYANTHA"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       LineHeight="22"/>
+                            <TextBlock Text="DIE CUTTING"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Opacity="0.6"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Welcome Text -->
+                    <TextBlock Text="Welcome back"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="Sign in to continue"
+                               FontSize="12"
+                               Opacity="0.55"
+                               Margin="0,0,0,28"/>
+
+                    <!-- Login Fields -->
+                    <StackPanel x:Name="Logininfo">
+
+                        <TextBlock Text="User Name"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.7"
+                                   Margin="0,0,0,6"/>
+                        <TextBox x:Name="UserName"
+                                 Style="{DynamicResource TextBoxStyle}"
+                                 Margin="0,0,0,5"/>
+
+                        <TextBlock Text="Password"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.7"
+                                   Margin="0,0,0,6"/>
+                        <PasswordBox x:Name="Password"
+                                     Margin="0,0,0,5"/>
+
+                        <!-- Remember Me -->
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,0,28">
+                            <CheckBox x:Name="RememberMeCheckBox"
+                                      IsChecked="False"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock Text="Remember me next login"
+                                       FontSize="11"
+                                       Opacity="0.6"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0"/>
                         </StackPanel>
 
-
-                        
-                        
-                       
-
-
-
-
-                    </Grid>
-                    
-                    
-                  
-                </StackPanel>
-
-                <StackPanel x:Name="Logininfo">
-
-                    <TextBlock Text="User Name:" Margin="0,0,0,8"/>
-                    <TextBox x:Name="UserName" Style="{DynamicResource TextBoxStyle}"/>
-                    <TextBlock Text="Password:" Margin="0,8,0,8"/>
-                    <PasswordBox x:Name="Password"/>
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-
-                        <CheckBox x:Name="RememberMeCheckBox" 
-Content="Remember Me" 
-Margin="10"
-IsChecked="False"/>
-
-                        <TextBlock VerticalAlignment="Center" Text="Save Password Next Login" 
-                         FontSize="10" 
-                         
-                         Foreground="{DynamicResource Forground}"/>
+                        <!-- Login Button -->
+                        <Button Content="Sign In"
+                                Style="{DynamicResource ActionButton}"
+                                Height="25"
+                                Click="Login_Click" IsDefault="True" Width="82"/>
 
                     </StackPanel>
 
-                    <Button Content="Login" Style="{DynamicResource ActionButton}" Width="100" Click="Login_Click" Margin="0,20,0,0"/>
+                    <StackPanel x:Name="LoadingBar" Visibility="Collapsed"/>
 
+                </StackPanel>
+            </Grid>
+
+            <!-- ═══════════════════════════════════ -->
+            <!-- RIGHT PANEL - Illustration          -->
+            <!-- ═══════════════════════════════════ -->
+            <Border Grid.Column="1" Grid.Row="0"
+                    Background="{DynamicResource Background}"
+                    CornerRadius="0,10,0,0"
+                    Opacity="0.08"/>
+
+
+
+
+            <Grid Grid.Column="1" Grid.Row="0">
+
+
+                <StackPanel
+         HorizontalAlignment="Right"
+         Margin="0,16,20,0">
+                    <Button Click="closeButton_Click"
+         Content="✕"
+              
+         Width="28" Height="28"
+         Style="{DynamicResource ActionButton}"/>
                 </StackPanel>
 
 
-                <StackPanel x:Name="LoadingBar" Visibility="Visible"/>
+                <Image Source="/Assets/LoginImage.png"
+                       Width="auto"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       SnapsToDevicePixels="True" Height="304"/>
+            </Grid>
 
-            </StackPanel>
+            <!-- ═══════════════════════════════════ -->
+            <!-- BOTTOM STATUS BAR                   -->
+            <!-- ═══════════════════════════════════ -->
+            <Border x:Name="IvmsVisibility" Visibility="Collapsed" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="20,10"
+                    CornerRadius="0,0,10,10">
 
-            <StackPanel HorizontalAlignment="Center" Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
+                <Grid  >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-           
-
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,30,0">
-                    <Image Source="/Assets/LoginImage.png" Width="380"
-      HorizontalAlignment="Center" VerticalAlignment="Center"
-      RenderOptions.BitmapScalingMode="HighQuality"
-      SnapsToDevicePixels="True" />
-                </StackPanel>
-
-            </StackPanel>
-
-
-            <StackPanel Visibility="Collapsed" x:Name="IvmsVisibility" Opacity="0.2" Margin="20" Grid.ColumnSpan="2" Grid.Row="1" >
-
-
-                <!-- iVMS -->
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Margin="0,5">
-                    <TextBlock x:Name="IvmsIcon" VerticalAlignment="Center" Text="⏳" FontSize="16" Width="30"/>
-                    <TextBlock x:Name="IvmsText" VerticalAlignment="Center" Text="Checking iVMS-4200..."
-                  />
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="9,0,0,0" />
-                    <TextBlock x:Name="SqlIcon" VerticalAlignment="Center" Text="⏳" FontSize="16" Width="30"/>
-                    <TextBlock x:Name="SqlText" VerticalAlignment="Center" Text="Checking SQL Server..."
- />
-
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" >
-                        <TextBlock x:Name="NetIcon" VerticalAlignment="Center" Text="⏳" FontSize="16" Width="30"/>
-                        <TextBlock x:Name="NetText" VerticalAlignment="Center" Text="Checking Network..."
- />
-
-
+                    <!-- iVMS Status -->
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <TextBlock x:Name="IvmsIcon"
+                                   Text="⏳"
+                                   Foreground="Gray"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+                        <TextBlock x:Name="IvmsText"
+                                   Text="Checking iVMS-4200..."
+                                   FontSize="11"
+                                   Foreground="Gray"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
 
+                    <!-- SQL Status -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <TextBlock x:Name="SqlIcon"
+                                   Text="⏳"
+                                   FontSize="14"
+                                   Foreground="Gray"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+                        <TextBlock x:Name="SqlText"
+                                   Text="Checking SQL Server..."
+                                   FontSize="11"
+                                   Foreground="Gray"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
 
-                    <Button x:Name="RecheckButton"
-Content="Recheck"
-Width="120"
+                    <!-- Network Status -->
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <TextBlock x:Name="NetIcon"
+                                   Text="⏳"
+                                   Foreground="Gray"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+                        <TextBlock x:Name="NetText"
+                                   Text="Checking Network..."
+                                   FontSize="11"
+                                   Foreground="Gray"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
 
-VerticalAlignment="Center"
-                    
-                    Style="{DynamicResource NavigationButtonStyle}"
-Visibility="Collapsed"
-Click="RecheckButton_Click" Margin="10,0,0,0"/>
+                    <!-- Recheck Button -->
+                    <Button Grid.Column="3"
+                            x:Name="RecheckButton"
+                            Content="⟳  Recheck"
+                            Width="110"
+                           
+                            VerticalAlignment="Center"
+                            Style="{DynamicResource NavigationButtonStyle}"
+                            Visibility="Collapsed"
+                            Click="RecheckButton_Click"/>
 
 
-                </StackPanel>
-
-                <!-- SQL -->
-
-                <!-- Network -->
-
-
-          
+                    <Button x:Name="SkipButton"
+        Content="Skip"
+                        Style="{DynamicResource NavigationButtonStyle}"    Grid.Column="4"
+        Visibility="Collapsed"
+        Click="SkipButton_Click" Margin="24,0,0,0"
+       />
 
 
+                </Grid>
 
-
-
-            </StackPanel>
-
-
-
+            </Border>
 
         </Grid>
-        
-        
-
     </Grid>
-  
+
 </Window>
