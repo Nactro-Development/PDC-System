@@ -225,64 +225,13 @@ namespace PDC_System
         }
 
         // ==================== RESTORE (Default - Last Backup) ====================
-        private async void Restore_Click(object sender, RoutedEventArgs e)
+        // ==================== RESTORE (Opens History Window) ====================
+        private void Restore_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                // Find last backup from default folder
-                if (!Directory.Exists(defaultBackupFolder))
-                {
-                    CustomMessageBox.Show("No backups found in default location!", "Error",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                var lastBackup = Directory.GetFiles(defaultBackupFolder, "*.pdcbak")
-                    .OrderByDescending(f => File.GetCreationTime(f))
-                    .FirstOrDefault();
-
-                if (lastBackup == null)
-                {
-                    CustomMessageBox.Show("No backup files found!", "Error",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                LogMessage($"Last backup found: {Path.GetFileName(lastBackup)}");
-
-                // Confirm restore
-                var confirmResult = CustomMessageBox.Show(
-                    "⚠️ This will overwrite your current data and restart the application!\n\nAre you sure you want to restore?",
-                    "Confirm Restore",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
-
-                if (confirmResult != MessageBoxResult.Yes)
-                {
-                    LogMessage("Restore cancelled.");
-                    return;
-                }
-
-                LogMessage("Starting restore...");
-
-                await PerformRestore(lastBackup);
-
-                LogMessage("🎉 Restore completed successfully! Restarting...");
-                RestartApplication();
-            }
-            catch (CryptographicException)
-            {
-                LogMessage("❌ Restore failed: Invalid or corrupted backup file.");
-                CustomMessageBox.Show("Invalid or corrupted backup file! Decryption failed.",
-                    "Restore Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception ex)
-            {
-                LogMessage($"❌ Restore failed: {ex.Message}");
-                CustomMessageBox.Show($"Restore failed: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var historyWindow = new RestoreHistoryWindow { Owner = this };
+            historyWindow.ShowDialog();
         }
+
 
         // ==================== CUSTOM RESTORE (From Custom Location) ====================
         private async void CustomRestore_Click(object sender, RoutedEventArgs e)

@@ -146,6 +146,17 @@ public static class UpdateManager
         if (!File.Exists(InstallerPath))
             return;
 
+        var result = System.Windows.MessageBox.Show(
+            "Before installing the update please CLOSE the application on ALL CLIENT PCs.\n\n" +
+            "If other PCs are still running the software the update may fail.\n\n" +
+            "Do you want to continue?",
+            "Update Warning",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+
+        if (result != System.Windows.MessageBoxResult.Yes)
+            return;
+
         Process.Start(new ProcessStartInfo
         {
             FileName = InstallerPath,
@@ -155,4 +166,6 @@ public static class UpdateManager
 
         System.Windows.Application.Current.Shutdown();
     }
+
+
 }

@@ -68,7 +68,15 @@ namespace PDC_System.Backup
 
                 if (Directory.Exists(PaysheetFolder))
                     AddFolderToZip(zip, PaysheetFolder, tempDbCopies);
+
+                // SETTINGS EXPORT
+                string settingsFile = Path.Combine(Path.GetTempPath(), "settings_backup.txt");
+                SettingsExport.Export(settingsFile);
+
+                zip.CreateEntryFromFile(settingsFile, "Settings/settings_backup.txt");
             }
+
+
 
             foreach (var tmp in tempDbCopies)
             {
