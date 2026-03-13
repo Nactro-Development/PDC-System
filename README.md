@@ -1,4 +1,5 @@
 # PDC System - User Manual
+<img width="1919" height="1078" alt="image" src="https://github.com/user-attachments/assets/2dbb644e-c8e1-4347-9121-20fe912cedb5" />
 
 ![PDC System](https://img.shields.io/badge/PDC%20System-v2025-blue.svg)
 ![WPF](https://img.shields.io/badge/WPF-.NET%208-green.svg)
