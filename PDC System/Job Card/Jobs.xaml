@@ -194,7 +194,10 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="Date And Time"   Binding="{Binding JobCardDate}"    Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
+                    <DataGridTextColumn Header="Date"
+    Binding="{Binding JobCardDate, StringFormat=yyyy-MM-dd}"
+    Width="*"
+    ElementStyle="{DynamicResource DataGridColumnsStyle}" />
                     <DataGridTextColumn Header="Customer Name"   Binding="{Binding Customer_Name}"  Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
                     <DataGridTextColumn Header="Description"     Binding="{Binding Description}"    Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
                     <DataGridTextColumn Header="Type"            Binding="{Binding Type}"           Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />

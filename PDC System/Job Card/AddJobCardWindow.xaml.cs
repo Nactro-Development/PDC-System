@@ -50,6 +50,8 @@ namespace PDC_System
             Digital_Checked.IsChecked = true;
         }
 
+
+
         // ── Edit mode constructor ─────────────────────────────────────────
         public AddJobCardWindow(List<Customerinfo> customers, JobCard existingJobCard)
             : this(customers)
@@ -66,7 +68,7 @@ namespace PDC_System
             // Job number (read-only in edit mode)
             currentJobNumber = jc.JobNo ?? currentJobNumber;
             JobNumberTextBox.Text = currentJobNumber;
-
+            Date.SelectedDate = jc.JobCardDate;
             // Customer
             var matchedCustomer = (CustomerComboBox.ItemsSource as List<Customerinfo>)
                                   ?.FirstOrDefault(c => c.Name == jc.Customer_Name);
@@ -123,13 +125,29 @@ namespace PDC_System
                 }
             }
 
-            // Screenshot preview
-            if (!string.IsNullOrEmpty(jc.ScreenshotPath) && File.Exists(jc.ScreenshotPath))
+            // Screenshot preview - Handle both relative and absolute paths
+            if (!string.IsNullOrEmpty(jc.ScreenshotPath))
             {
-                var bitmap = new BitmapImage(new Uri(jc.ScreenshotPath));
-                PreviewImage.Source = bitmap;
-                capturedImage = bitmap;
-                tempCapturedFilePath = jc.ScreenshotPath;
+                string fullPath = jc.ScreenshotPath;
+
+                // If it's a relative path, combine with app base directory
+                if (!Path.IsPathRooted(fullPath))
+                {
+                    fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, jc.ScreenshotPath);
+                }
+
+                // Check if file exists at the resolved path
+                if (File.Exists(fullPath))
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.UriSource = new Uri(fullPath, UriKind.Absolute);
+                    bitmap.EndInit();
+                    PreviewImage.Source = bitmap;
+                    capturedImage = bitmap;
+                    tempCapturedFilePath = fullPath;
+                }
             }
         }
 
@@ -417,6 +435,7 @@ namespace PDC_System
                 // Update the existing JobCard object in place
                 _editingJobCard!.Customer_Name = customerName;
                 _editingJobCard.Description = DescriptionTextBox.Text;
+                _editingJobCard.JobCardDate = Date.SelectedDate ?? _editingJobCard.JobCardDate;
                 _editingJobCard.Quantity = quantity;
                 _editingJobCard.Printed = printed;
                 _editingJobCard.GSM = gsm;
@@ -448,12 +467,15 @@ namespace PDC_System
                 jobs.Add(new JobNo { JobNumber = currentJobNumber });
                 File.WriteAllText(jsonFile, JsonConvert.SerializeObject(jobs, Formatting.Indented));
                 GenerateJobNumber();
+                // Get the selected date from DatePicker, fallback to today if none selected
+                DateTime selectedDateTime = Date.SelectedDate ?? DateTime.Now; 
 
                 JobCard = new JobCard
                 {
                     Customer_Name = customerName,
                     JobNo = currentJobNumber,
                     DigitalConpanyName = selectedCompany,
+                    JobCardDate = selectedDateTime,
                     selectedPlateName = selectedPlateName,
                     Paper_Size = PaperSizeTextBox.Text,
                     Description = DescriptionTextBox.Text,

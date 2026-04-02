@@ -5,6 +5,7 @@
           xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         ScrollViewer.VerticalScrollBarVisibility="Auto"
         Title="Add Job Card (Digital Printing)" 
+         xmlns:cal="clr-namespace:ModernCalendarLib;assembly=ModernCalendarLib"
         Foreground="{DynamicResource Forground}" 
         Background="{DynamicResource Background}" 
         Height="886" 
@@ -145,6 +146,20 @@ Background="{DynamicResource TitleBarBackground}"
                                 </ComboBox>
                             </StackPanel>
 
+                            <!-- Date -->
+                            <StackPanel Margin="0,0,0,20">
+                                <Label Foreground="{DynamicResource Forground}" 
+Content="Date:" 
+FontSize="14" 
+FontWeight="SemiBold"
+Padding="0,0,0,5"/>
+                                <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"  Margin="0,10,10,10" CornerRadius="5">
+                                    <cal:CustomDatePicker x:Name="Date"  Width="auto"  Height="auto" />
+                                </Border>
+
+                            </StackPanel>
+                            
+
                             <!-- Quantity -->
                             <StackPanel Margin="0,0,0,20">
                                 <Label Foreground="{DynamicResource Forground}" 
@@ -158,6 +173,8 @@ Background="{DynamicResource TitleBarBackground}"
                           Height="35"
                           PreviewTextInput="QuantityTextBox_PreviewTextInput"/>
                             </StackPanel>
+                            
+                          
 
                             <!-- Printing Type Selection -->
                             <Border BorderBrush="{DynamicResource BorderBrush}" 

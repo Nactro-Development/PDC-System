@@ -49,7 +49,7 @@ namespace PDC_System.Job_Card
                 {
                     // Show only Name, Description, Quantity for Offset
                     CustomerNameText.Text = _jobCardData.Customer_Name;
-                    DateText.Text = _jobCardData.JobCardDate.ToString("yyyy-MM-dd HH:mm:ss");
+                    DateText.Text = _jobCardData.JobCardDate.ToString("yyyy-MM-dd");
                     DescriptionText.Text = _jobCardData.Description;
                     QuantityTextSimple.Text = _jobCardData.Quantity.ToString("N0");
                     JobNoText.Text = $"Job #{_jobCardData.JobNo}";
@@ -77,7 +77,7 @@ namespace PDC_System.Job_Card
                     // Bind all data
                     JobNoText.Text = $"Job #{_jobCardData.JobNo}";
                     CustomerNameText.Text = _jobCardData.Customer_Name;
-                    DateText.Text = _jobCardData.JobCardDate.ToString("yyyy-MM-dd HH:mm:ss");
+                    DateText.Text = _jobCardData.JobCardDate.ToString("yyyy-MM-dd");
                     DescriptionText.Text = _jobCardData.Description;
                     TypeText.Text = _jobCardData.Type;
 
@@ -179,7 +179,7 @@ namespace PDC_System.Job_Card
             {
                 // Try relative path first
                 string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                    _jobCardData.ScreenshotPath);
+     _jobCardData.ScreenshotPath);
 
                 // If relative path doesn't exist, try absolute path
                 if (!File.Exists(fullPath))

@@ -430,11 +430,17 @@ namespace PDC_System
                 File.Copy(tempCapturedFilePath, finalScreenshotPath, true); // Copy to permanent location
             }
 
+
+            // Get the selected date from DatePicker, fallback to today if none selected
+            DateTime selectedDateTime = Date.SelectedDate ?? DateTime.Now;
+
+
             JobCard = new JobCard
             {
                 Customer_Name = customerName,
                 JobNo = currentJobNumber,
                 DigitalConpanyName = selectedCompany,
+                JobCardDate = selectedDateTime,
                 selectedPlateName = selectedPlateName,
                 Paper_Size = PaperSizeTextBox.Text,
                 Description = DescriptionTextBox.Text,

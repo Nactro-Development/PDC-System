@@ -4,7 +4,7 @@ namespace PDC_System
 {
     public class JobCard
     {
-        public DateTime JobCardDate { get; set; } = DateTime.Now;
+        public DateTime JobCardDate { get; set; }
         public string? Customer_Name { get; set; }
         public string? Description { get; set; }
         public string? Paper_Size { get; set; }
