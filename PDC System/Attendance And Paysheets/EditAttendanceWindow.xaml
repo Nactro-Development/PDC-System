@@ -23,6 +23,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
 
@@ -78,8 +79,14 @@
               Width="60"
               Style="{DynamicResource ComboBoxFlatStyle}"/>
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5" Grid.Row="5">
+                    <Label VerticalAlignment="Center" Content="Auto Set&#xD;&#xA;" Width="100" Foreground="{DynamicResource Forground}"/>
+                    <Button Content="Auto Set" Width="100" Margin="5" Click="BtnAuto_Click" Style="{DynamicResource ActionButton}"/>
+
+                </StackPanel>
                 <!-- Buttons -->
-                <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="0,20,0,0" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" Grid.Row="6" Margin="0,20,0,0" HorizontalAlignment="Right">
                     <Button Content="Save" Width="80" Click="BtnSave_Click" Margin="5" Style="{DynamicResource ActionButton}"/>
                     <Button Content="Cancel" Width="80" Click="BtnCancel_Click" Margin="5" Style="{DynamicResource NavigationButtonStyle}"/>
                 </StackPanel>

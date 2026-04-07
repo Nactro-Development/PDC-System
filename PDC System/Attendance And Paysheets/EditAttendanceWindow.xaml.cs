@@ -403,26 +403,23 @@ namespace PDC_System
 
         private void RecalculateOT(AttendanceRecord record, TimeSpan checkIn, TimeSpan checkOut)
         {
-            // Reset values
             record.OverTime = "0h 0m";
             record.DoubleOT = "0h 0m";
             record.EarlyLeave = "0h 0m";
             record.LateHours = "0h 0m";
 
-            // Load holidays
             var holidays = LoadHolidays();
             var holiday = holidays.FirstOrDefault(h => h.Date.Date == record.Date.Date);
             bool isHoliday = holiday != null;
             bool isSunday = record.Date.DayOfWeek == DayOfWeek.Sunday;
             bool isSaturday = record.Date.DayOfWeek == DayOfWeek.Saturday;
 
-            // Load employee info
             string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Savers");
-            var employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(Path.Combine(basePath, "employee.json")));
+            var employees = JsonConvert.DeserializeObject<List<Employee>>(
+                File.ReadAllText(Path.Combine(basePath, "employee.json")));
             var emp = employees.FirstOrDefault(e => e.EmployeeId == record.EmployeeId);
             if (emp == null) return;
 
-            // Determine working day flags
             bool isWorkingDay = record.Date.DayOfWeek switch
             {
                 DayOfWeek.Monday => emp.Monday,
@@ -435,130 +432,85 @@ namespace PDC_System
                 _ => false
             };
 
-            // Define working hours
             TimeSpan workStart = isSaturday ? emp.SaturdayCheckIn : emp.CheckIn;
             TimeSpan workEnd = isSaturday ? emp.SaturdayCheckOut : emp.CheckOut;
 
+            var totalWorked = checkOut - checkIn;
+
+            // ✅ 1. Holiday
             if (isHoliday)
             {
-                // ✅ Holiday worked → double OT (with 14min threshold)
-                var totalWorked = checkOut - checkIn;
                 if (totalWorked.TotalMinutes >= 14)
-                {
-                    totalWorked = RoundToSettingMinutes(totalWorked);
-                    record.DoubleOT = $"{(int)totalWorked.TotalHours}h {totalWorked.Minutes}m";
-                }
+                    record.DoubleOT = FormatTime(RoundToSettingMinutes(totalWorked));
                 record.Status = $"{holiday.Name} (Holiday)";
             }
+            // ✅ 2. Sunday (whether working day or not)
             else if (isSunday)
             {
-                // ✅ Sunday → double OT (with 14min threshold)
-                var totalWorked = checkOut - checkIn;
                 if (totalWorked.TotalMinutes >= 14)
-                {
-                    totalWorked = RoundToSettingMinutes(totalWorked);
-                    record.DoubleOT = $"{(int)totalWorked.TotalHours}h {totalWorked.Minutes}m";
-                }
+                    record.DoubleOT = FormatTime(RoundToSettingMinutes(totalWorked));
                 record.Status = "Sunday (Double OT)";
             }
+            // ✅ 3. Saturday non-working
             else if (isSaturday && !emp.Saturday)
             {
-                // ✅ Saturday marked non-working → double OT
-                var totalWorked = checkOut - checkIn;
                 if (totalWorked.TotalMinutes >= 14)
-                {
-                    totalWorked = RoundToSettingMinutes(totalWorked);
-                    record.DoubleOT = $"{(int)totalWorked.TotalHours}h {totalWorked.Minutes}m";
-                }
+                    record.DoubleOT = FormatTime(RoundToSettingMinutes(totalWorked));
                 record.Status = "Saturday (Double OT)";
             }
-            else if (!isWorkingDay && !isHoliday)
+            // ✅ 4. Other non-working day
+            else if (!isWorkingDay)
             {
-                // ✅ Non-working day (NOT holiday, NOT Sunday)
-                // 👉 Total worked hours = NORMAL OT
-
-                var totalWorked = checkOut - checkIn;
-
                 if (totalWorked.TotalMinutes >= 14)
-                {
-                    totalWorked = RoundToSettingMinutes(totalWorked);
-                    record.OverTime = $"{(int)totalWorked.TotalHours}h {totalWorked.Minutes}m";
-                }
-
-                record.DoubleOT = "0h 0m";
-                record.EarlyLeave = "0h 0m";
-                record.LateHours = "0h 0m";
-
+                    record.OverTime = FormatTime(RoundToSettingMinutes(totalWorked));
                 record.Status = "Worked on Off Day (Normal OT)";
             }
-
+            // ✅ 5. Normal working day
             else
             {
-                // ✅ Regular working day or Saturday that is working
                 TimeSpan ot = TimeSpan.Zero;
 
-                // Early check-in OT (before work start)
                 if (checkIn < workStart)
                 {
                     var earlyOt = workStart - checkIn;
-
-                    int minOtMinutes = Properties.Settings.Default.OT_RoundMinutes;
-                    // or OT_MinMinutes if you have a separate setting
-
-                    if (earlyOt.TotalMinutes >= minOtMinutes)
-                    {
+                    if (earlyOt.TotalMinutes >= Properties.Settings.Default.OT_RoundMinutes)
                         ot += earlyOt;
-                    }
                 }
 
-
-
-                // Late check-out OT (after work end)
                 if (checkOut > workEnd)
                 {
                     var lateOt = checkOut - workEnd;
-                    if (lateOt.TotalMinutes >= 14) // Only count significant overtime
-                    {
+                    if (lateOt.TotalMinutes >= 14)
                         ot += lateOt;
-                    }
                 }
 
                 if (ot.TotalMinutes > 0)
-                {
-                    ot = RoundToSettingMinutes(ot);
-                    record.OverTime = $"{(int)ot.TotalHours}h {ot.Minutes}m";
-                }
+                    record.OverTime = FormatTime(RoundToSettingMinutes(ot));
 
-                // ✅ Early leave (count any early departure)
                 if (checkOut < workEnd)
                 {
                     var early = workEnd - checkOut;
                     if (early.TotalMinutes >= 1)
-                    {
-                        record.EarlyLeave = $"{(int)early.TotalHours}h {early.Minutes}m";
-                    }
+                        record.EarlyLeave = FormatTime(early);
                 }
 
-                // ✅ Late hours with allowable minutes
                 int allowedLate = Properties.Settings.Default.Late_Allow_Minutes;
                 if (checkIn > workStart)
                 {
                     var late = checkIn - workStart;
-                    if (late.TotalMinutes <= allowedLate)
-                    {
-                        record.LateHours = "0h 0m"; // No late
-                    }
-                    else
-                    {
-                        var actualLate = late - TimeSpan.FromMinutes(allowedLate);
-                        record.LateHours = $"{(int)actualLate.TotalHours}h {actualLate.Minutes}m";
-                    }
+                    if (late.TotalMinutes > allowedLate)
+                        record.LateHours = FormatTime(late - TimeSpan.FromMinutes(allowedLate));
                 }
 
-                // Status
-                record.Status = isSaturday && emp.Saturday ? "Saturday OK" : "OK";
+                record.Status = isSaturday ? "Saturday OK" : "OK";
             }
         }
+
+        // ✅ Helper method
+        private string FormatTime(TimeSpan t) =>
+            $"{(int)t.TotalHours}h {t.Minutes}m";
+
+
 
         private TimeSpan RoundToSettingMinutes(TimeSpan time)
         {
@@ -597,6 +549,47 @@ namespace PDC_System
 
             return new List<Holiday>();
         }
+
+
+
+        private void BtnAuto_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Savers");
+                var employees = JsonConvert.DeserializeObject<List<Employee>>(
+                    File.ReadAllText(Path.Combine(basePath, "employee.json")));
+
+                var emp = employees?.FirstOrDefault(e => e.EmployeeId == _record.EmployeeId);
+                if (emp == null)
+                {
+                    CustomMessageBox.Show("Employee not found.", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                bool isSaturday = _record.Date.DayOfWeek == DayOfWeek.Saturday;
+
+                TimeSpan autoCheckIn = isSaturday ? emp.SaturdayCheckIn : emp.CheckIn;
+                TimeSpan autoCheckOut = isSaturday ? emp.SaturdayCheckOut : emp.CheckOut;
+
+                // Fill Check-In dropdowns
+                CmbCheckIn_Hour.SelectedItem = autoCheckIn.Hours.ToString("00");
+                CmbCheckIn_Minute.SelectedItem = autoCheckIn.Minutes.ToString("00");
+
+                // Fill Check-Out dropdowns
+                CmbCheckOut_Hour.SelectedItem = autoCheckOut.Hours.ToString("00");
+                CmbCheckOut_Minute.SelectedItem = autoCheckOut.Minutes.ToString("00");
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show($"Error loading employee schedule: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+
     }
 
     public class Holiday

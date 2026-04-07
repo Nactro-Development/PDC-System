@@ -420,8 +420,11 @@ namespace PDC_System
                     if (!Directory.Exists(folder))
                         Directory.CreateDirectory(folder);
 
-                    finalScreenshotPath = Path.GetFullPath(Path.Combine(folder, $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png"));
-                    File.Copy(tempCapturedFilePath, finalScreenshotPath, true);
+                    string absolutePath = Path.Combine(folder, $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+                    File.Copy(tempCapturedFilePath, absolutePath, true);
+                    
+                    // Store relative path instead of absolute path
+                    finalScreenshotPath = Path.Combine("Savers", "Screenshots", $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png");
                 }
             }
             else if (_isEditMode)

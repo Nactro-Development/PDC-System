@@ -424,8 +424,8 @@ namespace PDC_System
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
 
-                // Save absolute path
-                finalScreenshotPath = Path.GetFullPath(Path.Combine(folder, $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png"));
+                // Save relative path
+                finalScreenshotPath = Path.Combine("Savers", "Screenshots", $"JobCard_{DateTime.Now:yyyyMMdd_HHmmss}.png");
 
                 File.Copy(tempCapturedFilePath, finalScreenshotPath, true); // Copy to permanent location
             }

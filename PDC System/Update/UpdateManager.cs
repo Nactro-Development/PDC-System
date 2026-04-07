@@ -57,7 +57,7 @@ public static class UpdateManager
             using HttpClient client = new HttpClient();
 
             string json = await client.GetStringAsync(
-            "https://raw.githubusercontent.com/kavidu-kaushalya/PDC-System/refs/heads/master/PDC%20System/Update/version.json");
+            "https://raw.githubusercontent.com/Nactro-Development/PDC-System-Updater/refs/heads/main/version.json");
 
             VersionInfo data =
                 JsonConvert.DeserializeObject<VersionInfo>(json);

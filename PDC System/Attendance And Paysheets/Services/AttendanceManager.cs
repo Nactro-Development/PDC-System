@@ -39,8 +39,10 @@ namespace PDC_System.Services
         public List<AttendanceRecord> LoadAttendance()
         {
             var data = _db.GetFingerprintData();
-            var employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(Path.Combine(basePath, "employee.json")));
-            var holidays = JsonConvert.DeserializeObject<List<Holiday>>(File.ReadAllText(Path.Combine(basePath, "holiday.json")));
+            var employees = JsonConvert.DeserializeObject<List<Employee>>(
+                File.ReadAllText(Path.Combine(basePath, "employee.json")));
+            var holidays = JsonConvert.DeserializeObject<List<Holiday>>(
+                File.ReadAllText(Path.Combine(basePath, "holiday.json")));
 
             var records = new List<AttendanceRecord>();
             var grouped = data.GroupBy(x => new { x.EmployeeID, Date = x.DateTime.Date });
@@ -48,9 +50,27 @@ namespace PDC_System.Services
 
             foreach (var emp in employees)
             {
-                // Generate records for the last 30 days only (or adjust as needed)
                 DateTime startDate = DateTime.Today.AddDays(-30);
                 DateTime endDate = DateTime.Today;
+
+                // ✅ Manual edits තියෙනවා නම් past සහ future දෙකම extend කරනවා
+                var empManualEdits = savedRecords
+                    .Where(r => r.EmployeeId == emp.EmployeeId && r.IsManualEdit)
+                    .ToList();
+
+                if (empManualEdits.Any())
+                {
+                    var earliestManual = empManualEdits.Min(r => r.Date);
+                    var latestManual = empManualEdits.Max(r => r.Date);
+
+                    // ✅ Past - startDate extend
+                    if (earliestManual.Date < startDate.Date)
+                        startDate = earliestManual.Date;
+
+                    // ✅ Future - endDate extend
+                    if (latestManual.Date > endDate.Date)
+                        endDate = latestManual.Date;
+                }
 
                 for (var day = startDate.Date; day <= endDate.Date; day = day.AddDays(1))
                 {
@@ -64,7 +84,8 @@ namespace PDC_System.Services
                         continue;
                     }
 
-                    var grp = grouped.FirstOrDefault(g => g.Key.EmployeeID == emp.EmployeeId && g.Key.Date == day);
+                    var grp = grouped.FirstOrDefault(g =>
+                        g.Key.EmployeeID == emp.EmployeeId && g.Key.Date == day);
                     var times = grp?.OrderBy(x => x.DateTime).Select(x => x.DateTime).ToList();
 
                     var calculatedRecord = CalculateAttendanceRecord(emp, day, times, holidays);
@@ -74,6 +95,10 @@ namespace PDC_System.Services
 
             return records.OrderBy(r => r.Date).ThenBy(r => r.EmployeeId).ToList();
         }
+
+
+
+
 
         // ✅ Load with date range - now generates temporary absence records
         public List<AttendanceRecord> LoadAttendanceWithDateRange(DateTime startDate, DateTime endDate)
@@ -183,28 +208,39 @@ namespace PDC_System.Services
                     doubleOtStr = $"{(int)doubleOt.TotalHours}h {doubleOt.Minutes}m";
                 }
             }
+
+
             else if (isNonWorkingDay)
             {
                 if (times != null && times.Count >= 2)
                 {
                     var first = times.First();
                     var last = times.Last();
-
                     checkInStr = first.ToString("HH:mm");
                     checkOutStr = last.ToString("HH:mm");
 
-                    // 🔹 Total worked hours = OT
-                    var totalWorked = last - first;
-                    totalWorked = RoundToSettingMinutes(totalWorked);
-
-                    overtime = $"{(int)totalWorked.TotalHours}h {totalWorked.Minutes}m";
-
-                    // 🔹 No late / no early leave / no double OT
-                    lateHours = "0h 0m";
-                    earlyLeave = "0h 0m";
-                    doubleOtStr = "0h 0m";
-
-                    status = "Worked on Off Day (Normal OT)";
+                    // ✅ NEW: Sunday non-working day = Double OT (not Normal OT)
+                    if (isSunday)
+                    {
+                        var totalWorked = last - first;
+                        var doubleOt = TimeSpan.FromMinutes(totalWorked.TotalMinutes);
+                        doubleOtStr = $"{(int)doubleOt.TotalHours}h {doubleOt.Minutes}m";
+                        lateHours = "0h 0m";
+                        earlyLeave = "0h 0m";
+                        overtime = "0h 0m";
+                        status = "Sunday (Double OT)";
+                    }
+                    else
+                    {
+                        // Normal off-day worked = Normal OT
+                        var totalWorked = last - first;
+                        totalWorked = RoundToSettingMinutes(totalWorked);
+                        overtime = $"{(int)totalWorked.TotalHours}h {totalWorked.Minutes}m";
+                        lateHours = "0h 0m";
+                        earlyLeave = "0h 0m";
+                        doubleOtStr = "0h 0m";
+                        status = "Worked on Off Day (Normal OT)";
+                    }
                 }
                 else if (times != null && times.Count == 1)
                 {
@@ -218,16 +254,29 @@ namespace PDC_System.Services
             }
 
 
+
+
+
+
             else if (times == null || times.Count == 0)
             {
                 // This creates temporary absence records without saving to database
                 status = "Absent (Temporary)";
             }
+
+
+
+
+
             else if (times.Count == 1)
             {
                 checkInStr = times.First().ToString("HH:mm");
                 status = "Missing Finger Print";
             }
+
+
+
+
             else
             {
                 var first = times.First();
