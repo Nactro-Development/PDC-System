@@ -5,6 +5,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System;
+using System.Diagnostics;
+
+
 using System.Windows.Media.Imaging;
 
 namespace PDC_System
@@ -711,5 +715,48 @@ namespace PDC_System
         {
             this.Close();
         }
+
+
+
+
+
+
+
+
+
+        private void OpenIVMS_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string[] possiblePaths =
+                {
+            @"C:\Program Files (x86)\iVMS-4200 Site\iVMS-4200 Client\Client\iVMS-4200.Framework.C.exe",
+            @"C:\Program Files\Hikvision\iVMS-4200\Client\iVMS-4200.exe"
+        };
+
+                string ivmsPath = possiblePaths.FirstOrDefault(File.Exists);
+
+                if (ivmsPath != null)
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = ivmsPath,
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("iVMS-4200 not installed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
+
+
     }
 }

@@ -549,7 +549,7 @@ RowStyle="{StaticResource DataGridRowStyle}">
 
             <TabItem Header="Holydays" Width="120" Style="{StaticResource TabItem}">
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+               
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="191*"/>
@@ -574,43 +574,47 @@ RowStyle="{StaticResource DataGridRowStyle}">
                             </StackPanel>
 
 
-
-                            <DataGrid ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" x:Name="HolydayDataGrid"                 PreviewMouseWheel="DataGridMain_PreviewMouseWheel"
-            Background="Transparent"
-            RowBackground="White"
-            AlternatingRowBackground="#f0f0f0"
-            SnapsToDevicePixels="True"
-            CanUserResizeColumns="False"
-            CellStyle="{StaticResource DataGridCellStyle}"
-            Style="{StaticResource DataGridStyle}"
-            ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-            RowStyle="{StaticResource DataGridRowStyle}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <DataGrid 
+              AutoGenerateColumns="False" 
+              x:Name="HolydayDataGrid"
+              Height="450"
+              PreviewMouseWheel="DataGridMain_PreviewMouseWheel"
+              Background="Transparent"
+              RowBackground="White"
+              AlternatingRowBackground="#f0f0f0"
+              SnapsToDevicePixels="True"
+              CanUserResizeColumns="False"
+              CellStyle="{StaticResource DataGridCellStyle}"
+              Style="{StaticResource DataGridStyle}"
+              ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+              RowStyle="{StaticResource DataGridRowStyle}">
 
                                 <DataGrid.Columns>
-
                                     <DataGridTemplateColumn Header="Select" Width="80">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox HorizontalAlignment="Center" 
-         Tag="{Binding}" 
-         Checked="CheckBox_Checked" 
-         Unchecked="CheckBox_Unchecked"/>
+                                  Tag="{Binding}" 
+                                  Checked="CheckBox_Checked" 
+                                  Unchecked="CheckBox_Unchecked"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}"/>
+                                    <DataGridTextColumn Header="Name" 
+                                Binding="{Binding Name}" 
+                                Width="*" 
+                                ElementStyle="{DynamicResource DataGridColumnsStyle}"/>
                                     <DataGridTextColumn Header="Date"
-        Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}"
-        Width="*"
-        ElementStyle="{DynamicResource DataGridColumnsStyle}"/>
-
-
+                                Binding="{Binding Date, StringFormat={}{0:yyyy-MM-dd}}"
+                                Width="*"
+                                ElementStyle="{DynamicResource DataGridColumnsStyle}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
+                        </ScrollViewer>
 
-
-                        </StackPanel>
+                    </StackPanel>
 
                         <StackPanel Width="300" Grid.Column="2" x:Name="InputStackPanel"
 Visibility="Collapsed" Orientation="Vertical" Margin="10,10,0,10" HorizontalAlignment="Left" >
@@ -644,7 +648,7 @@ Visibility="Collapsed" Orientation="Vertical" Margin="10,10,0,10" HorizontalAlig
 
                     </Grid>
 
-                </ScrollViewer>
+          
 
             </TabItem>
 

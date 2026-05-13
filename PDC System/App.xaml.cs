@@ -26,6 +26,11 @@ namespace PDC_System
         private static readonly string CrashLogPath =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash_log.txt");
 
+
+
+
+
+
         protected override async void OnStartup(StartupEventArgs e)
         {
             SQLitePCL.Batteries.Init();  // REQUIRED
@@ -131,7 +136,17 @@ namespace PDC_System
 
             // Start auto-backup scheduler (reads user settings)
             AutoBackupScheduler.Initialize();
+
+
+            var loadingWindow = new Loading();
+            MainWindow = loadingWindow;
+            loadingWindow.Show();
+
         }
+
+
+
+
 
         /// <summary>
         /// UI thread exceptions — handle gracefully, DO NOT restart for minor errors

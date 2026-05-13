@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
+using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 
 namespace PDC_System.Backup
 {
@@ -27,6 +28,10 @@ namespace PDC_System.Backup
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 string zipFileName = $"PDC_Backup_{timestamp}.zip";
                 string tempZipPath = Path.Combine(Path.GetTempPath(), zipFileName);
+
+
+
+
 
                 // Create ZIP
                 CreateBackupZip(tempZipPath);
@@ -50,6 +55,9 @@ namespace PDC_System.Backup
                     File.WriteAllBytes(customPath, encryptedBytes);
                 }
 
+
+
+
                 // Cleanup temp zip
                 try { if (File.Exists(tempZipPath)) File.Delete(tempZipPath); } catch { }
             });
@@ -69,12 +77,45 @@ namespace PDC_System.Backup
                 if (Directory.Exists(PaysheetFolder))
                     AddFolderToZip(zip, PaysheetFolder, tempDbCopies);
 
-                // SETTINGS EXPORT
-                string settingsFile = Path.Combine(Path.GetTempPath(), "settings_backup.txt");
-                SettingsExport.Export(settingsFile);
+                // Add application config
+                try
+                {
+                    string exeConfig = ConfigurationManager
+                        .OpenExeConfiguration(ConfigurationUserLevel.None)
+                        .FilePath;
 
-                zip.CreateEntryFromFile(settingsFile, "Settings/settings_backup.txt");
+                    if (!string.IsNullOrEmpty(exeConfig) &&
+                        File.Exists(exeConfig))
+                    {
+                        zip.CreateEntryFromFile(
+                            exeConfig,
+                            "Settings/app.config",
+                            CompressionLevel.Optimal);
+                    }
+                }
+                catch { }
+
+                // Add user config
+                try
+                {
+                    var userConfig = ConfigurationManager
+                        .OpenExeConfiguration(
+                            ConfigurationUserLevel.PerUserRoamingAndLocal);
+
+                    string userConfigPath = userConfig.FilePath;
+
+                    if (!string.IsNullOrEmpty(userConfigPath) &&
+                        File.Exists(userConfigPath))
+                    {
+                        zip.CreateEntryFromFile(
+                            userConfigPath,
+                            "Settings/user.config",
+                            CompressionLevel.Optimal);
+                    }
+                }
+                catch { }
             }
+
 
 
 

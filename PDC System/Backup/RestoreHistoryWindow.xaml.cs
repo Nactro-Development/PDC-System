@@ -133,16 +133,10 @@ namespace PDC_System.Backup
                 try
                 {
                     RestoreFromZip(tempZipPath);
-
-                    // SETTINGS IMPORT
-                    string settingsFile = Path.Combine(
-                        AppDomain.CurrentDomain.BaseDirectory,
-                        "Settings/settings_backup.txt"
-                    );
-
-                    SettingsExport.Import(settingsFile);
+                    
+                    // Settings are restored through RestoreFromZip() above
+                    // which handles app.config and user.config files
                 }
-
                 finally
                 {
                     try { if (File.Exists(tempZipPath)) File.Delete(tempZipPath); } catch { }

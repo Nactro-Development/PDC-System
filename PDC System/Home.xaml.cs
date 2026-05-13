@@ -28,7 +28,7 @@ namespace PDC_System
     {
         #region Fields
 
-       
+
         private PeopleServiceService peopleService;
         private TaskbarIcon _trayIcon;
         private User _user;
@@ -66,7 +66,7 @@ namespace PDC_System
                 {
                 }
             };
-        
+
 
 
 
@@ -110,7 +110,7 @@ namespace PDC_System
             Payroll.Visibility = _user.Payroll ? Visibility.Visible : Visibility.Collapsed;
             Paysheet.Visibility = _user.Paysheet ? Visibility.Visible : Visibility.Collapsed;
             UserManagerTAB.Visibility = _user.UserManager ? Visibility.Visible : Visibility.Collapsed;
-           
+
         }
 
 
@@ -118,7 +118,7 @@ namespace PDC_System
 
         #endregion
 
-    
+
 
         #region Tray Icon
 
@@ -311,7 +311,7 @@ namespace PDC_System
                 settingsWindow.GoogleAccountChanged += () =>
                 {
                     // Refresh Home UI when Google account changes
-                    
+
                 };
                 settingsWindow.Show();
             }
@@ -394,7 +394,25 @@ namespace PDC_System
         #endregion
 
 
+        private void Backup_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if BackupWindow is already open
+            var existingWindow = Application.Current.Windows
+                                    .OfType<BackupWindow>()
+                                    .FirstOrDefault();
+            if (existingWindow != null)
+            {
+                // If already open, bring it to front
+                existingWindow.Activate();
+            }
+            else
+            {
+                // If not open, create and show a new one
+                var backupWindow = new BackupWindow();
+                backupWindow.Show();
+            }
 
 
+        }
     }
 }

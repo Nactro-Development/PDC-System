@@ -106,9 +106,18 @@
                               
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
+                                    <Button HorizontalAlignment="Left" Click="Backup_Click" Background="Transparent">
+                                        <StackPanel Orientation="Horizontal" Width="208">
+                                            <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/Backup.png" Width="15"/>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Backup" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
+                                        </StackPanel>
+
+
+                                    </Button>
+
                                     <Button HorizontalAlignment="Left" Click="Setting_Click" Background="Transparent">
                                         <StackPanel Orientation="Horizontal" Width="208">
-                                            <Image HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/Setting_G.png" Width="15"/>
+                                            <Image RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/gear.png" Width="15"/>
                                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Settings" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
                                         </StackPanel>
 
@@ -117,7 +126,7 @@
 
                                     <Button HorizontalAlignment="Left" Click="AboutButton_Click" Background="Transparent" >
                                         <StackPanel Orientation="Horizontal" Width="208">
-                                            <Image HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/About.png" Width="15"/>
+                                            <Image RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/information.png" Width="19"/>
                                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="About" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
                                         </StackPanel>
 
