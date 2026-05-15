@@ -10,11 +10,14 @@ using PDC_System.Settings;
 using System.Drawing;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace PDC_System
 {
@@ -28,6 +31,8 @@ namespace PDC_System
     {
         #region Fields
 
+
+        DispatcherTimer timer = new DispatcherTimer();
 
         private PeopleServiceService peopleService;
         private TaskbarIcon _trayIcon;
@@ -67,6 +72,12 @@ namespace PDC_System
                 }
             };
 
+
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
+            UpdateClock();
 
 
 
@@ -414,5 +425,18 @@ namespace PDC_System
 
 
         }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            UpdateClock();
+        }
+
+        private void UpdateClock()
+        {
+            Clock.Text = DateTime.Now.ToString("hh:mm:ss tt");
+        }
+
+
+
     }
 }

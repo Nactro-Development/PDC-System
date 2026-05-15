@@ -23,6 +23,8 @@ namespace PDC_System
         {
             InitializeComponent();
 
+            TypeFilterComboBox.SelectedIndex = 0;
+
             if (!Directory.Exists(saversFolder))
                 Directory.CreateDirectory(saversFolder);
 
@@ -174,6 +176,12 @@ namespace PDC_System
 
             JobCardDataGrid.ItemsSource = null;
             JobCardDataGrid.ItemsSource = jobCards;
+
+            TypeFilterComboBox.SelectedIndex = 0;
+
+            PlateCompanyComboBox.Visibility = Visibility.Collapsed;
+            PlateCompanyComboBox.ItemsSource = null;
+
         }
 
         private void OpenJobCardButton_Click(object sender, RoutedEventArgs e)
@@ -222,32 +230,65 @@ namespace PDC_System
 
         private void ApplyFilter()
         {
-            if (NameAutoCompleteBox1.Text == null) return;
+            string query = NameAutoCompleteBox1.Text?.Trim().ToLower() ?? "";
 
-            string query = NameAutoCompleteBox1.Text.Trim().ToLower();
             DateTime? startDate = StartDatePicker.SelectedDate;
             DateTime? endDate = EndDatePicker.SelectedDate?.AddDays(1).AddTicks(-1);
 
             var filteredFiles = jobCards.AsEnumerable();
 
+            // Search Filter
             if (!string.IsNullOrEmpty(query))
             {
-                filteredFiles = filteredFiles
-                    .Where(jc => !string.IsNullOrEmpty(jc.Customer_Name) &&
-                                 jc.Customer_Name.ToLower().Contains(query));
+                filteredFiles = filteredFiles.Where(jc =>
+                    !string.IsNullOrEmpty(jc.Customer_Name) &&
+                    jc.Customer_Name.ToLower().Contains(query));
             }
 
+            // Date Filter
             if (startDate != null && endDate != null)
             {
-                filteredFiles = filteredFiles
-                    .Where(jc => jc.JobCardDate >= startDate && jc.JobCardDate <= endDate);
+                filteredFiles = filteredFiles.Where(jc =>
+                    jc.JobCardDate >= startDate &&
+                    jc.JobCardDate <= endDate);
             }
 
-            var finalList = filteredFiles.OrderByDescending(jc => jc.JobCardDate).ToList();
+            // Type Filter
+            if (TypeFilterComboBox.SelectedItem is ComboBoxItem typeItem)
+            {
+                string selectedType = typeItem.Content.ToString();
+
+                if (selectedType != "All")
+                {
+                    filteredFiles = filteredFiles.Where(jc =>
+                        jc.Type != null &&
+                        jc.Type.Equals(selectedType, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+
+            // Plate Company Filter
+            if (PlateCompanyComboBox.Visibility == Visibility.Visible &&
+                PlateCompanyComboBox.SelectedItem != null)
+            {
+                string selectedCompany = PlateCompanyComboBox.SelectedItem.ToString();
+
+                if (selectedCompany != "All")
+                {
+                    filteredFiles = filteredFiles.Where(jc =>
+                        jc.selectedPlateName != null &&
+                        jc.selectedPlateName.Equals(selectedCompany, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+
+            var finalList = filteredFiles
+                .OrderByDescending(jc => jc.JobCardDate)
+                .ToList();
 
             JobCardDataGrid.ItemsSource = null;
             JobCardDataGrid.ItemsSource = finalList;
         }
+
+
 
         private void JobCardDataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -268,5 +309,51 @@ namespace PDC_System
                 e.Handled = true;
             }
         }
+
+
+
+        private void TypeFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TypeFilterComboBox == null)
+                return;
+
+            ComboBoxItem item = TypeFilterComboBox.SelectedItem as ComboBoxItem;
+
+            if (item == null || item.Content == null)
+                return;
+
+            string selectedType = item.Content.ToString();
+
+            if (selectedType == "Offset")
+            {
+                PlateCompanyComboBox.Visibility = Visibility.Visible;
+
+                var companies = jobCards
+                    .Where(j => !string.IsNullOrEmpty(j.selectedPlateName))
+                    .Select(j => j.selectedPlateName)
+                    .Distinct()
+                    .ToList();
+
+                companies.Insert(0, "All");
+
+                PlateCompanyComboBox.ItemsSource = companies;
+                PlateCompanyComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                PlateCompanyComboBox.Visibility = Visibility.Collapsed;
+                PlateCompanyComboBox.ItemsSource = null;
+            }
+
+            ApplyFilter();
+        }
+
+
+        private void PlateCompanyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+
     }
 }

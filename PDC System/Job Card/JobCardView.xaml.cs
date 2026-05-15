@@ -53,7 +53,7 @@ namespace PDC_System.Job_Card
                     DescriptionText.Text = _jobCardData.Description;
                     QuantityTextSimple.Text = _jobCardData.Quantity.ToString("N0");
                     JobNoText.Text = $"Job #{_jobCardData.JobNo}";
-
+                    PlateCompanyTextSimple.Text = _jobCardData.selectedPlateName;
                     PlateQuantityTextSimple.Text = _jobCardData.PlateQuantitiy ?? "-";
 
                     // Hide all other sections for Offset

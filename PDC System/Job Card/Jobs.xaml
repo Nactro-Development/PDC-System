@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -24,6 +25,7 @@
         <!-- ROW 0: TITLE -->
         <Grid Grid.Row="0" Margin="0,0,0,18">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -127,8 +129,37 @@
         </Grid>
 
 
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+
+            <StackPanel Orientation="Horizontal" >
+                <ComboBox 
+          x:Name="TypeFilterComboBox"
+          Width="130"
+                     Style="{DynamicResource ComboBoxFlatStyle}"
+          Height="35"
+          Margin="5"
+          SelectionChanged="TypeFilterComboBox_SelectionChanged">
+
+                    <ComboBoxItem Content="All" />
+                    <ComboBoxItem Content="Digital"/>
+                    <ComboBoxItem Content="Offset"/>
+
+                </ComboBox>
+
+                <ComboBox 
+          x:Name="PlateCompanyComboBox"
+          Width="180"
+          Height="35"
+                    Style="{DynamicResource ComboBoxFlatStyle}"
+          Margin="5"
+          Visibility="Collapsed"
+          SelectionChanged="PlateCompanyComboBox_SelectionChanged"/>
+            </StackPanel>
+
+        </Grid>
+
         <!-- ROW 3: DATA GRID AREA -->
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -163,6 +194,9 @@
                            Foreground="{DynamicResource Forground}"
                            Margin="5,0,0,0"/>
             </Grid>
+            
+            
+            
 
             <!-- DataGrid -->
             <DataGrid Grid.Row="1"
@@ -200,7 +234,68 @@
     ElementStyle="{DynamicResource DataGridColumnsStyle}" />
                     <DataGridTextColumn Header="Customer Name"   Binding="{Binding Customer_Name}"  Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
                     <DataGridTextColumn Header="Description"     Binding="{Binding Description}"    Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
-                    <DataGridTextColumn Header="Type"            Binding="{Binding Type}"           Width="*" ElementStyle="{DynamicResource DataGridColumnsStyle}" />
+                    <DataGridTemplateColumn Header="Type" Width="*">
+
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+
+                                <Border x:Name="TypeBorder"
+                    Padding="10,4"
+                    CornerRadius="5"
+                                        Height="25"
+                    HorizontalAlignment="Center"
+                    BorderThickness="1">
+
+                                    <TextBlock Text="{Binding Type}"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                                               x:Name="TextJob"
+                           VerticalAlignment="Center"/>
+
+                                </Border>
+
+                                <DataTemplate.Triggers>
+
+                                    <!-- Digital -->
+                                    <DataTrigger Binding="{Binding Type}" Value="Digital">
+
+                                        <Setter TargetName="TypeBorder"
+                            Property="Background"
+                            Value="#33FF4A4A"/>
+                                        
+                                        
+
+                                        <Setter TargetName="TypeBorder"
+                            Property="BorderBrush"
+                            Value="#FF4A4A"/>
+
+
+                                        <Setter TargetName="TextJob" Property="Foreground" Value="#FF4A4A" />
+                                        
+                                    </DataTrigger>
+
+                                    <!-- Offset -->
+                                    <DataTrigger Binding="{Binding Type}" Value="Offset">
+
+                                        <Setter TargetName="TypeBorder"
+                            Property="Background"
+                            Value="#334DA6FF"/>
+
+                                        <Setter TargetName="TypeBorder"
+                            Property="BorderBrush"
+                            Value="#4DA6FF"/>
+
+                                        <Setter TargetName="TextJob" Property="Foreground" Value="#4DA6FF" />
+
+                                    </DataTrigger>
+
+                                </DataTemplate.Triggers>
+
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+
+                    </DataGridTemplateColumn>
+                    
 
                     <DataGridTemplateColumn Header="Action" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
