@@ -450,6 +450,7 @@ namespace PDC_System.Paysheets
                     !(a.Status.Contains("Holiday") ||
                       a.Status.Contains("Poya Day") ||
                       a.Status.Contains("Non-Working Day") ||
+                      a.Status.Contains("Sunday Day") ||
                       a.Status.Contains("Absent")))
                 .ToList();
             Contorls.IsEnabled = true;
@@ -466,12 +467,57 @@ namespace PDC_System.Paysheets
             }
 
 
-
+            bool countOffDays = (EmployeeCombo.SelectedItem as Employee)?.CountOffDays == true;
             int workingDays = filtered.Count(a => a.CheckIn != "-" && a.CheckOut != "-");
+
+
+
             int absentDays = filtered.Count(a =>
-                (a.CheckIn == "-" && a.CheckOut == "-") &&
-                !(a.Status.Contains("Holiday") || a.Status.Contains("Poya Day") || a.Status.Contains("Non-Working Day"))
+    (a.CheckIn == "-" && a.CheckOut == "-") &&
+
+    (
+        countOffDays
+
+        // TRUE -> only Non-Working Days count as absent (NO Sunday)
+        ? !(a.Status.Contains("Holiday") ||
+            a.Status.Contains("Poya Day") ||
+            a.Status.Contains("Sunday Day"))
+
+        // FALSE -> Off days NOT counted as absent
+        : !(a.Status.Contains("Holiday") ||
+            a.Status.Contains("Poya Day") ||
+            a.Status.Contains("Sunday") ||
+            a.Status.Contains("Non-Working Day"))
+    )
+);
+
+
+
+           
+
+            int SundayCount = filtered.Count(a =>
+    a.Status.Contains("Sunday Day")
+);
+
+
+            int holidayCount = filtered.Count(a =>
+                countOffDays
+
+                    // TRUE -> include Non-Working Days also as "holiday side"
+                    ? (a.Status.Contains("Holiday") ||
+                       a.Status.Contains("Poya Day"))
+                    // FALSE -> normal holiday counting (NO Non-Working Day)
+                    : 
+                       (a.Status.Contains("Holiday") ||
+                       a.Status.Contains("Poya Day") ||
+                       a.Status.Contains("Non-Working Day"))
             );
+
+
+
+
+
+
 
             // Populate No Pay Days ComboBox based on absent days
             PopulateNopayCombo(absentDays);
@@ -493,6 +539,17 @@ namespace PDC_System.Paysheets
             var absentDayAmount = (EmployeeCombo.SelectedItem as Employee)?.AbesentAmount ?? 0m;
             var NopayDays = (EmployeeCombo.SelectedItem as Employee)?.Nopay ?? 0m;
             var saleryAmount = (EmployeeCombo.SelectedItem as Employee)?.Salary ?? 0m;
+            var BsaleryAmount = (EmployeeCombo.SelectedItem as Employee)?.BSalary ?? 0m;
+            
+
+            var NetSaleryBalence = saleryAmount - BsaleryAmount;
+            var DaliySalery = saleryAmount / 25;
+
+            Console.WriteLine(DaliySalery);
+
+            var MonthlyDay = workingDays + absentDays + holidayCount ;
+
+            var MonthlyDaySalery = DaliySalery * MonthlyDay;
 
             #endregion
 
@@ -525,7 +582,7 @@ namespace PDC_System.Paysheets
 
             #region Total Calcualtion
 
-            decimal TotalOfSalary = Math.Round((saleryAmount + TotalEarings) - totalofDeducations, 2);
+            decimal TotalOfSalary = Math.Round((MonthlyDaySalery + TotalEarings) - totalofDeducations, 2);
 
 
             #endregion
@@ -580,7 +637,7 @@ namespace PDC_System.Paysheets
 
 
 
-            TotalsTextBlock.Text = $"Working Days: {workingDays} | Absent Days: {absentDays} | OT: {formattedAOT} | Double OT: {formattedDoubleOT} |Late: {formattedLate} | Early Leave: {formattedLeave}";
+            TotalsTextBlock.Text = $"Working Days: {workingDays} | Holidays:{holidayCount}   {MonthlyDay} | Sundays:{SundayCount} | Absent Days: {absentDays} | OT: {formattedAOT} | Double OT: {formattedDoubleOT} |Late: {formattedLate} | Early Leave: {formattedLeave}";
 
             WorkingDays.Text = workingDays.ToString();
             AbsentDays.Text = absentDays.ToString();

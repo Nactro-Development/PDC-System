@@ -85,6 +85,8 @@
         public TimeSpan CheckOut { get; set; }
         public TimeSpan SaturdayCheckIn { get; set; }
         public TimeSpan SaturdayCheckOut { get; set; }
+
+        public bool CountOffDays { get; set; }
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
         public bool Wednesday { get; set; }

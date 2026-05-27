@@ -249,7 +249,14 @@ namespace PDC_System.Services
                 }
                 else
                 {
-                    status = "Non-Working Day";
+                    if (isSunday)
+                    {
+                        status = "Sunday Day";
+                    }
+                    else
+                    {
+                        status = "Non-Working Day";
+                    }
                 }
             }
 

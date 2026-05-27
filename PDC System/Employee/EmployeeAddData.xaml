@@ -330,6 +330,13 @@ Background="{DynamicResource Background}"
 
                                         <StackPanel Grid.Row="3" Grid.ColumnSpan="2"  HorizontalAlignment="Center" >
                                             <TextBlock Text="Select Working Days:" Margin="10" FontSize="14"/>
+
+
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Text="Count Off Days" Margin="10" FontSize="14"/>
+                                                <CheckBox x:Name="CountOffDays"/>
+                                            </StackPanel>
+                                            
                                             <StackPanel Orientation="Horizontal">
                                                 <StackPanel HorizontalAlignment="Center">
                                                     <TextBlock Text="MON" Margin="10" FontSize="14"/>

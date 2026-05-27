@@ -72,7 +72,8 @@ namespace PDC_System
             birthday.SelectedDate = Employee.Birthday;
             Department.Text = Employee.Department;
 
-        
+
+            CountOffDays.IsChecked = Employee.CountOffDays;
 
             Mon.IsChecked = Employee.Monday;
             Tue.IsChecked = Employee.Tuesday;
@@ -131,6 +132,9 @@ namespace PDC_System
                 CheckOut = existingEmployee.CheckOut,
                 SaturdayCheckIn = existingEmployee.SaturdayCheckIn,
                 SaturdayCheckOut = existingEmployee.SaturdayCheckOut,
+
+
+                CountOffDays = existingEmployee.CountOffDays,
                 Monday = existingEmployee.Monday,
                 Tuesday = existingEmployee.Tuesday,
                 Wednesday = existingEmployee.Wednesday,
@@ -362,7 +366,7 @@ namespace PDC_System
                 Birthday = birthday.SelectedDate,
                 Department = Department.Text.Trim(),
 
-
+                CountOffDays = (CountOffDays.IsChecked == true),
 
                 Monday = (Mon.IsChecked == true),
                 Tuesday = (Tue.IsChecked == true),
