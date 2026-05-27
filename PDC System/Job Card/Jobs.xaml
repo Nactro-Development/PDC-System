@@ -65,13 +65,19 @@
 
         <!-- ROW 1: SEARCH BOX -->
         <Grid Grid.Row="1" Margin="0,10,0,10">
-            <TextBox HorizontalAlignment="Left"
-                     Name="NameAutoCompleteBox1"
-                     ToolTip="Search by Employee Name or ID"
-                     Height="35"
-                     Style="{DynamicResource OutsourceSerchBar}"
-                     Width="300"
-                     TextChanged="SearchBox_TextChanged2" />
+
+            <StackPanel Orientation="Horizontal" >
+                <TextBox HorizontalAlignment="Left"
+             Name="NameAutoCompleteBox1"
+             ToolTip="Search by Employee Name or ID"
+             Height="35"
+             Style="{DynamicResource OutsourceSerchBar}"
+             Width="300"
+             TextChanged="SearchBox_TextChanged2" />
+
+                <Button HorizontalAlignment="Left" Click="Refresh_Click" Content="Refresh" Style="{DynamicResource ActionButton}" Margin="10,0,0,0" />
+            </StackPanel>
+        
         </Grid>
 
 

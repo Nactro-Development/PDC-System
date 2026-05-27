@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Newtonsoft.Json;
-
+using System.Windows.Threading;
 using PDC_System.Job_Card;
 using static PDC_System.QuotationWindow;
 
@@ -17,11 +17,13 @@ namespace PDC_System
 
         private readonly string saversFolder = Path.Combine(Directory.GetCurrentDirectory(), "Savers");
         private readonly string jobCardsFile;
+        private DispatcherTimer refreshTimer;
         private readonly string customersFile;
 
         public Jobs()
         {
             InitializeComponent();
+            InitializeRefreshTimer();
 
             TypeFilterComboBox.SelectedIndex = 0;
 
@@ -347,6 +349,55 @@ namespace PDC_System
 
             ApplyFilter();
         }
+
+
+
+
+        private void InitializeRefreshTimer()
+        {
+            refreshTimer = new DispatcherTimer();
+            refreshTimer.Interval = TimeSpan.FromSeconds(5);
+
+            refreshTimer.Tick += (s, e) =>
+            {
+                RefreshJobCards();
+            };
+
+            refreshTimer.Start();
+        }
+
+
+
+
+        private void RefreshJobCards()
+        {
+            try
+            {
+                if (File.Exists(jobCardsFile))
+                {
+                    var updatedJobCards = JsonConvert.DeserializeObject<List<JobCard>>(
+                        File.ReadAllText(jobCardsFile));
+
+                    jobCards = updatedJobCards
+                        .OrderByDescending(j => j.JobCardDate)
+                        .ToList();
+
+                    ApplyFilter(); // current filters keep karanawa
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Refresh Error: {ex.Message}");
+            }
+        }
+
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshJobCards();
+        }
+
+
 
 
         private void PlateCompanyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

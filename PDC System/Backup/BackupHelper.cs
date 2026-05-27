@@ -14,6 +14,7 @@ namespace PDC_System.Backup
     public static class BackupHelper
     {
         private static readonly string EncryptionKey = "PDC_BACKUP_2025_SECURE_KEY";
+        private static readonly int BackupRetentionDays = 14; // 2 weeks
 
         private static readonly string DefaultBackupFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PDC_Backups");
@@ -28,10 +29,6 @@ namespace PDC_System.Backup
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 string zipFileName = $"PDC_Backup_{timestamp}.zip";
                 string tempZipPath = Path.Combine(Path.GetTempPath(), zipFileName);
-
-
-
-
 
                 // Create ZIP
                 CreateBackupZip(tempZipPath);
@@ -55,12 +52,62 @@ namespace PDC_System.Backup
                     File.WriteAllBytes(customPath, encryptedBytes);
                 }
 
-
-
+                // Cleanup old backups
+                CleanupOldBackups(customBackupFolder);
 
                 // Cleanup temp zip
                 try { if (File.Exists(tempZipPath)) File.Delete(tempZipPath); } catch { }
             });
+        }
+
+        public static async Task CleanupOldBackupsAsync(string? customBackupFolder = null)
+        {
+            await Task.Run(() => CleanupOldBackups(customBackupFolder));
+        }
+
+        private static void CleanupOldBackups(string? customBackupFolder)
+        {
+            DateTime cutoffDate = DateTime.Now.AddDays(-BackupRetentionDays);
+
+            // Cleanup default backup folder
+            CleanupFolder(DefaultBackupFolder, cutoffDate);
+
+            // Cleanup custom backup folder if provided
+            if (!string.IsNullOrEmpty(customBackupFolder) && Directory.Exists(customBackupFolder))
+            {
+                CleanupFolder(customBackupFolder, cutoffDate);
+            }
+        }
+
+        private static void CleanupFolder(string folderPath, DateTime cutoffDate)
+        {
+            try
+            {
+                if (!Directory.Exists(folderPath))
+                    return;
+
+                var backupFiles = Directory.GetFiles(folderPath, "*.pdcbak", SearchOption.TopDirectoryOnly);
+
+                foreach (var backupFile in backupFiles)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(backupFile);
+                        if (fileInfo.LastWriteTime < cutoffDate)
+                        {
+                            File.Delete(backupFile);
+                        }
+                    }
+                    catch
+                    {
+                        // Log or handle individual file deletion errors silently
+                    }
+                }
+            }
+            catch
+            {
+                // Handle folder access errors silently
+            }
         }
 
         private static void CreateBackupZip(string zipPath)
@@ -115,9 +162,6 @@ namespace PDC_System.Backup
                 }
                 catch { }
             }
-
-
-
 
             foreach (var tmp in tempDbCopies)
             {

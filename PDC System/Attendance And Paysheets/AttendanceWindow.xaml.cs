@@ -10,7 +10,6 @@ using PdfSharp.UniversalAccessibility;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -21,8 +20,7 @@ using System.Windows.Threading;
 using System.Xml.Linq;
 using static PDC_System.QuotationWindow;
 using Application = System.Windows.Application;
-using
-   MessageBox = System.Windows.MessageBox;
+using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace PDC_System
