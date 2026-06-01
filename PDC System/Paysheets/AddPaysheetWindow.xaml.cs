@@ -543,7 +543,7 @@ namespace PDC_System.Paysheets
             
 
             var NetSaleryBalence = saleryAmount - BsaleryAmount;
-            var DaliySalery = saleryAmount / 25;
+            var DaliySalery = BsaleryAmount / 25;
 
             Console.WriteLine(DaliySalery);
 
@@ -582,7 +582,11 @@ namespace PDC_System.Paysheets
 
             #region Total Calcualtion
 
-            decimal TotalOfSalary = Math.Round((MonthlyDaySalery + TotalEarings) - totalofDeducations, 2);
+            decimal TotalOfSalary = Math.Round(
+    ((MonthlyDaySalery + TotalEarings) - totalofDeducations) +
+    (MonthlyDay >= 25 ? NetSaleryBalence : 0),
+    2
+);
 
 
             #endregion
