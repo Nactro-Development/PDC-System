@@ -43,7 +43,7 @@ namespace PDC_System.Paysheets
         private Paysheet? existingPaysheet;   // 🔹 NEW
         private string epfHistoryFile = "Savers/EPFHistory.json";
 
-        private string employeeFile = "Savers/employee.json";
+        
         private List<AttendanceRecord>? attendanceRecords;
         private List<Earning>? earnings;
         private List<Deducation>? deducations;
@@ -250,12 +250,9 @@ namespace PDC_System.Paysheets
 
         private void LoadEmployees()
         {
-            if (File.Exists(employeeFile))
-            {
-                string json = File.ReadAllText(employeeFile);
-                var employees = JsonConvert.DeserializeObject<List<Employee>>(json);
-                EmployeeCombo.ItemsSource = employees;
-            }
+            var employees = EmployeeStorage.Load();
+            EmployeeCombo.ItemsSource = employees;
+            
         }
 
         private void LoadAttendance()
@@ -583,12 +580,9 @@ namespace PDC_System.Paysheets
             #region Total Calcualtion
 
             decimal TotalOfSalary = Math.Round(
-    ((MonthlyDaySalery + TotalEarings) - totalofDeducations) +
-    (MonthlyDay >= 25 ? NetSaleryBalence : 0),
+    (((DailyAttendace.IsChecked == true ? MonthlyDaySalery : saleryAmount) + TotalEarings) - totalofDeducations),
     2
 );
-
-
             #endregion
 
             decimal actualAbesntDate = absentDays - NopayDays;
@@ -1692,9 +1686,49 @@ namespace PDC_System.Paysheets
         }
 
 
+        private void StartDatePicker_SelectedDateChanged(object sender, EventArgs e)
+        {
+            if (DailyAttendace.IsChecked == true)
+                return;
 
+            if (StartDatePicker.SelectedDate == null)
+                return;
 
+            DateTime startDate = StartDatePicker.SelectedDate.Value;
 
+            // Month eke palaweni dawasada?
+            if (startDate.Day == 1)
+            {
+                // E mase anthima dawasa
+                EndDatePicker.SelectedDate = new DateTime(
+                    startDate.Year,
+                    startDate.Month,
+                    DateTime.DaysInMonth(startDate.Year, startDate.Month)
+                );
+            }
+            else
+            {
+                // 30 day period eka
+                EndDatePicker.SelectedDate = startDate.AddDays(30).AddDays(-1);
+            }
+
+            FilterChanged(null, null);
+        }
+
+        private void DailyAttendace_Checked(object sender, RoutedEventArgs e)
+        {
+            EndDatePicker.IsEnabled = true;
+            StartDatePicker.SelectedDate = null;
+            EndDatePicker.SelectedDate = null;
+
+        }
+
+        private void DailyAttendace_UnChecked(object sender, RoutedEventArgs e)
+        {
+            EndDatePicker.IsEnabled = false;
+            StartDatePicker.SelectedDate = null;
+            EndDatePicker.SelectedDate = null;
+        }
     }
 
     public class Paysheet

@@ -12,6 +12,9 @@ namespace PDC_System
 {
     public class EmployeeDailyAttendance
     {
+
+
+
         public static async Task CheckTodayAttendanceAsync()
         {
             if (!Properties.Settings.Default.SendAttendanceEmails)

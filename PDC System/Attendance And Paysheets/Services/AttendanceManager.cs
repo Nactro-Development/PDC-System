@@ -8,6 +8,8 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PDC_System.Services
 {
@@ -22,7 +24,19 @@ namespace PDC_System.Services
             if (!Directory.Exists(basePath))
                 Directory.CreateDirectory(basePath);
 
-            EnsureJsonFile("employee.json");
+            string employeeDat = Path.Combine(basePath, "employees.dat");
+
+            if (!File.Exists(employeeDat))
+            {
+                byte[] encrypted = ProtectedData.Protect(
+                    Encoding.UTF8.GetBytes("[]"),
+                    null,
+                    DataProtectionScope.CurrentUser);
+
+                File.WriteAllBytes(employeeDat, encrypted);
+            }
+
+
             EnsureJsonFile("holiday.json");
 
             _db = new AttendanceDatabase(basePath);
@@ -35,12 +49,37 @@ namespace PDC_System.Services
                 File.WriteAllText(path, "[]");
         }
 
+
+
+        private List<Employee> LoadEmployees()
+        {
+            string datFile = Path.Combine(basePath, "employees.dat");
+
+            if (!File.Exists(datFile))
+                return new List<Employee>();
+
+            byte[] encrypted = File.ReadAllBytes(datFile);
+
+            byte[] decrypted = ProtectedData.Unprotect(
+                encrypted,
+                null,
+                DataProtectionScope.CurrentUser);
+
+            string json = Encoding.UTF8.GetString(decrypted);
+
+            return JsonConvert.DeserializeObject<List<Employee>>(json)
+                   ?? new List<Employee>();
+        }
+
+
+
         // ✅ Load all attendance (read-only, NO auto-save)
         public List<AttendanceRecord> LoadAttendance()
         {
             var data = _db.GetFingerprintData();
-            var employees = JsonConvert.DeserializeObject<List<Employee>>(
-                File.ReadAllText(Path.Combine(basePath, "employee.json")));
+
+            var employees = EmployeeStorage.Load();
+
             var holidays = JsonConvert.DeserializeObject<List<Holiday>>(
                 File.ReadAllText(Path.Combine(basePath, "holiday.json")));
 
@@ -104,7 +143,7 @@ namespace PDC_System.Services
         public List<AttendanceRecord> LoadAttendanceWithDateRange(DateTime startDate, DateTime endDate)
         {
             var data = _db.GetFingerprintData();
-            var employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(Path.Combine(basePath, "employee.json")));
+            var employees = EmployeeStorage.Load();
             var holidays = JsonConvert.DeserializeObject<List<Holiday>>(File.ReadAllText(Path.Combine(basePath, "holiday.json")));
 
             var records = new List<AttendanceRecord>();
@@ -494,8 +533,7 @@ namespace PDC_System.Services
 
             var db = new AttendanceDatabase(basePath);
             var fp = db.GetFingerprintData();
-            var employees = JsonConvert.DeserializeObject<List<Employee>>(
-                File.ReadAllText(Path.Combine(basePath, "employee.json")));
+            var employees = EmployeeStorage.Load();
 
             foreach (var f in fp)
             {

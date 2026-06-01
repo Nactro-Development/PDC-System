@@ -12,6 +12,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -65,6 +67,9 @@ namespace PDC_System
 
         #region Load Data
 
+
+
+
         private void LoadData()
         {
             // Load holidays (JSON)
@@ -76,11 +81,7 @@ namespace PDC_System
             }
 
             // Load employees (JSON)
-            string employeeFile = Path.Combine(saversFolder, "employee.json");
-            if (File.Exists(employeeFile))
-            {
-                employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(employeeFile));
-            }
+            var employees = EmployeeStorage.Load();
 
             // Load raw punch data from SQLite
             dataTable = _manager.LoadRawPunchTable();

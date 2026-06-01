@@ -336,7 +336,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderBrush="#0660FE"
                     BorderThickness="2"
                     CornerRadius="8">
                         <ContentPresenter HorizontalAlignment="Center"
@@ -931,7 +931,7 @@
                               Width="25"
                               Height="25"
                           BorderThickness="2"
-                          BorderBrush="{DynamicResource BorderBrush}"
+                          BorderBrush="#0660FE"
                           Background="{DynamicResource ThemeBackground}"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"/>

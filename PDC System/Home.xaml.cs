@@ -52,6 +52,8 @@ namespace PDC_System
             SetupTrayIcon();
 
             _user = user;
+            UserNameTextBox.Text = _user.Username;   // හෝ _user.UserName
+
             ApplyAccess();
 
             LoadCalculateSettings();
@@ -424,6 +426,29 @@ namespace PDC_System
             }
 
 
+        }
+
+        private static void RestartApplication()
+        {
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = exePath,
+                UseShellExecute = true
+            });
+
+            Application.Current.Shutdown();
+        }
+
+
+        private void Log_out (object sender, RoutedEventArgs e)
+        {
+            var result = CustomMessageBox.Show("Are you sure you want to log out?", "Confirm Logout", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                RestartApplication();
+            }
         }
 
         private void Timer_Tick(object? sender, EventArgs e)

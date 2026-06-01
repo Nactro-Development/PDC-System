@@ -15,10 +15,10 @@
         AllowsTransparency="True"
         WindowState="Normal"
         MinWidth="1450"
-        MinHeight="780"
+        MinHeight="888"
         Width="1450"
         Icon="/Assets/Main.ico"
-        Height="780">
+        Height="888">
 
     <!-- WindowChrome for custom window border and rounded corners -->
     <shell:WindowChrome.WindowChrome>
@@ -89,6 +89,7 @@
                         <!-- App Title -->
                         <TextBlock x:Name="PDCtitel" Text="PDC System" Foreground="{DynamicResource Forground}"  VerticalAlignment="Center" Margin="8,0"/>
                         <!-- Control Panel -->
+
                        
 
 
@@ -316,22 +317,37 @@ Margin="3" Width="250" Height="45">
                                     </StackPanel>
                                 </RadioButton>
 
+
+                             
+
                             </StackPanel>
 
-                          
-
-
-                           
 
 
 
+                            <StackPanel VerticalAlignment="Bottom" >
+
+                                <Border Background="#FF0660FE" CornerRadius="10
+               " Margin="10,10,10,0" Height="38" >
+                                    <TextBlock x:Name="UserNameTextBox" TextAlignment="Center" FontWeight="SemiBold" Text="admin"  HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="15"  Margin="5"/>
+                                </Border>
+
+                                <Button Width="auto" Content="Log Out"  Click="Log_out" Style="{DynamicResource NavigationButtonStyle}" Margin="10" />
+                            </StackPanel>
 
 
-                              
+
+
+
+
 
 
 
                         </Grid>
+                        
+                        
+                        
+                        
                     </Border>
                 </Grid>
 

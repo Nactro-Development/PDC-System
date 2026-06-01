@@ -293,18 +293,15 @@ namespace PDC_System
 
         private void LoadData()
         {
-            string filePath = Path.Combine(saversDirectory, "employee.json");
+            employees = EmployeeStorage.Load(); // ✅ FIXED
 
-            if (File.Exists(filePath))
-            {
-                employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(filePath));
-                RefreshUpcomingBirthdays();
-            }
+            RefreshUpcomingBirthdays();
         }
+
 
         private void RefreshUpcomingBirthdays()
         {
-            UpcomingBirthdays = GetUpcomingBirthdays(30); // Get birthdays within next 30 days
+            UpcomingBirthdays = GetUpcomingBirthdays(31); // Get birthdays within next 30 days
             DataContext = this; // Update UI
         }
 

@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Security.Cryptography;
 
 namespace PDC_System
 {
@@ -15,31 +18,58 @@ namespace PDC_System
 
         // Set the path to the Savers folder in the current directory
         private string saversFolder = Path.Combine(Directory.GetCurrentDirectory(), "Savers");
-        private string employeeFile;
+    
 
         public EmployeeWindow()
         {
             InitializeComponent();
-
-            // Ensure Savers folder exists
-            if (!Directory.Exists(saversFolder))
-                Directory.CreateDirectory(saversFolder);
-
-            // Full path to JSON file
-            employeeFile = Path.Combine(saversFolder, "employee.json");
-
             LoadData();
         }
 
         private void LoadData()
         {
-            if (File.Exists(employeeFile))
+            string dataFile = Path.Combine(saversFolder, "employees.dat");
+
+            if (File.Exists(dataFile))
             {
-                employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(employeeFile));
-                filteredEmployees = new List<Employee>(employees); // Initialize filtered list
-                EmployeeDataGrid.ItemsSource = filteredEmployees;
+                byte[] encrypted = File.ReadAllBytes(dataFile);
+
+                byte[] decrypted = ProtectedData.Unprotect(
+                    encrypted,
+                    null,
+                    DataProtectionScope.CurrentUser);
+
+                string json = Encoding.UTF8.GetString(decrypted);
+
+                employees = JsonConvert.DeserializeObject<List<Employee>>(json)
+                            ?? new List<Employee>();
             }
+
+            filteredEmployees = new List<Employee>(employees);
+            EmployeeDataGrid.ItemsSource = filteredEmployees;
         }
+
+
+
+        private void SaveData()
+        {
+            string json = JsonConvert.SerializeObject(
+                employees,
+                Formatting.Indented);
+
+            byte[] data = Encoding.UTF8.GetBytes(json);
+
+            byte[] encrypted = ProtectedData.Protect(
+                data,
+                null,
+                DataProtectionScope.CurrentUser);
+
+            string dataFile = Path.Combine(saversFolder, "employees.dat");
+
+            File.WriteAllBytes(dataFile, encrypted);
+        }
+
+
 
         private void AddEmployee_Click(object sender, RoutedEventArgs e)
         {
@@ -49,7 +79,7 @@ namespace PDC_System
             {
                 employees.Add(addEmployeeWindow.Employee);
                 ApplyFilter();
-                File.WriteAllText(employeeFile, JsonConvert.SerializeObject(employees, Formatting.Indented));
+                SaveData();
             }
         }
 
@@ -70,7 +100,7 @@ namespace PDC_System
                 {
                     employees.Remove(selectedEmployee);
                     ApplyFilter();
-                    File.WriteAllText(employeeFile, JsonConvert.SerializeObject(employees));
+                    SaveData();
                 }
             }
             else
@@ -124,8 +154,37 @@ namespace PDC_System
                 ApplyFilter();
 
                 // Save JSON
-                File.WriteAllText(employeeFile, JsonConvert.SerializeObject(employees, Formatting.Indented));
+                SaveData();
             }
+        }
+
+
+        private void ConvertJsonToDat()
+        {
+            string jsonFile = Path.Combine(saversFolder, "employee.json");
+            string datFile = Path.Combine(saversFolder, "employees.dat");
+
+            if (!File.Exists(jsonFile))
+            {
+                MessageBox.Show("employee.json file not found!");
+                return;
+            }
+
+            // JSON file read
+            string json = File.ReadAllText(jsonFile);
+
+            // Encrypt
+            byte[] data = Encoding.UTF8.GetBytes(json);
+
+            byte[] encrypted = ProtectedData.Protect(
+                data,
+                null,
+                DataProtectionScope.CurrentUser);
+
+            // Save as .dat
+            File.WriteAllBytes(datFile, encrypted);
+
+            MessageBox.Show("Data converted successfully!");
         }
 
     }

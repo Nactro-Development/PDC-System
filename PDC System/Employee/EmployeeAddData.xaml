@@ -60,12 +60,9 @@ Background="{DynamicResource Background}"
 
 
                 <Grid Grid.Row="1" >
-                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1.5" Background="{DynamicResource Background}" CornerRadius="10" Margin="10">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="0" Opacity="0.505" BlurRadius="8"/>
-                        </Border.Effect>
-
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Border CornerRadius="10" Margin="10">
+                      
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                             <Grid Margin="20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>

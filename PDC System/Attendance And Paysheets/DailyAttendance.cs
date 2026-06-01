@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json;
+using PDC_System.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
-using PDC_System.Services;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -13,6 +14,30 @@ namespace PDC_System
     public class DaliyAttendance
     {
         private static AttendanceDatabase _db;
+
+
+        private static List<Employee> LoadEmployees(string baseFolder)
+        {
+            string file = Path.Combine(baseFolder, "employees.dat");
+
+            if (!File.Exists(file))
+                return new List<Employee>();
+
+            byte[] encrypted = File.ReadAllBytes(file);
+
+            byte[] decrypted = ProtectedData.Unprotect(
+                encrypted,
+                null,
+                DataProtectionScope.CurrentUser);
+
+            string json = Encoding.UTF8.GetString(decrypted);
+
+            return JsonConvert.DeserializeObject<List<Employee>>(json)
+                   ?? new List<Employee>();
+        }
+
+
+
 
         public static async Task CheckTodayAttendance()
         {
@@ -41,7 +66,7 @@ namespace PDC_System
                 return;
             }
 
-            var employees = JsonConvert.DeserializeObject<List<Employee>>(File.ReadAllText(employeePath));
+            var employees = LoadEmployees(saversFolder);
 
             // Get fingerprint data from SQLite database instead of JSON file
             var ivmsData = _db.GetFingerprintData();   // returns List<FingerprintData>

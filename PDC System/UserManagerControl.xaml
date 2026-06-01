@@ -8,7 +8,9 @@
 
     <UserControl.Resources>
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <local:UserActionVisibilityConverter x:Key="UserActionVisibilityConverter"/>
     </UserControl.Resources>
+
 
     <Border Padding="30"
             CornerRadius="15"
@@ -26,14 +28,12 @@
             <!-- Header Section -->
             <StackPanel Grid.Row="0" Margin="0,0,0,30">
                 <TextBlock Text="User Management System"
-                           FontSize="25
-                           "
+                           FontSize="25"
                            FontWeight="Bold"
                            Foreground="{DynamicResource Forground}"
                            Margin="0,0,0,8"/>
                 <TextBlock Text="Manage user accounts and permissions for your PDC system"
-                           FontSize="13
-                           "
+                           FontSize="13"
                            Opacity="0.7"
                            Foreground="{DynamicResource Forground}"/>
             </StackPanel>
@@ -47,16 +47,11 @@
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="BtnCreateUser" 
                             Content="➕ Create User"
-                          
                             Width="180" 
                             Margin="5"
-                           
-                          
                             Click="BtnCreateUser_Click"
                             Style="{DynamicResource ActionButton}" 
                             />
-
-
                 </StackPanel>
             </Border>
 
@@ -65,7 +60,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
-
                 </Grid.ColumnDefinitions>
 
                 <!-- Users Management Panel (Left) -->
@@ -128,30 +122,25 @@
                                       Background="Transparent"
                                       BorderThickness="0"
                                       MinHeight="400"
-                                      
-                                        CellStyle="{StaticResource DataGridCellStyle}"
-  Style="{StaticResource DataGridStyle}"
-  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-  RowStyle="{StaticResource DataGridRowStyle}"
-                                      
+                                      CellStyle="{StaticResource DataGridCellStyle}"
+                                      Style="{StaticResource DataGridStyle}"
+                                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                      RowStyle="{StaticResource DataGridRowStyle}"
                                       MaxHeight="500">
-
 
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Username" 
-                                                     
                                                         Binding="{Binding Username}" 
                                                         Width="150"
-                                                         ElementStyle="{DynamicResource DataGridColumnsStyle}"/>
-
+                                                        ElementStyle="{DynamicResource DataGridColumnsStyle}"/>
 
                                     <!-- Dashboard -->
                                     <DataGridTemplateColumn Header="Dashboard" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsEnabled="False" IsChecked="{Binding Dashbord}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -161,8 +150,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsEnabled="False" IsChecked="{Binding OderCheck}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -172,8 +161,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsEnabled="False" IsChecked="{Binding Jobcard}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -183,8 +172,8 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsEnabled="False" IsChecked="{Binding Customer}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -194,8 +183,18 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsEnabled="False" IsChecked="{Binding Employee}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <DataGridTemplateColumn Header="User Manager" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsEnabled="False" IsChecked="{Binding UserManager}"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -205,12 +204,11 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsEnabled="False" IsChecked="{Binding Isadmin}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-
 
                                     <DataGridTemplateColumn Header="Actions" Width="140">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -247,103 +245,103 @@
 
                 <!-- Create/Edit User Panel (Right) -->
                 <Border Grid.Column="1" 
-        x:Name="CreateUserPanel" 
-        Visibility="Collapsed"
-        Background="{DynamicResource Background}"
-        BorderBrush="{DynamicResource BorderBrush}"
-        BorderThickness="1"
-        CornerRadius="12"
-        Padding="25" Margin="10,0,0,0">
+                        x:Name="CreateUserPanel" 
+                        Visibility="Visible"
+                        Background="{DynamicResource Background}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="25" 
+                        Margin="10,0,0,0">
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <!-- Panel Header -->
                             <Border Background="{DynamicResource ThemeBackground}"
-                    CornerRadius="8"
-                    Padding="15"
-                    Margin="0,0,0,25">
+                                    CornerRadius="8"
+                                    Padding="15"
+                                    Margin="0,0,0,25">
                                 <StackPanel>
                                     <TextBlock Text="➕ Create New User"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground="{DynamicResource Forground}"
-                               Margin="0,0,0,5"/>
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource Forground}"
+                                               Margin="0,0,0,5"/>
                                     <TextBlock Text="Fill in the details to create a new user account"
-                               FontSize="12"
-                               Opacity="0.7"
-                               Foreground="{DynamicResource Forground}"/>
+                                               FontSize="12"
+                                               Opacity="0.7"
+                                               Foreground="{DynamicResource Forground}"/>
                                 </StackPanel>
                             </Border>
 
                             <!-- User Details Section -->
                             <Border Background="{DynamicResource Background}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="20"
-                    Margin="0,0,0,20">
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="20"
+                                    Margin="0,0,0,20">
 
                                 <StackPanel>
                                     <TextBlock Text="👤 User Details"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource Forground}"
-                               Margin="0,0,0,15"/>
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Forground}"
+                                               Margin="0,0,0,15"/>
 
                                     <!-- Username -->
                                     <StackPanel Margin="0,0,0,15">
                                         <TextBlock Text="Username"
-                                   FontSize="13"
-                                   FontWeight="Medium"
-                                   Foreground="{DynamicResource Forground}"
-                                   Margin="0,0,0,5"/>
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="{DynamicResource Forground}"
+                                                   Margin="0,0,0,5"/>
                                         <TextBox x:Name="TxtUser"
-                                 Style="{DynamicResource TextBoxStyle}"
-                                 Height="40"
-                                 FontSize="14"/>
+                                                 Style="{DynamicResource TextBoxStyle}"
+                                                 Height="40"
+                                                 FontSize="14"/>
                                     </StackPanel>
 
                                     <!-- Password -->
                                     <StackPanel Margin="0,0,0,15">
                                         <TextBlock Text="Password"
-                                   FontSize="13"
-                                   FontWeight="Medium"
-                                   Foreground="{DynamicResource Forground}"
-                                   Margin="0,0,0,5"/>
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="{DynamicResource Forground}"
+                                                   Margin="0,0,0,5"/>
                                         <PasswordBox x:Name="TxtPass"
-                                     Height="40"
-                                     FontSize="14"/>
+                                                     Height="40"
+                                                     FontSize="14"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
                             <!-- Permissions Section -->
                             <Border Background="{DynamicResource Background}"
-                    BorderBrush="{DynamicResource BorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="20"
-                    Margin="0,0,0,20">
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="20"
+                                    Margin="0,0,0,20">
 
                                 <StackPanel>
                                     <TextBlock Text="🔐 Permissions Access"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource Forground}"
-                               Margin="0,0,0,15"/>
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Forground}"
+                                               Margin="0,0,0,15"/>
 
                                     <!-- Basic Permissions -->
                                     <TextBlock Text="Basic Access"
-                               FontSize="14"
-                               FontWeight="Medium"
-                               Foreground="{DynamicResource Forground}"
-                               Opacity="0.8"
-                               Margin="0,0,0,10"/>
+                                               FontSize="14"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource Forground}"
+                                               Opacity="0.8"
+                                               Margin="0,0,0,10"/>
 
-                                    <Border 
-                            CornerRadius="6"
-                            Padding="15"
-                            Margin="0,0,0,15">
+                                    <Border CornerRadius="6"
+                                            Padding="15"
+                                            Margin="0,0,0,15">
 
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -360,81 +358,81 @@
 
                                             <!-- Dashboard (Disabled) -->
                                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="🏠 Dashboard"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="🏠 Dashboard"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="0" Grid.Column="1"
-                                      x:Name="Dashbord"
-                                      IsChecked="True"
-                                      IsEnabled="False"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="Dashbord"
+                                                      IsChecked="True"
+                                                      IsEnabled="False"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Order Check -->
                                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                       Text="📋 Order Check"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="📋 Order Check"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="1" Grid.Column="1"
-                                      x:Name="ChkOderCheck"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkOderCheck"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Job Card -->
                                             <TextBlock Grid.Row="2" Grid.Column="0"
-                                       Text="🎯 Job Card"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="🎯 Job Card"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="2" Grid.Column="1"
-                                      x:Name="ChkJobcard"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkJobcard"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Customer Management -->
                                             <TextBlock Grid.Row="3" Grid.Column="0"
-                                       Text="👥 Customer Management"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="👥 Customer Management"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="3" Grid.Column="1"
-                                      x:Name="ChkCustomer"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkCustomer"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Quotation -->
                                             <TextBlock Grid.Row="4" Grid.Column="0"
-                                       Text="💰 Quotation"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="💰 Quotation"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="4" Grid.Column="1"
-                                      x:Name="ChkQuotation"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkQuotation"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
                                         </Grid>
 
                                     </Border>
 
                                     <!-- Advanced Permissions -->
                                     <TextBlock Text="Advanced Access"
-                               FontSize="14"
-                               FontWeight="Medium"
-                               Foreground="{DynamicResource Forground}"
-                               Opacity="0.8"
-                               Margin="0,10,0,10"/>
+                                               FontSize="14"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource Forground}"
+                                               Opacity="0.8"
+                                               Margin="0,10,0,10"/>
 
                                     <Border Background="{DynamicResource ThemeBackground}"
-                            CornerRadius="6"
-                            Padding="15"
-                            Margin="0,0,0,15">
+                                            CornerRadius="6"
+                                            Padding="15"
+                                            Margin="0,0,0,15">
 
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -452,66 +450,75 @@
 
                                             <!-- Outsourcing -->
                                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="🏢 Outsourcing"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="🏢 Outsourcing"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="0" Grid.Column="1"
-                                      x:Name="ChkOutsourcing"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkOutsourcing"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Employee Management -->
                                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                       Text="👤 Employee Management"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="👤 Employee Management"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="1" Grid.Column="1"
-                                      x:Name="ChkEmployee"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkEmployee"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Attendance -->
                                             <TextBlock Grid.Row="2" Grid.Column="0"
-                                       Text="📅 Attendance"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="📅 Attendance"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="2" Grid.Column="1"
-                                      x:Name="ChkAttendance"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkAttendance"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Payroll Management -->
                                             <TextBlock Grid.Row="3" Grid.Column="0"
-                                       Text="💳 Payroll Management"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="💳 Payroll Management"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="3" Grid.Column="1"
-                                      x:Name="ChkPayroll"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkPayroll"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
                                             <!-- Paysheet -->
                                             <TextBlock Grid.Row="4" Grid.Column="0"
-                                       Text="📊 Paysheet"
-                                       Foreground="{DynamicResource Forground}"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Margin="0,8"/>
+                                                       Text="📊 Paysheet"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
                                             <CheckBox Grid.Row="4" Grid.Column="1"
-                                      x:Name="ChkPaysheet"
-                                      VerticalAlignment="Center"
-                                      Margin="0,8"/>
+                                                      x:Name="ChkPaysheet"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
 
-                                            
-
+                                            <!-- User Manager -->
+                                            <TextBlock Grid.Row="5" Grid.Column="0"
+                                                       Text="📊 User Manager"
+                                                       Foreground="{DynamicResource Forground}"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,8"/>
+                                            <CheckBox Grid.Row="5" Grid.Column="1"
+                                                      x:Name="ChkUserManager"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,8"/>
                                         </Grid>
 
                                     </Border>
@@ -520,29 +527,30 @@
 
                             <!-- Action Buttons -->
                             <Border Background="{DynamicResource ThemeBackground}"
-                    CornerRadius="8"
-                    Padding="15">
+                                    CornerRadius="8"
+                                    Padding="15">
 
                                 <StackPanel Orientation="Horizontal" 
-                            HorizontalAlignment="Center">
+                                            HorizontalAlignment="Center">
+                                    <StackPanel.Visibility>
+                                        <MultiBinding Converter="{StaticResource UserActionVisibilityConverter}">
+                                            <Binding Path="Isadmin"/>
+                                            <Binding Path="Username"/>
+                                        </MultiBinding>
+                                    </StackPanel.Visibility>
+
                                     <Button x:Name="BtnCreateSave" 
-                            Content="✅ Create User"
-                            Width="140" 
-                            
-                            Margin="0,0,15,0"
-                           
-                           
-                            Click="CreateSave_Click"
-                            Style="{DynamicResource ActionButton}"
-                           />
+                                            Content="✅ Create User"
+                                            Width="140" 
+                                            Margin="0,0,15,0"
+                                            Click="CreateSave_Click"
+                                            Style="{DynamicResource ActionButton}"/>
 
                                     <Button x:Name="BtnClear" 
-                            Content="❌ Cancel"
-                            Width="100"
-                            
-                            
-                            Click="Clear_Click"
-                            Style="{DynamicResource DeleteActionButton}"/>
+                                            Content="❌ Cancel"
+                                            Width="100"
+                                            Click="Clear_Click"
+                                            Style="{DynamicResource DeleteActionButton}"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

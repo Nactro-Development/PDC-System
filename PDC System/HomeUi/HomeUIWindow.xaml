@@ -218,9 +218,10 @@
             <!-- Upcoming Birthdays -->
             <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="5,20,5,20">
 
-                <Border Background="{DynamicResource Background}" 
+                <Border 
             BorderThickness="3" 
-            BorderBrush="{DynamicResource BorderBrush}"  
+                    Background="{DynamicResource Background}"
+            BorderBrush="#FF0660FE"  
             CornerRadius="30"
             Padding="10">
 

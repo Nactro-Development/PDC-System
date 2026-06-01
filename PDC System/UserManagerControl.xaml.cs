@@ -153,7 +153,9 @@ namespace PDC_System
                 ChkAttendance.IsChecked = user.Attendance;
                 ChkPayroll.IsChecked = user.Payroll;
                 ChkPaysheet.IsChecked = user.Paysheet;
-               
+                ChkUserManager.IsChecked = user.UserManager;
+
+
 
                 // Update UI for edit mode
                 BtnCreateSave.Content = "💾 Update User";
@@ -246,6 +248,7 @@ namespace PDC_System
             user.Attendance = ChkAttendance.IsChecked == true;
             user.Payroll = ChkPayroll.IsChecked == true;
             user.Paysheet = ChkPaysheet.IsChecked == true;
+            user.UserManager = ChkUserManager.IsChecked == true;
 
         }
 
@@ -265,7 +268,8 @@ namespace PDC_System
             ChkAttendance.IsChecked = false;
             ChkPayroll.IsChecked = false;
             ChkPaysheet.IsChecked = false;
-            
+            ChkUserManager.IsChecked = false;
+
         }
 
         private void ResetToCreateMode()

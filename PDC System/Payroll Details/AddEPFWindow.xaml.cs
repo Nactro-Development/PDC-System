@@ -1,9 +1,9 @@
-﻿using PDC_System.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using PDC_System.Models;
+using PDC_System.Services;
 using System;
-using System.IO;
-
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace PDC_System
 
         private string epfFile = "Savers/epf.json";
 
-        private string employeeFile = "Savers/employee.json";
+      
         public event Action<EPF> ETFsaved;
         internal TextBox ETFPercentage;
         public AddEPFWindow()
@@ -37,13 +37,11 @@ namespace PDC_System
 
         private void LoadEmployees()
         {
-            if (File.Exists(employeeFile))
-            {
-                string json = File.ReadAllText(employeeFile);
-                var employees = JsonConvert.DeserializeObject<List<Employee>>(json);
-                EmployeeCombo.ItemsSource = employees;
-            }
+            var employees = EmployeeStorage.Load();
+            EmployeeCombo.ItemsSource = employees;
+
         }
+        
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {

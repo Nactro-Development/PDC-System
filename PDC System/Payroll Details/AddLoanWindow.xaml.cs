@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
-
+using PDC_System.Models;
+using PDC_System.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,14 +15,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using PDC_System.Models;
 
 namespace PDC_System
 {
     public partial class AddLoanWindow : Window
     {
         private string loanFile = "Savers/loan.json";
-        private string employeeFile = "Savers/employee.json";
+        
         public event Action<Loan> LoanSaved;
 
         // ✅ Edit mode: holds the existing loan being edited
@@ -62,12 +62,9 @@ namespace PDC_System
 
         private void LoadEmployees()
         {
-            if (File.Exists(employeeFile))
-            {
-                string json = File.ReadAllText(employeeFile);
-                var employees = JsonConvert.DeserializeObject<List<Employee>>(json);
-                EmployeeCombo.ItemsSource = employees;
-            }
+            var employees = EmployeeStorage.Load();
+            EmployeeCombo.ItemsSource = employees;
+            
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
