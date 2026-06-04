@@ -39,18 +39,19 @@ namespace PDC_System.Paysheets
         private string earningFile => System.IO.Path.Combine(saversPath, "Earning.json");
         private string deductionFile => System.IO.Path.Combine(saversPath, "Deduction.json");
 
+        private bool _isLoading = false;
 
         private Paysheet? existingPaysheet;   // 🔹 NEW
         private string epfHistoryFile = "Savers/EPFHistory.json";
+        private bool _changingEndDate = false;
 
-        
         private List<AttendanceRecord>? attendanceRecords;
         private List<Earning>? earnings;
         private List<Deducation>? deducations;
         private List<Loan>? loan;
         private List<EPF>? epf;
         private object saleryAmount;
-
+        private bool _missingAttendanceShown = false;
         private AttendanceManager _attendanceManager;   // 🔹 ADD THIS
 
         public object Employeename { get; private set; }
@@ -178,6 +179,8 @@ namespace PDC_System.Paysheets
         {
             // Set Employee
 
+            _isLoading = true;
+
             EmployeeCombo.IsEnabled = false;
 
             EmployeeCombo.SelectedValue = paysheet.EmployeeId;
@@ -200,9 +203,6 @@ namespace PDC_System.Paysheets
 
             // Set Dates
 
-            StartDatePicker.SelectedDate = paysheet.StartDate;
-            EndDatePicker.SelectedDate = paysheet.EndDate;
-
             Nopays.SelectedItem = paysheet.NopayDays;
 
             // Set Checkboxes
@@ -210,6 +210,19 @@ namespace PDC_System.Paysheets
             Deducation_Checked.IsChecked = paysheet.IncludeDeductions;
             Loan_Checked.IsChecked = paysheet.IncludeLoan;
             EPF_Checked.IsChecked = paysheet.IncludeETF;
+            DailyAttendace.IsChecked = paysheet.IncludeDailyAttendance;
+
+            if (paysheet.IncludeDailyAttendance)
+            {
+                EndDatePicker.IsEnabled = true;
+            }
+            else
+            {
+                EndDatePicker.IsEnabled = false;
+            }
+
+            StartDatePicker.SelectedDate = paysheet.StartDate;
+            EndDatePicker.SelectedDate = paysheet.EndDate;
 
             // Set Loan Amount
             if (paysheet.IncludeLoan)
@@ -230,6 +243,12 @@ namespace PDC_System.Paysheets
             // 🔹 VERY IMPORTANT: mark this as existing paysheet
             existingPaysheet = paysheet;
 
+            DailyAttendace.IsChecked = paysheet.IncludeDailyAttendance;
+
+            StartDatePicker.SelectedDate = paysheet.StartDate;
+            EndDatePicker.SelectedDate = paysheet.EndDate;
+
+            _isLoading = false;
             // Trigger calculation to load all data
             FilterChanged(null, null);
 
@@ -245,6 +264,9 @@ namespace PDC_System.Paysheets
                     break;
                 }
             }
+
+
+       
 
         }
 
@@ -279,6 +301,7 @@ namespace PDC_System.Paysheets
             loan = JsonConvert.DeserializeObject<List<Loan>>(json) ?? new List<Loan>();
         }
         private void LoadETF()
+
         {
             var json = File.ReadAllText("Savers/EPF.json");
             epf = JsonConvert.DeserializeObject<List<EPF>>(json) ?? new List<EPF>();
@@ -292,8 +315,7 @@ namespace PDC_System.Paysheets
             if (EmployeeCombo.SelectedValue == null)
                 return (new List<AttendanceRecord>(), new List<Earning>(), new List<Deducation>());
 
-            EmployeeCombo.SelectionChanged += EmployeeCombo_SelectionChanged;
-
+            
             // Get selected employee ID safely
             string selectedId = (EmployeeCombo.SelectedValue as string) ?? string.Empty;
 
@@ -350,6 +372,10 @@ namespace PDC_System.Paysheets
 
         private void FilterChanged(object sender, EventArgs e)
         {
+
+            if (_isLoading)
+                return;
+
             var (filtered, filteredEarnings, filteredDeducations) = GetFilteredData();
 
             // Employee info
@@ -452,16 +478,34 @@ namespace PDC_System.Paysheets
                 .ToList();
             Contorls.IsEnabled = true;
             Infomations.IsEnabled = true;
+
             if (missingRecords.Any())
             {
-                Infomations.IsEnabled = false;
-                Contorls.IsEnabled = false;
-                string dates = string.Join(", ", missingRecords.Select(a => a.Date.ToString("yyyy-MM-dd")));
+                if (!_missingAttendanceShown)
+                {
+                    _missingAttendanceShown = true;
 
-                CustomMessageBox.Show($"Cannot calculate totals. Missing attendance for these dates: {dates}", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    string dates = string.Join(", ",
+                        missingRecords.Select(a => a.Date.ToString("yyyy-MM-dd")));
+
+                    CustomMessageBox.Show(
+                        $"Cannot calculate totals. Missing attendance for these dates: {dates}",
+                        "Warning",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+
                 TotalsTextBlock.Text = "";
+                EmployeeSalary.Text = "Missing Attendance";
+                SaveButtons.IsEnabled = false;
                 return;
             }
+            else
+            {
+                _missingAttendanceShown = false;
+                SaveButtons.IsEnabled = true ;
+            }
+
 
 
             bool countOffDays = (EmployeeCombo.SelectedItem as Employee)?.CountOffDays == true;
@@ -675,9 +719,13 @@ namespace PDC_System.Paysheets
 
         private void EmployeeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_isLoading)
+                return;
+
             ResetAllFields();
-            LoadMonths(); // Reload months based on selected employee's last paysheet
+            LoadMonths();
         }
+
 
         private void ResetAllFields()
         {
@@ -708,6 +756,7 @@ namespace PDC_System.Paysheets
 
             // Disable controls
             Contorls.IsEnabled = false;
+
             Infomations.IsEnabled = false;
 
             // Reset date pickers
@@ -804,6 +853,7 @@ namespace PDC_System.Paysheets
                 IncludeEarnings = Earning_Checked.IsChecked ?? false,
                 IncludeDeductions = Deducation_Checked.IsChecked ?? false,
                 IncludeLoan = Loan_Checked.IsChecked ?? false,
+                IncludeDailyAttendance = DailyAttendace.IsChecked ?? false,
                 IncludeETF = EPF_Checked.IsChecked ?? false
             };
 
@@ -1365,6 +1415,8 @@ namespace PDC_System.Paysheets
                 IncludeEarnings = Earning_Checked.IsChecked ?? false,
                 IncludeDeductions = Deducation_Checked.IsChecked ?? false,
                 IncludeLoan = Loan_Checked.IsChecked ?? false,
+                IncludeDailyAttendance = DailyAttendace.IsChecked ?? false,
+
                 IncludeETF = EPF_Checked.IsChecked ?? false,
                 PDFPath = fullPath
             };
@@ -1560,10 +1612,39 @@ namespace PDC_System.Paysheets
 
 
 
-        private void EndDatePicker_SelectedDateChanged(object sender, ModernCalendarLib.SelectedDateChangedEventArgs e)
+        private void EndDatePicker_SelectedDateChanged(object sender, EventArgs e)
         {
 
+            if (_isLoading)
+                return;
+
+            if (_changingEndDate)
+                return;
+
+            if (StartDatePicker.SelectedDate == null ||
+                EndDatePicker.SelectedDate == null)
+                return;
+
+            if (EndDatePicker.SelectedDate < StartDatePicker.SelectedDate)
+            {
+                _changingEndDate = true;
+
+                CustomMessageBox.Show(
+                    "End Date cannot be earlier than Start Date.",
+                    "Invalid Date Range",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                EndDatePicker.SelectedDate = StartDatePicker.SelectedDate;
+
+                _changingEndDate = false;
+                return;
+            }
+
+            FilterChanged(null, null);
         }
+
+
 
         private void EarningGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1717,18 +1798,23 @@ namespace PDC_System.Paysheets
 
         private void DailyAttendace_Checked(object sender, RoutedEventArgs e)
         {
+            if (_isLoading) return;
+
             EndDatePicker.IsEnabled = true;
             StartDatePicker.SelectedDate = null;
             EndDatePicker.SelectedDate = null;
-
         }
+
 
         private void DailyAttendace_UnChecked(object sender, RoutedEventArgs e)
         {
+            if (_isLoading) return;
+
             EndDatePicker.IsEnabled = false;
             StartDatePicker.SelectedDate = null;
             EndDatePicker.SelectedDate = null;
         }
+
     }
 
     public class Paysheet
@@ -1751,6 +1837,8 @@ namespace PDC_System.Paysheets
         public bool IncludeDeductions { get; set; }
         public bool IncludeLoan { get; set; }
         public bool IncludeETF { get; set; }
+
+        public bool IncludeDailyAttendance { get; set; }
         public DateTime Date { get; set; }
 
         public string PDFPath { get; set; }
