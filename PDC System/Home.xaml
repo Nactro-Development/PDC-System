@@ -14,7 +14,7 @@
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         WindowState="Normal"
-        MinWidth="1450"
+        MinWidth="1600"
         MinHeight="888"
         Width="1450"
         Icon="/Assets/Main.ico"
@@ -179,6 +179,17 @@
                                         <StackPanel Margin="10,0,0,0">
                                             <TextBlock Text="Home" FontFamily="Poppins" FontWeight="SemiBold" FontSize="13" />
                                             <TextBlock Text="Show Full Overview of System." FontFamily="Poppins" FontWeight="Regular" 
+               FontSize="9"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="Email"  Click="OpenView15_Click" Style="{StaticResource SelectableRadioButtonStyle}" 
+                 Margin="3" Width="250" Height="45">
+                                    <StackPanel Orientation="Horizontal" Width="200" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <Image Source="/Assets/Email.png" Width="16" Margin="0,0,0,3" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
+                                        <StackPanel Margin="10,0,0,0">
+                                            <TextBlock Text="Emails" FontFamily="Poppins" FontWeight="SemiBold" FontSize="13" />
+                                            <TextBlock Text="Show Emails of System." FontFamily="Poppins" FontWeight="Regular" 
                FontSize="9"/>
                                         </StackPanel>
                                     </StackPanel>

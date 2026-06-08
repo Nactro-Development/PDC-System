@@ -85,6 +85,7 @@
 		<None Remove="Assets\Asse_9.png" />
 		<None Remove="Assets\Attendance.png" />
 		<None Remove="Assets\Backup.png" />
+		<None Remove="Assets\birthday.png" />
 		<None Remove="Assets\Business_deal.gif" />
 		<None Remove="Assets\Company.png" />
 		<None Remove="Assets\crop.gif" />
@@ -96,6 +97,7 @@
 		<None Remove="Assets\Edit.png" />
 		<None Remove="Assets\EditB.png" />
 		<None Remove="Assets\EditW.png" />
+		<None Remove="Assets\Email.png" />
 		<None Remove="Assets\gear.png" />
 		<None Remove="Assets\HomeHeading.png" />
 		<None Remove="Assets\information.png" />
@@ -204,6 +206,9 @@
 		<Content Include="Assets\Backup.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\birthday.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\Business_deal.gif">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -235,6 +240,9 @@
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Assets\EditW.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\Email.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Assets\gear.png">

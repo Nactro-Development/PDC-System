@@ -216,104 +216,157 @@
 
 
             <!-- Upcoming Birthdays -->
-            <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="5,20,5,20">
+            <Grid Grid.Column="1" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2" Margin="5,20,5,20">
 
-                <Border 
+                <Border  HorizontalAlignment="Stretch"
             BorderThickness="3" 
                     Background="{DynamicResource Background}"
             BorderBrush="#FF0660FE"  
             CornerRadius="30"
             Padding="10">
 
-                    <StackPanel Width="500">
-                        <!-- Title -->
-                        <TextBlock x:Name="birthdayname"
-                       Grid.Row="0"
-                       FontSize="23"
-                       FontWeight="Bold"
-                       Margin="10"
-                       Foreground="White"
-                       TextAlignment="Center"
-                       Text="Up Coming Birthdays"/>
 
-                        <!-- DataGrid -->
-                        <DataGrid x:Name="MyDataGrid"
-                      Grid.Row="1"
-                               
-                      ItemsSource="{Binding UpcomingBirthdays}"
-                      AlternatingRowBackground="#f0f0f0"
-                      SnapsToDevicePixels="True"
-                                    IsReadOnly="True"
-                      AutoGenerateColumns="False"
-                      CanUserResizeColumns="False"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Auto"
-                      CellStyle="{StaticResource DataGridCellStyle}"
-                      Style="{StaticResource DataGridStyle}"
-                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-                      RowStyle="{StaticResource DataGridRowStyle}">
+                    <Grid HorizontalAlignment="Stretch" Margin="15">
 
-                            <DataGrid.Columns>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
 
-                                <DataGridTextColumn Binding="{Binding Name}"
-                    Width="*"
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Up Coming Birthdays"
+               FontSize="24"
+               FontWeight="Bold"
+               Foreground="White"
+               HorizontalAlignment="Center"
+               Margin="0,0,0,20"/>
+
+                        <ListBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"  Height="300" ItemsSource="{Binding UpcomingBirthdays}"
+             Background="Transparent"
+             BorderThickness="0">
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,5"/>
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Grid Margin="0,8">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Avatar -->
+                                        <Border Width="48"
+                            Height="48"
+                            CornerRadius="24"
+                            Background="#2563EB">
+
+                                            <TextBlock Text="👤"
+                                   FontSize="22"
+                                                       Foreground="{DynamicResource ForgroudColor}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"/>
+                                        </Border>
+
+                                        <!-- Details -->
+                                        <StackPanel Grid.Column="1"
+                                Margin="10,0">
+
+                                            <TextBlock Text="{Binding Name}"
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"/>
+
+                                            <TextBlock Text="{Binding Designation}"
+                                   Foreground="#B8C0D4"
+                                   FontSize="12"/>
+                                        </StackPanel>
+
+
+                                        <Grid   HorizontalAlignment="Right"  Grid.Column="2" >
+                                            <Border  HorizontalAlignment="Right"   
+Padding="16,8"
+CornerRadius="12">
+
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+
+                                                        <Setter Property="Background"
+            Value="#2563EB"/>
+
+                                                        <Style.Triggers>
+
+                                                            <DataTrigger Binding="{Binding DaysLeft}"
+                     Value="0">
+                                                                <Setter Property="Background"
+                    Value="#EC4899"/>
+                                                            </DataTrigger>
+
+                                                            <DataTrigger Binding="{Binding DaysLeft}"
+                     Value="1">
+                                                                <Setter Property="Background"
+                    Value="#10B981"/>
+                                                            </DataTrigger>
+
+                                                            <DataTrigger Binding="{Binding DaysLeft}"
+                     Value="2">
+                                                                <Setter Property="Background"
+                    Value="#F59E0B"/>
+                                                            </DataTrigger>
+
+                                                        </Style.Triggers>
+
+                                                    </Style>
+                                                </Border.Style>
+
+                                                <TextBlock VerticalAlignment="Center" Text="{Binding BirthdayDate}"
+       Foreground="White"
+       FontWeight="Bold"
+       FontSize="14"/>
+
+                                            </Border>
+
+
+                                        </Grid>
+                                        <!-- Date Badge -->
+                                 
+                                    </Grid>
+
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+
+                        <Image Grid.Column="1" Grid.Row="1" Height="300" Source="/Assets/birthday.png" />
+
+                    </Grid>
+                    
                
-                                                    
-                    ElementStyle="{StaticResource DataGridColumnsStyle}"/>
 
-                                <DataGridTextColumn Binding="{Binding BirthDate, StringFormat=MMMM dd}"
-                    Width="*"
-               
-                    ElementStyle="{StaticResource DataGridColumnsStyle}"/>
-
-                                <!-- Days left column -->
-                                <DataGridTemplateColumn  Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-
-
-                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock TextAlignment="Center"
-         VerticalAlignment="Center"
-         HorizontalAlignment="Center">
-
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-
-                                                            <!-- Default text -->
-                                                            <Setter Property="Text"
-                  Value="{Binding DaysLeft, StringFormat=Days Left: {0}}"/>
-
-                                                            <!-- Birthday today trigger -->
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding DaysLeft}" Value="0">
-                                                                    <Setter Property="Text"
-                          Value="TODAY IS BIRTHDAY"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-
-                                                        </Style>
-                                                    </TextBlock.Style>
-
-                                                </TextBlock>
-                                            </StackPanel>
+                    
+                    
 
 
 
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                            </DataGrid.Columns>
-
-                        </DataGrid>
-                    </StackPanel>
-
-               
 
 
-
-             
                 </Border>
 
             </Grid>

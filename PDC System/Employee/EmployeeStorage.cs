@@ -23,7 +23,7 @@ namespace PDC_System.Services
             byte[] decrypted = ProtectedData.Unprotect(
                 encrypted,
                 null,
-                DataProtectionScope.CurrentUser);
+                DataProtectionScope.LocalMachine);
 
             string json = Encoding.UTF8.GetString(decrypted);
 
@@ -41,7 +41,7 @@ namespace PDC_System.Services
             byte[] encrypted = ProtectedData.Protect(
                 data,
                 null,
-                DataProtectionScope.CurrentUser);
+                DataProtectionScope.LocalMachine);
 
             File.WriteAllBytes(FilePath, encrypted);
         }

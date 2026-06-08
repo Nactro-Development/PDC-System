@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using PDC_System.Email;
 
 namespace PDC_System
 {
@@ -217,6 +218,9 @@ namespace PDC_System
         private void OpenView9_Click(object sender, RoutedEventArgs e) => LoadView(new Oders());
         private void OpenView11_Click(object sender, RoutedEventArgs e) => LoadView(new OutsourcingWindow());
         private void OpenView14_Click(object sender, RoutedEventArgs e) => LoadView(new UserManagerControl());
+        private void OpenView15_Click(object sender, RoutedEventArgs e) => LoadView(new EmailWindow());
+
+
 
         private void LoadView(UserControl view)
         {

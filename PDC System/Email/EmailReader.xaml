@@ -1,0 +1,131 @@
+<UserControl x:Class="PDC_System.Email.EmailReader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PDC_System.Email"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="600">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- no-selection placeholder -->
+            <RowDefinition Height="Auto"/>  <!-- email header meta -->
+            <RowDefinition Height="Auto"/>  <!-- attachments strip -->
+            <RowDefinition Height="*"/>     <!-- HTML body -->
+        </Grid.RowDefinitions>
+
+        <!-- Empty state -->
+        <Border Grid.RowSpan="4"
+                Visibility="{Binding HasEmail, Converter={x:Static local:InverseBoolToVisibilityConverter.Instance}}"
+                Panel.ZIndex="10"
+                Background="White">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <TextBlock Text="✉" FontSize="48" HorizontalAlignment="Center"
+                           Foreground="#DADCE0"/>
+                <TextBlock Text="Select an email to read"
+                           FontFamily="Segoe UI" FontSize="15"
+                           Foreground="#BDC1C6"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Email meta header -->
+        <Border Grid.Row="1"
+                Background="#F8F9FA"
+                BorderBrush="#EEEEEE"
+                BorderThickness="0,0,0,1"
+                Padding="20,14"
+                Visibility="{Binding HasEmail, Converter={x:Static local:BoolToVisibilityConverter.Instance}}">
+            <StackPanel >
+                <TextBlock x:Name="SubjectText"
+                           FontSize="17" FontWeight="SemiBold"
+                           FontFamily="Segoe UI"
+                           Foreground="#202124"
+                           TextWrapping="Wrap"/>
+                <StackPanel Orientation="Horizontal" >
+                    <TextBlock x:Name="FromText"
+                               FontSize="13"
+                               Foreground="#5F6368"
+                               FontFamily="Segoe UI"/>
+                    <TextBlock Text="→"
+                               FontSize="13"
+                               Foreground="#BDC1C6"/>
+                    <TextBlock x:Name="ToText"
+                               FontSize="13"
+                               Foreground="#5F6368"
+                               FontFamily="Segoe UI"/>
+                    <TextBlock Text="·"
+                               FontSize="13"
+                               Foreground="#BDC1C6"/>
+                    <TextBlock x:Name="DateText"
+                               FontSize="13"
+                               Foreground="#5F6368"
+                               FontFamily="Segoe UI"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Attachments strip -->
+        <Border Grid.Row="2"
+                x:Name="AttachmentsStrip"
+                Background="#FFF8E1"
+                BorderBrush="#FFE082"
+                BorderThickness="0,0,0,1"
+                Padding="14,8"
+                Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal"  x:Name="AttachmentsPanel">
+                <TextBlock Text="📎 Attachments:"
+                           FontFamily="Segoe UI" FontSize="12"
+                           Foreground="#5F6368"
+                           VerticalAlignment="Center"/>
+                <!-- Attachment chips populated in code-behind -->
+                <ItemsControl x:Name="AttachmentItems">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Tag="{Binding}"
+                                    Click="AttachmentChip_Click"
+                                    Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="White"
+                                                BorderBrush="#FFD54F"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Padding="8,4">
+                                            <StackPanel Orientation="Horizontal" >
+                                                <TextBlock Text="📄"
+                                                           FontSize="12"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding FileName}"
+                                                           FontFamily="Segoe UI"
+                                                           FontSize="12"
+                                                           VerticalAlignment="Center"
+                                                           MaxWidth="160"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding Size, StringFormat=\{0:N0\} B}"
+                                                           FontSize="10"
+                                                           Foreground="#9E9E9E"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <!-- HTML viewer via WebBrowser -->
+        <WebBrowser Grid.Row="3"
+                    x:Name="HtmlViewer"
+                    Visibility="{Binding HasEmail, Converter={x:Static local:BoolToVisibilityConverter.Instance}}"/>
+    </Grid>
+</UserControl>

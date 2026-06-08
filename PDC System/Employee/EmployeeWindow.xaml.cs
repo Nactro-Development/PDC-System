@@ -37,7 +37,7 @@ namespace PDC_System
                 byte[] decrypted = ProtectedData.Unprotect(
                     encrypted,
                     null,
-                    DataProtectionScope.CurrentUser);
+                    DataProtectionScope.LocalMachine);
 
                 string json = Encoding.UTF8.GetString(decrypted);
 
@@ -62,7 +62,7 @@ namespace PDC_System
             byte[] encrypted = ProtectedData.Protect(
                 data,
                 null,
-                DataProtectionScope.CurrentUser);
+                DataProtectionScope.LocalMachine);
 
             string dataFile = Path.Combine(saversFolder, "employees.dat");
 

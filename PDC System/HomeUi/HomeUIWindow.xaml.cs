@@ -301,36 +301,38 @@ namespace PDC_System
 
         private void RefreshUpcomingBirthdays()
         {
-            UpcomingBirthdays = GetUpcomingBirthdays(31); // Get birthdays within next 30 days
-            DataContext = this; // Update UI
+            UpcomingBirthdays = GetUpcomingBirthdays();
+            DataContext = this;
         }
 
-        private List<BirthdayInfo> GetUpcomingBirthdays(int daysAhead)
+
+        private List<BirthdayInfo> GetUpcomingBirthdays()
         {
             DateTime today = DateTime.Today;
-            DateTime futureDate = today.AddDays(daysAhead);
 
             return employees
-                .Where(e => e.Birthday.HasValue) // Ensure employee has a birthday
+                .Where(e => e.Birthday.HasValue)
                 .Select(e =>
                 {
-                    DateTime birthdayThisYear = new DateTime(today.Year, e.Birthday.Value.Month, e.Birthday.Value.Day);
-                    if (birthdayThisYear < today)
-                        birthdayThisYear = birthdayThisYear.AddYears(1);
-
-                    int daysLeft = (birthdayThisYear - today).Days;
+                    DateTime birthdayThisYear = new DateTime(
+                        today.Year,
+                        e.Birthday.Value.Month,
+                        e.Birthday.Value.Day);
 
                     return new BirthdayInfo
                     {
                         Name = e.Name,
+                        Designation = e.jobrole,
                         BirthDate = e.Birthday,
-                        DaysLeft = daysLeft
+                        DaysLeft = (birthdayThisYear - today).Days
                     };
                 })
-                .Where(b => b.DaysLeft <= daysAhead)
-                .OrderBy(b => b.DaysLeft)
+                .Where(b => b.DaysLeft >= 0) // old birthdays hide
+                .OrderBy(b => b.BirthDate.Value.Month)
+                .ThenBy(b => b.BirthDate.Value.Day)
                 .ToList();
         }
+
 
         private void LoadTotalCustomers()
         {
@@ -372,6 +374,18 @@ namespace PDC_System
             public int AbsentCount { get; set; }
             public int TotalEmployees { get; set; }
             public double AttendancePercentage { get; set; }
+        }
+
+        // Helper class for birthday information
+        public class BirthdayInfo
+        {
+            public string Name { get; set; }
+            public string Designation { get; set; }
+            public DateTime? BirthDate { get; set; }
+            public int DaysLeft { get; set; }
+
+            // Property to format the birthday date as "MMM dd" (e.g., "Dec 25")
+            public string BirthdayDate => BirthDate.HasValue ? BirthDate.Value.ToString("MMM dd") : "";
         }
     }
 }
