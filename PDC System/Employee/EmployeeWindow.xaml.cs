@@ -24,6 +24,7 @@ namespace PDC_System
         {
             InitializeComponent();
             LoadData();
+            ConvertJsonToDat();
         }
 
         private void LoadData()
@@ -38,6 +39,7 @@ namespace PDC_System
                     encrypted,
                     null,
                     DataProtectionScope.LocalMachine);
+
 
                 string json = Encoding.UTF8.GetString(decrypted);
 

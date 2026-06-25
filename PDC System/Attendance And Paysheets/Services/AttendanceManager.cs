@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
 
 namespace PDC_System.Services
 {
@@ -76,7 +77,7 @@ namespace PDC_System.Services
         // ✅ Load all attendance (read-only, NO auto-save)
         public List<AttendanceRecord> LoadAttendance()
         {
-            var data = _db.GetFingerprintData();
+            var data = _db.GetFingerprintDataFromEvents();
 
             var employees = EmployeeStorage.Load();
 
@@ -127,6 +128,14 @@ namespace PDC_System.Services
                         g.Key.EmployeeID == emp.EmployeeId && g.Key.Date == day);
                     var times = grp?.OrderBy(x => x.DateTime).Select(x => x.DateTime).ToList();
 
+                    if (grp != null)
+                    {
+                        MessageBox.Show(
+                            $"Emp: {emp.EmployeeId}\n" +
+                            $"Date: {day:yyyy-MM-dd}\n" +
+                            $"Punches: {grp.Count()}");
+                    }
+
                     var calculatedRecord = CalculateAttendanceRecord(emp, day, times, holidays);
                     records.Add(calculatedRecord);
                 }
@@ -136,13 +145,10 @@ namespace PDC_System.Services
         }
 
 
-
-
-
         // ✅ Load with date range - now generates temporary absence records
         public List<AttendanceRecord> LoadAttendanceWithDateRange(DateTime startDate, DateTime endDate)
         {
-            var data = _db.GetFingerprintData();
+            var data = _db.GetFingerprintDataFromEvents();
             var employees = EmployeeStorage.Load();
             var holidays = JsonConvert.DeserializeObject<List<Holiday>>(File.ReadAllText(Path.Combine(basePath, "holiday.json")));
 

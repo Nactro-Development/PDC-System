@@ -279,6 +279,28 @@ namespace PDC_System
                 // ✅ ONLY HERE Home opens
                 new Home(user).Show();
 
+
+                string basePath = Path.Combine(
+     AppDomain.CurrentDomain.BaseDirectory,
+     "Savers");
+
+                AttendanceDatabase db =
+                    new AttendanceDatabase(basePath);
+
+
+
+                var hik = new HikvisionService(
+                    "192.168.1.15",
+                    "admin",
+                    "priyanthaD@8");
+
+                AttendanceSyncService sync =
+                    new AttendanceSyncService(hik, db);
+
+                sync.Start();
+
+
+
                 // ✅ Open MiniWidgetWindow only if setting is enabled
                 if (Properties.Settings.Default.MiniWidgetCheckBoxState)
                 {

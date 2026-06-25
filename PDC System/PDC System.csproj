@@ -20,9 +20,9 @@
 		<NuGetAuditLevel>low</NuGetAuditLevel>
 		<AssemblyTitle></AssemblyTitle>
 
-		<Version>1.2.0.2</Version>
-		<AssemblyVersion>1.2.0.2</AssemblyVersion>
-		<FileVersion>1.2.0.2</FileVersion>
+		<Version>1.2.0.3</Version>
+		<AssemblyVersion>1.2.0.3</AssemblyVersion>
+		<FileVersion>1.2.0.3</FileVersion>
 		<PackageIcon>MainLogo.png</PackageIcon>
 		<Company>Nactro</Company>
 

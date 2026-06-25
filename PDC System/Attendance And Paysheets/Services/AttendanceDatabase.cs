@@ -11,6 +11,9 @@ namespace PDC_System.Services
         private readonly string _dbPath;
         private readonly string _connectionString;
 
+  
+
+
         public AttendanceDatabase(string basePath)
         {
             _dbPath = Path.Combine(basePath, "attendance.db");
@@ -33,6 +36,28 @@ CREATE TABLE IF NOT EXISTS FingerprintData (
     EmployeeId TEXT NOT NULL,
     DateTime TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Devices
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT,
+    IP TEXT,
+    Port INTEGER,
+    Username TEXT,
+    Password TEXT
+);
+
+CREATE TABLE IF NOT EXISTS AttendanceEvents
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    SerialNo INTEGER UNIQUE,
+    EmployeeId TEXT,
+    EventTime TEXT,
+    VerifyMode INTEGER,
+    Major INTEGER,
+    Minor INTEGER
+);
+
 
 CREATE TABLE IF NOT EXISTS AttendanceRecords (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -256,5 +281,107 @@ CREATE TABLE IF NOT EXISTS AttendanceRecords (
             cmd.Parameters.AddWithValue("$date", date.ToString("yyyy-MM-dd"));
             cmd.ExecuteNonQuery();
         }
+
+
+        public void SaveAttendanceEvent(AttendanceEvent item)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+
+            cmd.CommandText =
+            @"INSERT OR IGNORE INTO AttendanceEvents
+    (SerialNo, EmployeeId, EventTime, VerifyMode, Major, Minor)
+    VALUES
+    ($serial,$emp,$time,$verify,$major,$minor)";
+
+            cmd.Parameters.AddWithValue("$serial", item.SerialNo);
+            cmd.Parameters.AddWithValue("$emp", item.EmployeeId);
+            cmd.Parameters.AddWithValue("$time", item.EventTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            cmd.Parameters.AddWithValue("$verify", item.VerifyMode);
+            cmd.Parameters.AddWithValue("$major", item.Major);
+            cmd.Parameters.AddWithValue("$minor", item.Minor);
+
+            cmd.ExecuteNonQuery();
+        }
+
+        public List<AttendanceEvent> GetAttendanceEvents()
+        {
+            var list = new List<AttendanceEvent>();
+
+            using var connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+           
+            cmd.CommandText =
+            @"SELECT SerialNo,
+             EmployeeId,
+             EventTime,
+             VerifyMode,
+             Major,
+             Minor
+      FROM AttendanceEvents
+      ORDER BY SerialNo";
+
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                list.Add(new AttendanceEvent
+                {
+                    SerialNo = reader.GetInt32(0),
+                    EmployeeId = reader.GetString(1),
+                    EventTime = DateTime.Parse(reader.GetString(2)),
+                    VerifyMode = reader.GetInt32(3),
+                    Major = reader.GetInt32(4),
+                    Minor = reader.GetInt32(5)
+                });
+            }
+
+            return list;
+        }
+
+
+        public List<FingerprintData> GetFingerprintDataFromEvents()
+        {
+            return GetAttendanceEvents()
+                .Select(x => new FingerprintData
+                {
+                    EmployeeID = x.EmployeeId,
+                    DateTime = x.EventTime
+                })
+                .ToList();
+        }
+
+
+        public void SaveFingerprintData(string employeeId, DateTime dateTime)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+
+            cmd.CommandText =
+            @"INSERT INTO FingerprintData(EmployeeId, DateTime)
+      SELECT $emp, $dt
+      WHERE NOT EXISTS
+      (
+          SELECT 1
+          FROM FingerprintData
+          WHERE EmployeeId=$emp
+          AND DateTime=$dt
+      );";
+
+            cmd.Parameters.AddWithValue("$emp", employeeId);
+            cmd.Parameters.AddWithValue("$dt", dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+
+            cmd.ExecuteNonQuery();
+        }
+
+
+
     }
 }
