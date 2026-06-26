@@ -19,6 +19,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using PDC_System.Email;
+using PDC_System.Services;
 
 namespace PDC_System
 {
@@ -39,6 +40,8 @@ namespace PDC_System
         private TaskbarIcon _trayIcon;
         private User _user;
 
+
+
         #endregion
 
         #region Constructor
@@ -46,7 +49,7 @@ namespace PDC_System
         public Home(User user)
         {
             InitializeComponent();
-
+           
             ThemeManager.ApplyTheme(this);
             Loaded += Home_Loaded;
 
@@ -126,8 +129,6 @@ namespace PDC_System
             UserManagerTAB.Visibility = _user.UserManager ? Visibility.Visible : Visibility.Collapsed;
 
         }
-
-
 
 
         #endregion
@@ -458,6 +459,7 @@ namespace PDC_System
         private void Timer_Tick(object? sender, EventArgs e)
         {
             UpdateClock();
+         
         }
 
         private void UpdateClock()
@@ -465,6 +467,12 @@ namespace PDC_System
             Clock.Text = DateTime.Now.ToString("hh:mm:ss tt");
         }
 
+
+        public void updateattendacecheck()
+        {
+            check_status.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        }
 
 
     }

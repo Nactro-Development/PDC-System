@@ -60,11 +60,11 @@ namespace PDC_System.Services
             {
                 AcsEventCond = new
                 {
-                    searchID = "001",
+                    searchID = "all",
                     searchResultPosition = startPosition,
                     maxResults = maxResults,
-                    major = 0,
-                    minor = 0
+                    major = 5,
+                    minor = 38
                 }
             };
 
@@ -80,6 +80,9 @@ namespace PDC_System.Services
                     content);
 
             response.EnsureSuccessStatusCode();
+
+
+
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -136,15 +139,17 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
         }
 
 
-        public async Task<List<AttendanceEvent>> DownloadAttendanceEvents()
+        public async Task<List<AttendanceEvent>> DownloadAttendanceEvents(
+        int startPosition,
+        int maxResults = 100)
+
         {
             var events = new List<AttendanceEvent>();
 
-            int startPosition = 0;
 
             while (true)
             {
-                string json = await GetAttendanceEvents(startPosition, 100);
+                string json = await GetAttendanceEvents(startPosition, maxResults);
 
                 JObject root = JObject.Parse(json);
 
@@ -158,6 +163,8 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
                 int count = acs["numOfMatches"]?.Value<int>() ?? 0;
 
                 var infoList = acs["InfoList"];
+
+
 
                 if (infoList == null || !infoList.Any())
                     break;
@@ -176,6 +183,7 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
                 }
 
                
+
                 // Next page
                 startPosition += count;
 
@@ -186,6 +194,18 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 
             return events;
         }
+
+
+
+        public async Task<int> GetTotalMatches()
+        {
+            string json = await GetAttendanceEvents(0, 1);
+
+            JObject root = JObject.Parse(json);
+
+            return root["AcsEvent"]?["totalMatches"]?.Value<int>() ?? 0;
+        }
+
 
 
 

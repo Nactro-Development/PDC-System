@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PDC_System.Services
 {
@@ -10,6 +11,9 @@ namespace PDC_System.Services
 
         private readonly HikvisionService _hikvision;
         private readonly AttendanceDatabase _database;
+        public static event Action AttendanceUpdated;
+        private string _checkstatus;
+
 
         private Timer? _timer;
 
@@ -27,7 +31,7 @@ namespace PDC_System.Services
             {
                 await Sync();
 
-            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
         }
 
         public void Stop()
@@ -35,9 +39,11 @@ namespace PDC_System.Services
             _timer?.Dispose();
         }
 
-    
-       private async Task Sync()
+
+        private async Task Sync()
         {
+
+
             if (_isSyncing)
                 return;
 
@@ -45,15 +51,48 @@ namespace PDC_System.Services
 
             try
             {
-                var events = await _hikvision.DownloadAttendanceEvents();
+                int localCount = _database.GetAttendanceEventCount();
+
+                int totalMatches = await _hikvision.GetTotalMatches();
+
+
+                MessageBox.Show($"Local = {localCount}\nDevice = {totalMatches}");
+
+                if (localCount >= totalMatches)
+                    return;
+
+                int missing = totalMatches - localCount;
+
+                var events = await _hikvision.DownloadAttendanceEvents(
+                    localCount,
+                    missing);
+
 
                 foreach (var item in events)
                 {
                     _database.SaveAttendanceEvent(item);
                 }
+
+
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var home = Application.Current.Windows
+                                 .OfType<Home>()
+                                 .FirstOrDefault();
+
+                    home?.updateattendacecheck();
+                });
+
+
+
+
+
+
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
             }
             finally
             {

@@ -85,7 +85,7 @@ namespace PDC_System.Services
                 File.ReadAllText(Path.Combine(basePath, "holiday.json")));
 
             var records = new List<AttendanceRecord>();
-            var grouped = data.GroupBy(x => new { x.EmployeeID, Date = x.DateTime.Date });
+            var grouped = data.GroupBy(x => new { x.EmployeeId, Date = x.EventTime.Date });
             var savedRecords = LoadSavedAttendanceRecords();
 
             foreach (var emp in employees)
@@ -125,15 +125,12 @@ namespace PDC_System.Services
                     }
 
                     var grp = grouped.FirstOrDefault(g =>
-                        g.Key.EmployeeID == emp.EmployeeId && g.Key.Date == day);
-                    var times = grp?.OrderBy(x => x.DateTime).Select(x => x.DateTime).ToList();
+                        g.Key.EmployeeId == emp.EmployeeId && g.Key.Date == day);
+                    var times = grp?.OrderBy(x => x.EventTime).Select(x => x.EventTime).ToList();
 
                     if (grp != null)
                     {
-                        MessageBox.Show(
-                            $"Emp: {emp.EmployeeId}\n" +
-                            $"Date: {day:yyyy-MM-dd}\n" +
-                            $"Punches: {grp.Count()}");
+                       
                     }
 
                     var calculatedRecord = CalculateAttendanceRecord(emp, day, times, holidays);
@@ -159,7 +156,7 @@ namespace PDC_System.Services
                 dateRange.Add(date);
             }
 
-            var grouped = data.GroupBy(x => new { x.EmployeeID, Date = x.DateTime.Date });
+            var grouped = data.GroupBy(x => new { x.EmployeeId, Date = x.EventTime.Date });
             var savedRecords = LoadSavedAttendanceRecords();
 
             foreach (var emp in employees)
@@ -176,8 +173,8 @@ namespace PDC_System.Services
                         continue;
                     }
 
-                    var grp = grouped.FirstOrDefault(g => g.Key.EmployeeID == emp.EmployeeId && g.Key.Date == day);
-                    var times = grp?.OrderBy(x => x.DateTime).Select(x => x.DateTime).ToList();
+                    var grp = grouped.FirstOrDefault(g => g.Key.EmployeeId == emp.EmployeeId && g.Key.Date == day);
+                    var times = grp?.OrderBy(x => x.EventTime).Select(x => x.EventTime).ToList();
 
                     var calculatedRecord = CalculateAttendanceRecord(emp, day, times, holidays);
                     records.Add(calculatedRecord);
@@ -538,13 +535,13 @@ namespace PDC_System.Services
             dt.Columns.Add("DateTime", typeof(DateTime));
 
             var db = new AttendanceDatabase(basePath);
-            var fp = db.GetFingerprintData();
+            var fp = db.GetFingerprintDataFromEvents();
             var employees = EmployeeStorage.Load();
 
             foreach (var f in fp)
             {
-                var emp = employees.FirstOrDefault(x => x.EmployeeId == f.EmployeeID);
-                dt.Rows.Add(f.EmployeeID, emp?.Name ?? "-", f.DateTime);
+                var emp = employees.FirstOrDefault(x => x.EmployeeId == f.EmployeeId);
+                dt.Rows.Add(f.EmployeeId, emp?.Name ?? "-", f.EventTime);
             }
 
             return dt;

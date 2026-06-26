@@ -1,6 +1,9 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using Microsoft.Data.Sqlite;
 using PDC_System.Models;
 
@@ -292,9 +295,9 @@ CREATE TABLE IF NOT EXISTS AttendanceRecords (
 
             cmd.CommandText =
             @"INSERT OR IGNORE INTO AttendanceEvents
-    (SerialNo, EmployeeId, EventTime, VerifyMode, Major, Minor)
-    VALUES
-    ($serial,$emp,$time,$verify,$major,$minor)";
+      (SerialNo, EmployeeId, EventTime, VerifyMode, Major, Minor)
+      VALUES
+      ($serial,$emp,$time,$verify,$major,$minor)";
 
             cmd.Parameters.AddWithValue("$serial", item.SerialNo);
             cmd.Parameters.AddWithValue("$emp", item.EmployeeId);
@@ -303,8 +306,11 @@ CREATE TABLE IF NOT EXISTS AttendanceRecords (
             cmd.Parameters.AddWithValue("$major", item.Major);
             cmd.Parameters.AddWithValue("$minor", item.Minor);
 
-            cmd.ExecuteNonQuery();
+            int rows = cmd.ExecuteNonQuery();
+
+        
         }
+
 
         public List<AttendanceEvent> GetAttendanceEvents()
         {
@@ -345,13 +351,13 @@ CREATE TABLE IF NOT EXISTS AttendanceRecords (
         }
 
 
-        public List<FingerprintData> GetFingerprintDataFromEvents()
+        public List<AttendanceEvent> GetFingerprintDataFromEvents()
         {
             return GetAttendanceEvents()
-                .Select(x => new FingerprintData
+                .Select(x => new AttendanceEvent
                 {
-                    EmployeeID = x.EmployeeId,
-                    DateTime = x.EventTime
+                    EmployeeId = x.EmployeeId,
+                    EventTime = x.EventTime
                 })
                 .ToList();
         }
@@ -380,6 +386,27 @@ CREATE TABLE IF NOT EXISTS AttendanceRecords (
 
             cmd.ExecuteNonQuery();
         }
+
+
+
+        public int GetAttendanceEventCount()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM AttendanceEvents";
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+
+        public bool HasAttendanceEvents()
+        {
+            return GetAttendanceEventCount() > 0;
+        }
+
+
+
 
 
 

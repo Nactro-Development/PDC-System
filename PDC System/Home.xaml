@@ -76,6 +76,7 @@
                     <RowDefinition Height="50"/>
                     <!-- Title bar row -->
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
 
                 </Grid.RowDefinitions>
 
@@ -400,7 +401,19 @@ Margin="3" Width="250" Height="45">
                         </Grid>
                     </Border>
                 </Grid>
-               
+
+
+                <Grid Grid.Row="3" >
+                    <StackPanel Orientation="Horizontal" Margin="5" >
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/Backup.png" Width="15"/>
+                        
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Fingerprint Sync" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
+
+                        <TextBlock HorizontalAlignment="Center" x:Name="check_status" VerticalAlignment="Center" Margin="10,0,0,0" Text="Last Check: 2026-06-26 4:06pm" Foreground="Gray" />
+
+                    </StackPanel>
+
+                </Grid>
 
             </Grid>
         </Grid>
