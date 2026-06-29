@@ -34,7 +34,7 @@ namespace PDC_System
         #region Fields
 
 
-        DispatcherTimer timer = new DispatcherTimer();
+       
 
         private PeopleServiceService peopleService;
         private TaskbarIcon _trayIcon;
@@ -56,11 +56,15 @@ namespace PDC_System
             SetupTrayIcon();
 
             _user = user;
-            UserNameTextBox.Text = _user.Username;   // හෝ _user.UserName
+            UserNameTextBox.Text = string.IsNullOrWhiteSpace(_user.Username)
+     ? ""
+     : _user.Username.Substring(0, 1).ToUpper();
 
+            PopupUserName.Text = _user.FName + " " + _user.LName;
+            Adminitaterusername.Text = _user.Username;
             ApplyAccess();
 
-            LoadCalculateSettings();
+            //LoadCalculateSettings();
 
             UpdateManager.StateChanged += UpdateManager_StateChanged;
 
@@ -79,11 +83,6 @@ namespace PDC_System
             };
 
 
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += Timer_Tick;
-            timer.Start();
-
-            UpdateClock();
 
 
 
@@ -351,63 +350,7 @@ namespace PDC_System
 
 
         #region Database and Attendance Calculation
-        private void LoadCalculateSettings()
-        {
 
-            // 🔍 Try to find existing SettingsWindow
-            var settingsWindow = Application.Current.Windows
-                .OfType<SettingsWindow>()
-                .FirstOrDefault();
-
-            if (settingsWindow != null)
-            {
-                settingsWindow.BtnLoad_Click();
-
-
-            }
-            else
-            {
-                var backgroundSettings = new SettingsWindow();
-                backgroundSettings.Visibility = Visibility.Hidden;
-
-                if (backgroundSettings != null)
-                {
-                    backgroundSettings.BtnLoad_Click();
-                    backgroundSettings.Close();
-
-
-                }
-                else
-                {
-                    CustomMessageBox.Show("⚠️ Settings window could not be created.",
-                                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-
-            // 🧾 Attendance Manager section
-            var manager = new PDC_System.Services.AttendanceManager();
-
-            if (manager != null)
-            {
-                var records = manager.LoadAttendance();
-
-                if (records != null && records.Any())
-                {
-                    manager.SaveAllAttendanceRecords(records);
-                    NotificationHelper.ShowNotification("PDC System!", "Attendance Calculate Complete!");
-                }
-                else
-                {
-                    CustomMessageBox.Show("⚠️ No attendance records found to process.",
-                                    "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            else
-            {
-                CustomMessageBox.Show("⚠️ Attendance Manager not initialized.",
-                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         #endregion
 
@@ -456,17 +399,11 @@ namespace PDC_System
             }
         }
 
-        private void Timer_Tick(object? sender, EventArgs e)
+     
+        private void UserButton_Click(object sender, RoutedEventArgs e)
         {
-            UpdateClock();
-         
+            UserPopup.IsOpen = !UserPopup.IsOpen;
         }
-
-        private void UpdateClock()
-        {
-            Clock.Text = DateTime.Now.ToString("hh:mm:ss tt");
-        }
-
 
         public void updateattendacecheck()
         {

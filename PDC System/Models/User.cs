@@ -3,6 +3,10 @@
     public class User
     {
         public string Username { get; set; }
+
+        public string FName { get; set; } // New property for the user's first name
+        public string LName { get; set; } // New property for the user's last name
+
         public string PasswordHash { get; set; }
 
         public bool Dashbord { get; set; }

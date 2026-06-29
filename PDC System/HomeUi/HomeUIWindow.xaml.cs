@@ -34,6 +34,7 @@ namespace PDC_System
     public partial class HomeUIWindow : System.Windows.Controls.UserControl
     {
         private DispatcherTimer timer;
+        DispatcherTimer timer2 = new DispatcherTimer();
         public List<BirthdayInfo> UpcomingBirthdays { get; set; } = new List<BirthdayInfo>();
         private List<Employee> employees = new List<Employee>();
         public SeriesCollection SalesValues { get; set; }
@@ -53,6 +54,15 @@ namespace PDC_System
             LoadTotalJobs(); // Load total jobs count
             LoadPresentEmployeesToday(); // Load present employees for today
             LoadTotalCustomers(); // Load total customers count
+
+
+            timer2.Interval = TimeSpan.FromSeconds(1);
+            timer2.Tick += Timer_Tick;
+            timer2.Start();
+
+            UpdateClock();
+
+
         }
 
         // JsonData class
@@ -69,6 +79,22 @@ namespace PDC_System
             public string Label { get; set; }
             public int Value { get; set; }
         }
+
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            UpdateClock();
+
+        }
+
+        private void UpdateClock()
+        {
+            Clock.Text = DateTime.Now.ToString("hh:mm:ss tt ☀︎");
+            Date.Text = DateTime.Now.ToString("dddd, MMMM dd, yyyy ");
+        }
+
+
+
 
         private void LoadPresentEmployeesToday()
         {
@@ -228,18 +254,34 @@ namespace PDC_System
                         r.CheckIn == "-");
 
                     // Calculate attendance percentage
-                    int totalEmployees = dayRecords.Count;
-                    double attendancePercentage = totalEmployees > 0 ? (double)presentCount / totalEmployees * 100 : 0;
+                    int totalEmployees1 = dayRecords.Count;
+                    double attendancePercentage = totalEmployees1 > 0 ? (double)presentCount / totalEmployees1 * 100 : 0;
+
+
+
+
+
+
+
 
                     dailyStats.Add(new DailyAttendanceStats
                     {
                         Date = date,
                         PresentCount = presentCount,
                         AbsentCount = absentCount,
-                        TotalEmployees = totalEmployees,
+                        TotalEmployees = totalEmployees1,
                         AttendancePercentage = attendancePercentage
+
+
+                       
+
                     });
+
+                  
+
                 }
+
+                
 
                 // Create line chart series
                 AttendanceSeries = new SeriesCollection
@@ -252,7 +294,7 @@ namespace PDC_System
                         Fill = new SolidColorBrush(Color.FromArgb(40, 30, 144, 255)),
                         StrokeThickness = 3,
                         PointGeometry = DefaultGeometries.Circle,
-                        PointGeometrySize = 8,
+                        PointGeometrySize = 0,
                         PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4CAF50")),
                         DataLabels = true,
                         LabelPoint = point => $"{point.Y}"
@@ -261,14 +303,14 @@ namespace PDC_System
                     {
                         Title = "Absent Employees",
                         Values = new ChartValues<int>(dailyStats.Select(d => d.AbsentCount)),
-                        Stroke = Brushes.Red,
-                        Fill = new SolidColorBrush(Color.FromArgb(40, 255, 0, 0)),
+                        Stroke = Brushes.Transparent,
+                        Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent")),
 
-                        StrokeThickness = 3,
+                        StrokeThickness = 0,
                         PointGeometry = DefaultGeometries.Circle,
-                        PointGeometrySize = 8,
-                        PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F44336")),
-                        DataLabels = true,
+                        PointGeometrySize = 0,
+                        PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent")),
+                        DataLabels = false,
                         LabelPoint = point => $"{point.Y}"
                     }
                 };
@@ -278,6 +320,57 @@ namespace PDC_System
 
                 // Update UI
                 DataContext = this;
+
+
+
+
+
+                int totalPresent = dailyStats.Sum(x => x.PresentCount);
+                int totalAbsent = dailyStats.Sum(x => x.AbsentCount);
+                int totalEmployees = totalPresent + totalAbsent;
+
+                double presentPercentage = totalEmployees > 0
+                    ? (double)totalPresent / totalEmployees * 100
+                    : 0;
+
+                double absentPercentage = totalEmployees > 0
+                    ? (double)totalAbsent / totalEmployees * 100
+                    : 0;
+
+
+
+
+
+                var borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
+
+                LoanPieChart.Series = new SeriesCollection
+{
+    new PieSeries
+    {
+        Title = "Present",
+        Values = new ChartValues<int> { totalPresent },
+        DataLabels = false,
+        Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF05BF62"),
+        Stroke = borderBrush,
+        StrokeThickness = 0,
+        
+    },
+
+    new PieSeries
+    {
+        Title = "Absent",
+        Values = new ChartValues<int> { totalAbsent },
+        DataLabels = false,
+        Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#7E16A34A"),
+        Stroke = borderBrush,
+        StrokeThickness = 0,
+       
+    }
+};
+
+
+
+
             }
             catch (Exception ex)
             {
@@ -290,6 +383,14 @@ namespace PDC_System
                 System.Diagnostics.Debug.WriteLine($"Error loading attendance overview: {ex.Message}");
             }
         }
+
+
+
+
+
+
+
+
 
         private void LoadData()
         {

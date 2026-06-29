@@ -70,6 +70,14 @@ namespace PDC_System
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(TxtUserFirst.Text))
+            {
+                CustomMessageBox.Show("⚠️ Please enter a first name.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+
+
             if (string.IsNullOrWhiteSpace(TxtPass.Password) && !isEditMode)
             {
                 CustomMessageBox.Show("⚠️ Please enter a password.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -101,6 +109,8 @@ namespace PDC_System
                 var newUser = new User
                 {
                     Username = TxtUser.Text,
+                    FName = TxtUserFirst.Text,
+                    LName = TxtUserLast.Text,
                     PasswordHash = UserService.Hash(TxtPass.Password)
                 };
                 UpdateUserPermissions(newUser);
@@ -138,8 +148,14 @@ namespace PDC_System
                 ShowCreateUserPanel();
                 UpdatePanelHeader("✏️ Edit User", $"Modify details for user: {user.Username}");
 
+
+               
+
                 // Populate form with user data
                 TxtUser.Text = user.Username;
+                TxtUserFirst.Text = user.FName;
+                TxtUserLast.Text = user.LName;
+
                 TxtPass.Password = ""; // Don't show existing password
 
                 // Set permissions

@@ -204,6 +204,8 @@ namespace PDC_System
                 users.Add(new Models.User
                 {
                     Username = "admin",
+                    FName = "PDC",
+                    LName = "Administrator",
                     PasswordHash = UserService.Hash("PDC@Admin"),
                     Dashbord = true,
                     OderCheck = true,

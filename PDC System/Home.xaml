@@ -1,6 +1,7 @@
 ﻿<Window x:Class="PDC_System.Home"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:svg="http://dotnetprojects.github.io/SVGImage"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,10 +16,10 @@
         AllowsTransparency="True"
         WindowState="Normal"
         MinWidth="1600"
-        MinHeight="888"
+        MinHeight="900"
         Width="1450"
         Icon="/Assets/Main.ico"
-        Height="888">
+        Height="900">
 
     <!-- WindowChrome for custom window border and rounded corners -->
     <shell:WindowChrome.WindowChrome>
@@ -106,39 +107,134 @@
 
 
                               
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                               
 
 
-                                    <TextBlock Text="13:15 PM" x:Name="Clock" VerticalAlignment="Center" Foreground="{DynamicResource Forground}" FontWeight="Medium" Margin="0,0,20,0" />
 
-                                    <Button HorizontalAlignment="Left" Click="Backup_Click" Background="Transparent">
-                                        <StackPanel Orientation="Horizontal" Width="208">
-                                            <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/Backup.png" Width="15"/>
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Backup" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
-                                        </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel shell:WindowChrome.IsHitTestVisibleInChrome="True" >
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" >
+
+                                    <Grid>
+
+                                        <!-- User Button -->
+                                        <Button x:Name="UserButton"
+            Width="40"
+            Height="40"
+            Background="Transparent"
+            BorderThickness="0"
+            Click="UserButton_Click">
+
+                                            <Border Background="#0660FE"
+                CornerRadius="20"
+                Width="30"
+                Height="30">
+
+                                                <TextBlock Text="A"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="White"
+                                                           x:Name="UserNameTextBox"
+                       FontWeight="SemiBold"
+                       FontSize="15"/>
+
+                                            </Border>
+                                        </Button>
+
+                                        <!-- Popup -->
+                                        <Popup x:Name="UserPopup"
+       PlacementTarget="{Binding ElementName=UserButton}"
+       Placement="Bottom"
+                                               
+       StaysOpen="False"
+       AllowsTransparency="True">
+
+                                            <Border Background="{DynamicResource ThemeBackground}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1.5"
+            CornerRadius="10"
+            Padding="10"
+            MinWidth="220">
+
+                                                <StackPanel>
+
+                                                    <!-- User Info -->
+                                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+
+                                                        <Border Width="40"
+                        Height="40"
+                        CornerRadius="20"
+                        Background="#0660FE">
+
+                                                            <TextBlock Text="A"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                                                        </Border>
+
+                                                        <StackPanel Margin="10,0,0,0"
+                            VerticalAlignment="Center">
+
+                                                            <TextBlock x:Name="PopupUserName"
+                               Text="Kavindu Kaushalya"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               Foreground="{DynamicResource ForgroudColor}"/>
+
+                                                            <TextBlock x:Name="Adminitaterusername" Text="Administrator"
+                               FontSize="11"
+                               Foreground="Gray"/>
+
+                                                        </StackPanel>
+
+                                                    </StackPanel>
+
+                                                    <Separator Margin="0,0,0,8"/>
+
+                                                    <!-- Menu -->
+
+                                                    <Button Content="⚙ Settings"
+                    Style="{DynamicResource NavigationButtonStyle}"
+                    HorizontalContentAlignment="Left"
+                    Margin="0,2"
+                    Click="Setting_Click"/>
+
+                                                    <Button Content="🗄 Backup"
+                    Style="{DynamicResource NavigationButtonStyle}"
+                    HorizontalContentAlignment="Left"
+                    Margin="0,2"
+                    Click="Backup_Click"/>
+
+                                                    <Button Content="ℹ About"
+                    Style="{DynamicResource NavigationButtonStyle}"
+                    HorizontalContentAlignment="Left"
+                    Margin="0,2"
+                    Click="AboutButton_Click"/>
+
+                                                    <Separator Margin="0,8"/>
+
+                                                    <Button Content="⏻ Log Out"
+                    Style="{DynamicResource NavigationButtonStyle}"
+                    HorizontalContentAlignment="Left"
+                    Margin="0,2"
+                    Click="Log_out"/>
+
+                                                </StackPanel>
+
+                                            </Border>
+
+                                        </Popup>
+
+                                    </Grid>
 
 
-                                    </Button>
 
-                                    <Button HorizontalAlignment="Left" Click="Setting_Click" Background="Transparent">
-                                        <StackPanel Orientation="Horizontal" Width="208">
-                                            <Image RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/gear.png" Width="15"/>
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Settings" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
-                                        </StackPanel>
-
-
-                                    </Button>
-
-                                    <Button HorizontalAlignment="Left" Click="AboutButton_Click" Background="Transparent" >
-                                        <StackPanel Orientation="Horizontal" Width="208">
-                                            <Image RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/information.png" Width="19"/>
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="About" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
-                                        </StackPanel>
-
-
-                                    </Button>
                                 </StackPanel>
-
 
 
                             </StackPanel>
@@ -337,16 +433,7 @@ Margin="3" Width="250" Height="45">
 
 
 
-                            <StackPanel VerticalAlignment="Bottom" >
-
-                                <Border Background="#FF0660FE" CornerRadius="10
-               " Margin="10,10,10,0" Height="38" >
-                                    <TextBlock x:Name="UserNameTextBox" TextAlignment="Center" FontWeight="SemiBold" Text="admin"  HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="15"  Margin="5"/>
-                                </Border>
-
-                                <Button Width="auto" Content="Log Out"  Click="Log_out" Style="{DynamicResource NavigationButtonStyle}" Margin="10" />
-                            </StackPanel>
-
+                         
 
 
 
@@ -373,8 +460,8 @@ Margin="3" Width="250" Height="45">
 
 
                 <!-- Main Content Display Area -->
-                <Grid Grid.Row="2" Grid.Column="1" Margin="0,0,10,10">
-                    <Border Margin="15,0,15,15" CornerRadius="15" BorderThickness="1" BorderBrush="Transparent" Grid.Row="1" Grid.Column="1" Background="{DynamicResource ContBackground}">
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <Border  Margin="0,0,5,0" CornerRadius="15" BorderThickness="1" BorderBrush="Transparent" Grid.Row="1" Grid.Column="1" Background="{DynamicResource ContBackground}">
                         <Grid   >
 
                             <Grid.Background>
@@ -396,15 +483,15 @@ Margin="3" Width="250" Height="45">
                             </Grid.Background>
 
                             <Border CornerRadius="20">
-                                <ContentControl  Margin="20,20,5,20" x:Name="MainContent"   Background="Transparent"  />
+                                <ContentControl  Margin="20,20,0,8" x:Name="MainContent"   Background="Transparent"  />
                             </Border>
                         </Grid>
                     </Border>
                 </Grid>
 
 
-                <Grid Grid.Row="3" >
-                    <StackPanel Orientation="Horizontal" Margin="5" >
+                <Grid Grid.Row="3" Grid.ColumnSpan="3" >
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,0" >
                         <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/Backup.png" Width="15"/>
                         
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Fingerprint Sync" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />

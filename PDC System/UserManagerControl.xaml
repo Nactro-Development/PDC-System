@@ -300,6 +300,45 @@
                                                  Style="{DynamicResource TextBoxStyle}"
                                                  Height="40"
                                                  FontSize="14"/>
+
+                                        <Grid  >
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+
+                                            <StackPanel>
+                                                <TextBlock Text="First Name"
+                                            FontSize="13"
+                                            FontWeight="Medium"
+                                            Foreground="{DynamicResource Forground}"
+                                            Margin="0,10,5,5"/>
+
+                                                <TextBox Margin="0,5,5,5" x:Name="TxtUserFirst"
+Style="{DynamicResource TextBoxStyle}"
+Height="40"
+FontSize="14"/>
+                                            </StackPanel>
+
+
+                                            <StackPanel Grid.Column="1">
+
+                                                <TextBlock Text="Last Name" 
+                                                             FontSize="13"
+   FontWeight="Medium"
+   Foreground="{DynamicResource Forground}"
+Margin="5,10,0,5"
+                                                           />
+                                                <TextBox Margin="5,5,0,5"  x:Name="TxtUserLast"
+           Style="{DynamicResource TextBoxStyle}"
+           Height="40"
+           FontSize="14"/>
+                                            </StackPanel>
+                                           
+                                        </Grid>
+                                      
                                     </StackPanel>
 
                                     <!-- Password -->

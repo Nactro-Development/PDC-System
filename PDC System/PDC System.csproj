@@ -89,6 +89,8 @@
 		<None Remove="Assets\Business_deal.gif" />
 		<None Remove="Assets\Company.png" />
 		<None Remove="Assets\crop.gif" />
+		<None Remove="Assets\CUSTOMER.png" />
+		<None Remove="Assets\CUSTOMER.svg" />
 		<None Remove="Assets\data-recovery.ico" />
 		<None Remove="Assets\default_profile.png" />
 		<None Remove="Assets\Def_D.png" />
@@ -102,6 +104,8 @@
 		<None Remove="Assets\HomeHeading.png" />
 		<None Remove="Assets\information.png" />
 		<None Remove="Assets\IVMSLOGO.png" />
+		<None Remove="Assets\JOB.png" />
+		<None Remove="Assets\JOB.svg" />
 		<None Remove="Assets\Login.gif" />
 		<None Remove="Assets\LoginImage.png" />
 		<None Remove="Assets\LogoB.png" />
@@ -110,10 +114,14 @@
 		<None Remove="Assets\L_w.png" />
 		<None Remove="Assets\Mail.png" />
 		<None Remove="Assets\Main.ico" />
+		<None Remove="Assets\NOTIFICATION.png" />
+		<None Remove="Assets\NOTIFICATION.svg" />
 		<None Remove="Assets\N_D.png" />
 		<None Remove="Assets\N_w.png" />
 		<None Remove="Assets\Payroll.png" />
 		<None Remove="Assets\Person.png" />
+		<None Remove="Assets\PRESENT.png" />
+		<None Remove="Assets\PRESENT.svg" />
 		<None Remove="Assets\PriyanthaDieCuttingMail.png" />
 		<None Remove="Assets\PriyanthaDieCuttingWhatsapp.png" />
 		<None Remove="Assets\search.png" />
@@ -123,6 +131,8 @@
 		<None Remove="Assets\Warning.png" />
 		<None Remove="Assets\WhatsApp.png" />
 		<None Remove="Assets\Wonder_Things.gif" />
+		<None Remove="HomeUi\40cf3459-0235-4366-af81-86018c60768c-cover.png" />
+		<None Remove="HomeUi\ChatGPT Image Jun 28, 2026, 01_56_55 AM.png" />
 	</ItemGroup>
 
 	
@@ -218,6 +228,12 @@
 		<Content Include="Assets\crop.gif">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\CUSTOMER.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\CUSTOMER.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\data-recovery.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -257,6 +273,12 @@
 		<Content Include="Assets\IVMSLOGO.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\JOB.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\JOB.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\Login.gif">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -284,6 +306,9 @@
 		<Content Include="Assets\MainLogo.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\NOTIFICATION.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\N_D.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -295,6 +320,12 @@
 		</Content>
 		<Content Include="Assets\Person.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\PRESENT.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\PRESENT.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Assets\PriyanthaDieCuttingMail.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -327,6 +358,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.66" />
+		<PackageReference Include="DotNetProjects.SVGImage" Version="5.2.13" />
 		<PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
 		<PackageReference Include="Google.Apis.Drive.v3" Version="1.73.0.4045" />
 		<PackageReference Include="Google.Apis.Oauth2.v2" Version="1.68.0.1869" />
@@ -349,6 +381,7 @@
 		<PackageReference Include="OxyPlot.Wpf" Version="2.2.0" />
 		<PackageReference Include="PDFsharp" Version="6.2.4" />
 		<PackageReference Include="QuestPDF" Version="2026.2.2" />
+		<PackageReference Include="SharpVectors" Version="1.8.5" />
 		<PackageReference Include="SkiaSharp" Version="3.119.2" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
@@ -391,6 +424,13 @@
 	  <Reference Include="ModernCalendarLib">
 	    <HintPath>..\..\Wpf.Custom.UI.Calendar-master\ModernCalendarLib\bin\Debug\net8.0-windows\ModernCalendarLib.dll</HintPath>
 	  </Reference>
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <Resource Include="HomeUi\40cf3459-0235-4366-af81-86018c60768c-cover.png" />
+	  <Resource Include="HomeUi\ChatGPT Image Jun 28, 2026, 01_56_55 AM.png" />
 	</ItemGroup>
 
 	<Target Name="KillRunningProcess" BeforeTargets="BeforeBuild">
