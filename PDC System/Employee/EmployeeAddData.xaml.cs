@@ -38,30 +38,24 @@ namespace PDC_System
 
 
 
-        private async void LoadingWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            await Task.Run(() =>
-            {
-                string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-                string gifPath = System.IO.Path.Combine(baseFolder, "Assets", "Fingerprint_biometric_scan.gif");
-                var gifUri = new Uri(gifPath, UriKind.Absolute);
-
-                Dispatcher.Invoke(() =>
-                {
-                    AnimationBehavior.SetSourceUri(MyGifImage, gifUri);
-                    // Don't start the animation immediately - stop it initially
-                    AnimationBehavior.SetRepeatBehavior(MyGifImage, System.Windows.Media.Animation.RepeatBehavior.Forever);
-                    StopGifAnimation();
-                });
-            });
-        }
+     
 
 
         private void StartGifAnimation()
         {
-            // AnimationBehavior does not have SetIsPaused, so use AutoStart property
-            AnimationBehavior.SetAutoStart(MyGifImage, true);
+            string gifPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Assets",
+                "Fingerprint_biometric_scan.gif");
+
+            AnimationBehavior.SetSourceUri(MyGifImage, null);
+
+            AnimationBehavior.SetSourceUri(
+                MyGifImage,
+                new Uri(gifPath, UriKind.Absolute));
         }
+
+
 
         private void StopGifAnimation()
         {
