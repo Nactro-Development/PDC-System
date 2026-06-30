@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using PDC_System.Models;
 using System.Collections.Generic;
 using System.Windows;
-
+using System.Xml.Linq;
 
 namespace PDC_System.Services
 {
@@ -197,6 +197,9 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 
 
 
+
+
+
         public async Task<int> GetTotalMatches()
         {
             string json = await GetAttendanceEvents(0, 1);
@@ -205,6 +208,178 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 
             return root["AcsEvent"]?["totalMatches"]?.Value<int>() ?? 0;
         }
+
+
+
+
+        public async Task<bool> CreateUser(string employeeNo, string name)
+        {
+            var body = new
+            {
+                UserInfo = new
+                {
+                    employeeNo = employeeNo,
+                    name = name,
+                    userType = "normal",
+                    Valid = new
+                    {
+                        enable = true,
+                        beginTime = "2025-01-01T00:00:00",
+                        endTime = "2035-12-31T23:59:59",
+                        timeType = "local"
+                    },
+                    doorRight = "1"
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            var response = await _client.PutAsync(
+                "/ISAPI/AccessControl/UserInfo/SetUp?format=json",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            return response.IsSuccessStatusCode;
+        }
+
+
+
+        public async Task<bool> DeleteUser(string employeeNo)
+        {
+            var body = new
+            {
+                UserInfoDetail = new
+                {
+                    mode = "byEmployeeNo",
+                    EmployeeNoList = new[]
+                    {
+                new
+                {
+                    employeeNo = employeeNo
+                }
+            }
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            var response = await _client.PutAsync(
+                "/ISAPI/AccessControl/UserInfoDetail/Delete?format=json",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            return response.IsSuccessStatusCode;
+        }
+
+
+        public async Task<JObject?> SearchUser(string employeeNo)
+        {
+            var body = new
+            {
+                UserInfoSearchCond = new
+                {
+                    searchID = Guid.NewGuid().ToString(),
+                    searchResultPosition = 0,
+                    maxResults = 1,
+                    EmployeeNoList = new[]
+                    {
+                new
+                {
+                    employeeNo = employeeNo
+                }
+            }
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            var response = await _client.PostAsync(
+                "/ISAPI/AccessControl/UserInfo/Search?format=json",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            response.EnsureSuccessStatusCode();
+
+            string result = await response.Content.ReadAsStringAsync();
+
+            return JObject.Parse(result);
+        }
+
+
+
+
+        public async Task<bool> UploadFingerprint(
+    string employeeNo,
+    string fingerData,
+    int fingerId = 1)
+        {
+            var body = new
+            {
+                FingerPrintCfg = new
+                {
+                    employeeNo = employeeNo,
+                    enableCardReader = new[] { 1 },
+                    fingerPrintID = fingerId,
+                    fingerType = "normalFP",
+                    fingerData = fingerData,
+                    checkEmployeeNo = true
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            var response = await _client.PostAsync(
+                "/ISAPI/AccessControl/FingerPrint/SetUp?format=json",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            response.EnsureSuccessStatusCode();
+
+            string result = await response.Content.ReadAsStringAsync();
+
+            JObject obj = JObject.Parse(result);
+
+            var status =
+                obj["FingerPrintStatus"]?["StatusList"]?.First?["cardReaderRecvStatus"]?.Value<int>();
+
+            return status == 1;
+        }
+
+
+
+        public async Task<string?> CaptureFingerprintData(int fingerNo = 1)
+        {
+            string xml = await CaptureFingerprint(fingerNo);
+
+            var doc = System.Xml.Linq.XDocument.Parse(xml);
+
+            XNamespace ns = "http://www.isapi.org/ver20/XMLSchema";
+
+            return doc.Root?
+                .Element(ns + "fingerData")
+                ?.Value;
+        }
+
+
+        public async Task<JObject> GetUserList(int start = 0, int max = 100)
+        {
+            var body = new
+            {
+                UserInfoSearchCond = new
+                {
+                    searchID = Guid.NewGuid().ToString(),
+                    searchResultPosition = start,
+                    maxResults = max
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            var response = await _client.PostAsync(
+                "/ISAPI/AccessControl/UserInfo/Search?format=json",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            response.EnsureSuccessStatusCode();
+
+            return JObject.Parse(await response.Content.ReadAsStringAsync());
+        }
+
 
 
 

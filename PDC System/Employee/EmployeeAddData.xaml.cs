@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System;
 using System.Diagnostics;
-
+using XamlAnimatedGif;
 
 using System.Windows.Media.Imaging;
 
@@ -28,24 +28,60 @@ namespace PDC_System
             InitializeComponent();
             LoadCities();
             LoadTimeDropdowns();
+            StartGifAnimation();
+              Employee = new Employee();   // empty employee
 
-            Employee = new Employee();   // empty employee
 
 
-
-            // 👉 Load image (if exists)
-            if (!string.IsNullOrWhiteSpace(Employee.SavedLocation) && File.Exists(Employee.SavedLocation))
-            {
-                ImageDisplay.Source = new BitmapImage(new Uri(Employee.SavedLocation));
-            }
-            else
-            {
-                string defaultImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets/default_profile.png");
-
-                if (File.Exists(defaultImagePath))
-                    ImageDisplay.Source = new BitmapImage(new Uri(defaultImagePath));
-            }
+        
         }
+
+
+
+        private async void LoadingWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
+                string gifPath = System.IO.Path.Combine(baseFolder, "Assets", "Fingerprint_biometric_scan.gif");
+                var gifUri = new Uri(gifPath, UriKind.Absolute);
+
+                Dispatcher.Invoke(() =>
+                {
+                    AnimationBehavior.SetSourceUri(MyGifImage, gifUri);
+                    // Don't start the animation immediately - stop it initially
+                    AnimationBehavior.SetRepeatBehavior(MyGifImage, System.Windows.Media.Animation.RepeatBehavior.Forever);
+                    StopGifAnimation();
+                });
+            });
+        }
+
+
+        private void StartGifAnimation()
+        {
+            // AnimationBehavior does not have SetIsPaused, so use AutoStart property
+            AnimationBehavior.SetAutoStart(MyGifImage, true);
+        }
+
+        private void StopGifAnimation()
+        {
+            // AnimationBehavior does not have SetIsPaused, so use AutoStart property
+            AnimationBehavior.SetAutoStart(MyGifImage, false);
+        }
+
+
+        private void Finger1_Click(object sender, RoutedEventArgs e)
+        {
+            // Start the GIF animation when the button is clicked
+            StartGifAnimation();
+        }   
+        private void Finger2_Click(object sender, RoutedEventArgs e)
+        {
+            // Start the GIF animation when the button is clicked
+            StartGifAnimation();
+        }   
+
+
 
 
         public EmployeeAddData(Employee existingEmployee)
@@ -150,18 +186,7 @@ namespace PDC_System
 
 
 
-            // 👉 Load image (if exists)
-            if (!string.IsNullOrWhiteSpace(Employee.SavedLocation) && File.Exists(Employee.SavedLocation))
-            {
-                ImageDisplay.Source = new BitmapImage(new Uri(Employee.SavedLocation));
-            }
-            else
-            {
-                string defaultImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets/default_profile.png");
-
-                if (File.Exists(defaultImagePath))
-                    ImageDisplay.Source = new BitmapImage(new Uri(defaultImagePath));
-            }
+           
         }
 
 
@@ -174,45 +199,7 @@ namespace PDC_System
             // You might want to add event logic here or remove this method if not needed.
         }
 
-        private void ImportImageButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Open file dialog to select an image
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string originalFilePath = openFileDialog.FileName;
-                string fileExtension = Path.GetExtension(originalFilePath).ToLower();
-
-                // Ensure the custom folder exists
-                Directory.CreateDirectory(customFolderPath);
-
-                // Find the next available file name
-                int fileIndex = 1;
-                string newFilePath = Path.Combine(customFolderPath, $"{fileIndex}{fileExtension}");
-
-                // Keep incrementing the index until we find an unused file name
-                while (File.Exists(newFilePath))
-                {
-                    fileIndex++;
-                    newFilePath = Path.Combine(customFolderPath, $"{fileIndex}{fileExtension}");
-                }
-
-                // Save the image to the custom location with the new name
-                File.Copy(originalFilePath, newFilePath);
-
-                // Create a new ImageInfo object
-                imageInfo = new ImageInfo
-                {
-                    OriginalPath = originalFilePath,
-                    SavedLocation = newFilePath
-                };
-
-                // Display the imported image
-                ImageDisplay.Source = new BitmapImage(new Uri(newFilePath));
-            }
-        }
+    
 
 
 
@@ -728,39 +715,26 @@ namespace PDC_System
 
 
 
-        private void OpenIVMS_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string[] possiblePaths =
-                {
-            @"C:\Program Files (x86)\iVMS-4200 Site\iVMS-4200 Client\Client\iVMS-4200.Framework.C.exe",
-            @"C:\Program Files\Hikvision\iVMS-4200\Client\iVMS-4200.exe"
-        };
-
-                string ivmsPath = possiblePaths.FirstOrDefault(File.Exists);
-
-                if (ivmsPath != null)
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = ivmsPath,
-                        UseShellExecute = true
-                    });
-                }
-                else
-                {
-                    MessageBox.Show("iVMS-4200 not installed.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-
+   
 
 
     }
+
+
+    public class FingerprintSlot
+    {
+        public int FingerId { get; set; }
+
+        public bool IsRegistered { get; set; }
+
+        public string ButtonText =>
+            IsRegistered ? "Replace" : "Capture";
+
+        public string Status =>
+            IsRegistered
+                ? $"Fingerprint {FingerId} Registered"
+                : $"Fingerprint {FingerId} Empty";
+    }
+
+
 }
