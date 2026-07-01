@@ -100,7 +100,10 @@
 		<None Remove="Assets\EditB.png" />
 		<None Remove="Assets\EditW.png" />
 		<None Remove="Assets\Email.png" />
+		<None Remove="Assets\Fail.png" />
+		<None Remove="Assets\fingerprintss.gif" />
 		<None Remove="Assets\Fingerprint_biometric_scan.gif" />
+		<None Remove="Assets\Fingerprint_Verification.gif" />
 		<None Remove="Assets\gear.png" />
 		<None Remove="Assets\HomeHeading.png" />
 		<None Remove="Assets\information.png" />
@@ -125,10 +128,12 @@
 		<None Remove="Assets\PRESENT.svg" />
 		<None Remove="Assets\PriyanthaDieCuttingMail.png" />
 		<None Remove="Assets\PriyanthaDieCuttingWhatsapp.png" />
+		<None Remove="Assets\Scan.png" />
 		<None Remove="Assets\search.png" />
 		<None Remove="Assets\searcht.png" />
 		<None Remove="Assets\Settings_W.png" />
 		<None Remove="Assets\Setting_G.png" />
+		<None Remove="Assets\Success.png" />
 		<None Remove="Assets\Warning.png" />
 		<None Remove="Assets\WhatsApp.png" />
 		<None Remove="Assets\Wonder_Things.gif" />
@@ -262,7 +267,13 @@
 		<Content Include="Assets\Email.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\fingerprintss.gif">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\Fingerprint_biometric_scan.gif">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Assets\Fingerprint_Verification.gif">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Assets\gear.png">
@@ -337,6 +348,9 @@
 		<Content Include="Assets\PriyanthaDieCuttingWhatsapp.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\Scan.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\search.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -349,6 +363,9 @@
 		<Content Include="Assets\Setting_G.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Assets\Success.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Assets\Warning.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -358,6 +375,14 @@
 		<Content Include="Assets\Wonder_Things.gif">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+
+	
+
+	<ItemGroup>
+	  <Content Include="Assets\Fail.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>

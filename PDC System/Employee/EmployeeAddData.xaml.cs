@@ -28,7 +28,7 @@ namespace PDC_System
             InitializeComponent();
             LoadCities();
             LoadTimeDropdowns();
-            StartGifAnimation();
+          
               Employee = new Employee();   // empty employee
 
 
@@ -38,41 +38,22 @@ namespace PDC_System
 
 
 
-     
-
-
-        private void StartGifAnimation()
-        {
-            string gifPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Assets",
-                "Fingerprint_biometric_scan.gif");
-
-            AnimationBehavior.SetSourceUri(MyGifImage, null);
-
-            AnimationBehavior.SetSourceUri(
-                MyGifImage,
-                new Uri(gifPath, UriKind.Absolute));
-        }
 
 
 
-        private void StopGifAnimation()
-        {
-            // AnimationBehavior does not have SetIsPaused, so use AutoStart property
-            AnimationBehavior.SetAutoStart(MyGifImage, false);
-        }
 
+
+  
 
         private void Finger1_Click(object sender, RoutedEventArgs e)
         {
-            // Start the GIF animation when the button is clicked
-            StartGifAnimation();
+          Fingerprint fingerprintWindow = new Fingerprint();
+            fingerprintWindow.ShowDialog();
+
         }   
         private void Finger2_Click(object sender, RoutedEventArgs e)
         {
-            // Start the GIF animation when the button is clicked
-            StartGifAnimation();
+           
         }   
 
 

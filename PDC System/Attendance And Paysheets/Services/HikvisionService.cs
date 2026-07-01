@@ -384,5 +384,18 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 
 
 
+public async Task<XDocument?> DeviceInfo()
+    {
+        var response = await _client.GetAsync("/ISAPI/System/deviceInfo");
+
+        response.EnsureSuccessStatusCode();
+
+        string xml = await response.Content.ReadAsStringAsync();
+
+        return XDocument.Parse(xml);
     }
+
+
+
+}
 }

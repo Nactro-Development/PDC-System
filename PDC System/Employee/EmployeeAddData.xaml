@@ -221,24 +221,23 @@ Background="{DynamicResource Background}"
 
                                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 
-                                                <!-- Fingerprint Icon -->
-                                                <Image x:Name="MyGifImage"
-Width="200"
-                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-RenderOptions.BitmapScalingMode="HighQuality"
-SnapsToDevicePixels="True"/>
+                                              
 
-                                                <ListBox  Margin="10,10,0,13" Name="listBox1" HorizontalAlignment="Center" VerticalAlignment="Top" Background="Transparent" BorderBrush="Transparent" Width="auto" Height="auto">
-                                                    <ListBoxItem Background="Transparent" Foreground="Transparent" FontFamily="Verdana" FontSize="12" FontWeight="Bold">
                                                         <StackPanel  HorizontalAlignment="Center" Orientation="Horizontal">
 
-                                                            <Button Click="Finger1_Click" HorizontalAlignment="Center" Width="100" Content="Finger Print 1" Margin="5" Background="Green" Style="{DynamicResource ActionButton}" />
-                                                            <Button Click="Finger2_Click" HorizontalAlignment="Center" Margin="5" Width="100" Content="Finger Print 2" Background="Red" Style="{DynamicResource ActionButton}" />
+                                                    <Button Click="Finger1_Click" HorizontalAlignment="Center" Width="100" Content="Finger Print 1" Margin="5"  Style="{DynamicResource ActionButton}" >
+
+                                                        <StackPanel>
+                                                            
+                                                            <Image Source=""
+                                                            
+                                                        </StackPanel>
+                                                        
+                                                    </Button>
+                                                    <Button Click="Finger2_Click" HorizontalAlignment="Center" Margin="5" Width="100" Content="Finger Print 2" Background="Red" Style="{DynamicResource ActionButton}" />
 
                                                         </StackPanel>
-                                                    </ListBoxItem>
-
-                                                </ListBox>
+                                                 
 
 
                                             </StackPanel>
