@@ -6,7 +6,7 @@
              xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
          xmlns:cal="clr-namespace:ModernCalendarLib;assembly=ModernCalendarLib"
          FontFamily="Poppins" WindowStartupLocation="CenterScreen" MinHeight="600" Width="1200" WindowStyle="None" AllowsTransparency="True" MinWidth="900" SnapsToDevicePixels="True"
-        Foreground="{DynamicResource Forground}" Background="{DynamicResource Background}" >
+        Foreground="{DynamicResource Forground}" Background="{DynamicResource ThemeBackground}" >
 
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="32"
@@ -32,7 +32,7 @@
 
 
 
-                <Border Margin="5"  x:Name="TitleBar" Grid.Row="0"
+                <Border CornerRadius="10" Margin="0"  x:Name="TitleBar" Grid.Row="0"
 Background="{DynamicResource Background}" 
 >
                     <DockPanel>
@@ -45,7 +45,7 @@ Background="{DynamicResource Background}"
 
 
                         <!-- Title bar buttons -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <StackPanel Margin="0,0,5,0" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button x:Name="Minimize" Content="—" Width="25" Height="25" Click="Minimize_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}"/>
                             <Button x:Name="Maximize" Content="🗖" Width="25" Height="25" Click="Maximize_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}" />
                             <Button x:Name="Colose" Content="🗙" Width="25" Height="25" Click="Close_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}" />
@@ -92,13 +92,14 @@ Background="{DynamicResource Background}"
                                         </Grid.RowDefinitions>
 
                                         <StackPanel Grid.Column="0" Width="auto">
-                                            <TextBlock Text="Name:" Margin="10" FontSize="14"/>
+                                            <TextBlock Text="Full Name:" Margin="10" FontSize="14"/>
                                             <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmployeeNameTextBox" Margin="10" FontSize="16"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1" Width="auto">
                                             <TextBlock Text="Email:" Margin="10" FontSize="14"/>
-                                            <TextBox x:Name="EmployeeEmailTextBox"  Style="{DynamicResource TextBoxStyle}" Width="auto" Margin="10" FontSize="16"/>
+                                            <TextBox  TextChanged="EmployeeEmailTextBox_TextChanged" x:Name="EmployeeEmailTextBox"  Style="{DynamicResource TextBoxStyle}" Width="auto" Margin="10" FontSize="16"/>
+                                            <TextBlock x:Name="EmailErrorText" Margin="10,0" Foreground="Red" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="1" Grid.Column="0" Width="auto">
@@ -216,36 +217,113 @@ Background="{DynamicResource Background}"
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
 
-                                        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1.5" CornerRadius="10"  Grid.Column="1" Grid.Row="0" >
+                                        <Border BorderBrush="{DynamicResource BorderBrush}" 
+        BorderThickness="1.5" 
+        CornerRadius="10" 
+        Padding="15"
+        Background="{DynamicResource CardBackground}"
+        Grid.Column="1" 
+        Grid.Row="0">
 
+                                            <StackPanel HorizontalAlignment="Center">
 
-                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <!-- Header with Icon -->
+                                                <StackPanel Orientation="Horizontal" 
+                     HorizontalAlignment="Center" 
+                     Margin="0,0,0,3">
+                                                    <TextBlock Text="🛡" FontSize="16" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                    <TextBlock FontSize="15" 
+                       FontWeight="SemiBold" 
+                       Text="Register Finger Print"
+                       VerticalAlignment="Center"/>
+                                                </StackPanel>
 
-                                              
+                                                <!-- Subtitle -->
+                                                <TextBlock Text="Enroll biometric data for this user"
+                   FontSize="11"
+                   Foreground="#8E9AB9"
+                   HorizontalAlignment="Center"
+                   Margin="0,2,0,12"/>
 
-                                                        <StackPanel  HorizontalAlignment="Center" Orientation="Horizontal">
+                                                <StackPanel HorizontalAlignment="Center" Margin="0,20,0,0" Orientation="Horizontal">
 
-                                                    <Button Click="Finger1_Click" HorizontalAlignment="Center" Width="100" Content="Finger Print 1" Margin="5"  Style="{DynamicResource ActionButton}" >
+                                                    <!-- Finger 1 -->
+                                                    <StackPanel Margin="5">
+                                                        <Button Height="45" 
+                        Click="Finger1_Click" 
+                        HorizontalAlignment="Center" 
+                        Width="120" 
+                        Style="{DynamicResource ActionButton}">
 
-                                                        <StackPanel>
-                                                            
-                                                            <Image Source=""
-                                                            
-                                                        </StackPanel>
-                                                        
-                                                    </Button>
-                                                    <Button Click="Finger2_Click" HorizontalAlignment="Center" Margin="5" Width="100" Content="Finger Print 2" Background="Red" Style="{DynamicResource ActionButton}" />
+                                                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                                                <Image RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True" 
+                               VerticalAlignment="Center" 
+                               Width="18"
+                               Source="/Assets/Scan.png"/>
+                                                                <TextBlock Margin="8,0,0,0" 
+                                   FontSize="12"
+                                   VerticalAlignment="Center" 
+                                   Text="Finger 1"/>
+                                                            </StackPanel>
+                                                        </Button>
 
-                                                        </StackPanel>
-                                                 
+                                                        <Border Background="Transparent"
+                        CornerRadius="8"
+                        Padding="0,3"
+                        Margin="0,6,0,0"
+                        HorizontalAlignment="Stretch">
+                                                            <TextBlock x:Name="txtFinger1"
+                               Text="● Not Registered"
+                               FontSize="9"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource Forground}"
+                               HorizontalAlignment="Center"/>
+                                                        </Border>
+                                                    </StackPanel>
 
+                                                    <!-- Finger 2 -->
+                                                    <StackPanel Margin="5">
+                                                        <Button Height="45" 
+                        Click="Finger2_Click" 
+                        HorizontalAlignment="Center" 
+                        Width="120" 
+                        Style="{DynamicResource ActionButton}">
+
+                                                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                                                <Image RenderOptions.BitmapScalingMode="HighQuality"
+                               SnapsToDevicePixels="True" 
+                               VerticalAlignment="Center" 
+                               Width="18"
+                               Source="/Assets/Scan.png"/>
+                                                                <TextBlock Margin="8,0,0,0" 
+                                   FontSize="12"
+                                   VerticalAlignment="Center" 
+                                   Text="Finger 2"/>
+                                                            </StackPanel>
+                                                        </Button>
+
+                                                        <Border Background="Transparent"
+                        CornerRadius="8"
+                        Padding="0,3"
+                        Margin="0,6,0,0"
+                        HorizontalAlignment="Stretch">
+                                                            <TextBlock x:Name="txtFinger2"
+                               Text="● Not Registered"
+                               FontSize="9"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource Forground}"
+                               HorizontalAlignment="Center"/>
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                </StackPanel>
 
                                             </StackPanel>
 
-
                                         </Border>
 
-                       
+
                                         <StackPanel Grid.Row="0" Grid.Column="0">
                                             <TextBlock Text="Employee ID/Attendance ID:" Margin="10" FontSize="14"/>
                                             <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmployeeIDTextBox" Margin="10" SelectionTextBrush="White" PreviewTextInput="NumberOnly_PreviewTextInput" FontSize="16"/>
@@ -261,7 +339,7 @@ Background="{DynamicResource Background}"
 
 
 
-                                        <StackPanel Margin="5" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center">
+                                        <StackPanel Margin="5,20" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center">
                                             <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1.5" CornerRadius="10">
                                                 <StackPanel Margin="5">
 
@@ -394,13 +472,14 @@ Background="{DynamicResource Background}"
                                         </Grid.RowDefinitions>
 
                                         <StackPanel Grid.Row="0" Grid.Column="0">
-                                            <TextBlock Text="Net Salary:" Margin="10" FontSize="14"/>
-                                            <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmployeeSalaryTextBox" Margin="10" PreviewTextInput="PreviewfloteTextInput" LostFocus="TextBox_LostFocus" FontSize="16"/>
+                                            <TextBlock Text="Incentive:" Margin="10" FontSize="14"/>
+                                            <TextBox Style="{DynamicResource TextBoxStyle}" TextChanged="EmployeeIncentiveTextBox_TextChanged" x:Name="EmployeeIncentiveTextBox" Margin="10" PreviewTextInput="PreviewfloteTextInput" LostFocus="TextBox_LostFocus" FontSize="16"/>
+                                            <TextBlock x:Name="EmployeeSalaryTextBox"  Margin="10" FontSize="14"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="0" Grid.Column="1">
                                             <TextBlock Text="Basic Salary:" Margin="10" FontSize="14"/>
-                                            <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmployeeBasicSalaryTextBox" Margin="10" PreviewTextInput="PreviewfloteTextInput" LostFocus="TextBox_LostFocus" FontSize="16"/>
+                                            <TextBox Style="{DynamicResource TextBoxStyle}" TextChanged="EmployeeBasicTextBox_TextChanged" x:Name="EmployeeBasicSalaryTextBox" Margin="10" PreviewTextInput="PreviewfloteTextInput" LostFocus="TextBox_LostFocus" FontSize="16"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="1" Grid.Column="0">
@@ -411,11 +490,16 @@ Background="{DynamicResource Background}"
                                         <StackPanel Grid.Row="1" Grid.Column="1">
                                             <TextBlock Text="DOT (LKR):" Margin="10" FontSize="14"/>
                                             <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmployeeDOTTextBox" Margin="10" PreviewTextInput="PreviewfloteTextInput" LostFocus="TextBox_LostFocus" FontSize="16"/>
+                                            
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="2" Grid.Column="0">
                                             <TextBlock Text="Absent(LKR):" Margin="10" FontSize="14"/>
                                             <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="EmployeeAbsentTextBox" Margin="10" PreviewTextInput="PreviewfloteTextInput" LostFocus="TextBox_LostFocus" FontSize="16"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="2" Grid.Column="1">
+                                            <TextBlock Text="Absent(LKR):" Margin="10" FontSize="14"/>
+                                            <Button Style="{DynamicResource ActionButton}" Content="Autofill" Click="Autofill_Salary" />
                                         </StackPanel>
 
                                         <!-- Buttons at Bottom -->

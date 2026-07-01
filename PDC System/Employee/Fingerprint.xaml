@@ -4,192 +4,199 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PDC_System"
+     
         mc:Ignorable="d"
-        
+          FontFamily="Poppins"
         WindowStyle="None"
-         Background="{DynamicResource ThemeBackground}"
-        Title="Fingerprint"  Width="800">
-    <Grid>
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="Fingerprint" Width="420" Height="560">
 
-        <!-- Header -->
-        <Border Height="55"
-                VerticalAlignment="Top"
-                Background="{DynamicResource Background}">
+    <Border CornerRadius="16"
+            Background="{DynamicResource ThemeBackground}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1.5">
+     
 
-            <Grid Margin="15,0">
-                <TextBlock Text="🛡 Security Authentication"
-                           Foreground="White"
-                           FontSize="18"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"/>
+        <Grid>
 
-                <Button Content="✕"
-                        Width="35"
-                        Height="35"
-                        HorizontalAlignment="Right"
-                        Background="Transparent"
-                        Foreground="White"
-                        BorderThickness="0"/>
-            </Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        </Border>
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource Background}"
+                    CornerRadius="16,16,0,0">
 
-        <StackPanel Margin="30,80,30,20">
+                <Grid Margin="15,0">
+                    <TextBlock Text="🛡 Finger Print Register"
+                               Foreground="{DynamicResource Forground}"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
 
-            <!-- Scanner -->
-            <Grid Width="220"
-                  Height="220"
-                  HorizontalAlignment="Center">
-
-                <Ellipse 
-                    Stroke="#536384"
-                    StrokeThickness="4"
-                    StrokeDashArray="3 3"/>
-
-                <Ellipse Margin="20"
-                         Fill="#263553"/>
-
-                <Ellipse Margin="35"
-                         Fill="#1B2740"
-                         Stroke="#4D6BAA"
-                         StrokeThickness="2"/>
-
-                <!-- Fingerprint Icon -->
-                <Image x:Name="MyGifImage"
-Width="70"
-                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-RenderOptions.BitmapScalingMode="HighQuality"
-SnapsToDevicePixels="True"/>
-                
-            </Grid>
-
-            <!-- Status -->
-
-            <Border Margin="0,20"
-                    Background="#3C4568"
-                    CornerRadius="15"
-                    Padding="15,5"
-                    HorizontalAlignment="Center" Height="33" Width="178">
-
-                <TextBlock VerticalAlignment="Center" TextAlignment="Center" Text="● AWAITING INPUT"
-                           Foreground="#D9E4FF"
-                           FontWeight="Bold"/>
+                    <Button x:Name="Colose" Content="🗙" Width="25" HorizontalAlignment="Right" Height="25" Click="Close_Click"  Margin="5" Background="Transparent" Style="{DynamicResource NavigationButtonStyle}" BorderBrush="{x:Null}" />
+                </Grid>
             </Border>
 
-            <!-- Title -->
+            <StackPanel Grid.Row="1" Margin="20,15,20,15">
 
-            <TextBlock Text="Biometric ID Required"
-                       FontSize="25"
-                       FontWeight="Bold"
-                       Foreground="White"
-                       HorizontalAlignment="Center"/>
+                <!-- Scanner -->
+                <Grid Width="130"
+                      Height="130"
+                      HorizontalAlignment="Center"
+                      Margin="0,5,0,15">
 
-            <TextBlock Margin="0,10"
-                       TextAlignment="Center"
-                       Foreground="#C2C9DA"
-                       FontSize="20
-                       "
-                       FontWeight="SemiBold"
-                       Width="404"
-                       TextWrapping="Wrap"
-                       Text="Please place your finger on the scaanner to authorize access to the SecureGuard Admin Console."/>
+                    <Ellipse Stroke="{DynamicResource MainColor}"
+                             StrokeThickness="2.5"
+                             StrokeDashArray="3 3"/>
 
-            <!-- Info -->
+                    <Ellipse Margin="12"
+                             Fill="#263553"/>
 
-            <Grid Margin="0,35">
+                    <Ellipse Margin="22"
+                             Fill="#1B2740"
+                             Stroke="#4D6BAA"
+                             StrokeThickness="1.5"/>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="15"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+                    <!-- Fingerprint Icon -->
+                    <Image x:Name="MyGifImage"
+                           Width="45"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           SnapsToDevicePixels="True"/>
+                </Grid>
 
-                <Border Grid.Column="0"
+                <!-- Status -->
+                <Border Background="{DynamicResource MainColor}"
                         CornerRadius="12"
-                        Background="#1A233B"
-                        Padding="15">
+                        Padding="12,4"
+                        HorizontalAlignment="Center"
+                        Height="26"
+                        Margin="0,0,0,12">
 
-                    <StackPanel>
-
-                        <TextBlock
-                            Text="TERMINAL ID"
-                            Foreground="#8E9AB9"/>
-
-                        <TextBlock
-    x:Name="txtDeviceName"
-    Foreground="White"
-    FontWeight="Bold"/>
-
-                        <TextBlock
-    x:Name="txtModel"
-    Foreground="White"
-    FontWeight="Bold"/>
-
-                        <TextBlock
-    x:Name="txtFirmware"
-    Foreground="White"
-    FontWeight="Bold"/>
-
-                        <TextBlock
-    x:Name="txtStatus"
-    Foreground="LimeGreen"
-    FontWeight="Bold"/>
-                    </StackPanel>
-
+                    <TextBlock VerticalAlignment="Center"
+                               TextAlignment="Center"
+                               Text="● AWAITING INPUT"
+                               Foreground="#D9E4FF"
+                               x:Name="txtStatus"
+                               FontSize="11"
+                               FontWeight="Bold"/>
                 </Border>
 
-                <Border Grid.Column="2"
-                        CornerRadius="12"
-                        Background="#1A233B"
-                        Padding="15">
+                <!-- Title -->
+                <TextBlock Text="Biometric ID Required"
+                           FontSize="17"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource Forground}"
+                           HorizontalAlignment="Center"/>
 
-                    <StackPanel>
+                <TextBlock Margin="0,6,0,0"
+                           TextAlignment="Center"
+                           Foreground="{DynamicResource Forground}"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"
+                           Text="Please place your finger on the scanner to authorize access to the SecureGuard Admin Console."/>
 
-                        <TextBlock
-                            Text="SECURITY LEVEL"
-                            Foreground="#8E9AB9"/>
+                <!-- Info -->
+                <Grid Margin="0,18,0,10">
 
-                        <TextBlock
-                            Text="TIER 4 (RESTRICTED)"
-                            Foreground="#FFA726"
-                            FontWeight="Bold"/>
-                    </StackPanel>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                </Border>
+                    <Border Grid.Column="0"
+                            CornerRadius="10"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="2"
+                            Background="{DynamicResource Background}"
+                            Padding="10">
 
-            </Grid>
+                        <StackPanel>
+                            <TextBlock Text="TERMINAL ID"
+                                        Foreground="{DynamicResource Forground}"
+                                      
+                                       FontSize="9"/>
 
-            <!-- Cancel -->
+                            <TextBlock x:Name="txtDeviceName"
+                                       Foreground="{DynamicResource Forground}"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
 
-            <Button Height="55"
-                    Margin="40"
-                    Content="Cancel Capture"
-                    FontSize="18"
-                Style="{DynamicResource NavigationButtonStyle}" Width="300"
-                    BorderThickness="0"/>
+                            <TextBlock x:Name="txtModel"
+                                       Foreground="{DynamicResource Forground}"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
 
-        </StackPanel>
+                            <TextBlock x:Name="txtFirmware"
+                                       Foreground="{DynamicResource Forground}"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
 
-        <!-- Footer -->
+                            <TextBlock x:Name="txtStatus1"
+                                       Foreground="LimeGreen"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-        <Grid VerticalAlignment="Bottom"
-              Margin="10">
+                    <Border Grid.Column="2"
+                            CornerRadius="10"
+                               BorderBrush="{DynamicResource BorderBrush}"
+   BorderThickness="2"
+                            Background="{DynamicResource Background}"
+                            Padding="10">
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="SECURITY LEVEL"
+                                       Foreground="#8E9AB9"
+                                       FontSize="9"/>
 
-            <TextBlock
-                Text="ENCRYPTION : AES-256-GCM"
-                Foreground="#5F6E95"/>
+                            <TextBlock Text="TIER 4 (RESTRICTED)"
+                                       Foreground="{DynamicResource Forground}"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            <TextBlock Grid.Column="1"
-                       HorizontalAlignment="Right"
-                       Text="LOG_STAMP : 14:58:26.448"
-                       Foreground="#5F6E95"/>
+                <!-- Cancel -->
+                <Button Height="42"
+                        Margin="0,10,0,0"
+                        Content="Scan Finger Print"
+                        FontSize="14"
+                         x:Name="btnCapture"
+                        Click="btnCapture_Click"
+                        Style="{DynamicResource NavigationButtonStyle}"
+                        BorderThickness="0" Width="220"/>
 
+                <!-- Footer -->
+                <Grid Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="AES-256-GCM"
+                               Foreground="#5F6E95"
+                               FontSize="9"/>
+
+                    <TextBlock Grid.Column="1"
+                               HorizontalAlignment="Right"
+                               Text="LOG_STAMP : 14:58:26.448"
+                               Foreground="#5F6E95"
+                               FontSize="9"/>
+                </Grid>
+
+            </StackPanel>
         </Grid>
-
-    </Grid>
+    </Border>
 </Window>

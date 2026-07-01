@@ -2,7 +2,13 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
+
+    <SolidColorBrush x:Key="MainColor" Color="#0660FE"/>
+    
+    
+    
     <SolidColorBrush x:Key="BirthdayBoderColor" Color="White"/>
+  
     <SolidColorBrush x:Key="BirthdayBoderBackColor" Color="White"/>
     <SolidColorBrush x:Key="BirthdayBoderHoverColor" Color="White"/>
     <SolidColorBrush x:Key="Background" Color="Transparent"/>

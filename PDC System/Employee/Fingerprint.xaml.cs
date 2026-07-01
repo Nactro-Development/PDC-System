@@ -32,18 +32,25 @@ namespace PDC_System
     {
         private readonly HikvisionService _hikvision;
 
-        public Fingerprint()
+        
+        private readonly int _fingerNo;
+
+        public string? FingerData { get; private set; }
+
+        public Fingerprint(int fingerNo)
         {
             InitializeComponent();
+
+            _fingerNo = fingerNo;
+
             StartGifAnimation();
 
             _hikvision = new HikvisionService(
-          "192.168.1.15",
-                    "admin",
-                    "priyanthaD@8");
+                "192.168.1.15",
+                "admin",
+                "priyanthaD@8");
 
             Loaded += Fingerprint_Loaded;
-
         }
 
         private void StartGifAnimation()
@@ -57,12 +64,50 @@ namespace PDC_System
                     "fingerprintss.gif")));
         }
 
+       
+        private async void btnCapture_Click(object sender, RoutedEventArgs e)
+        {
+            btnCapture.IsEnabled = false;
+
+            txtStatus.Text = "Scanning...";
+
+            try
+            {
+                string? data = await _hikvision.CaptureFingerprintData(_fingerNo);
+
+                if (!string.IsNullOrWhiteSpace(data))
+                {
+                    FingerData = data;
+
+                    DialogResult = true;
+                    Close();
+                    return;
+                }
+
+                MessageBox.Show("Fingerprint capture failed.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            btnCapture.IsEnabled = true;
+            txtStatus.Text = "Ready";
+        }
 
 
         private async void Fingerprint_Loaded(object sender, RoutedEventArgs e)
         {
+            btnCapture.IsEnabled = false;
+
             await LoadDeviceInfo();
+
+            bool online = await _hikvision.TestConnection();
+
+            btnCapture.IsEnabled = online;
         }
+
+
 
         private async Task LoadDeviceInfo()
         {
@@ -86,20 +131,25 @@ namespace PDC_System
 
                 bool online = await _hikvision.TestConnection();
 
-                txtStatus.Text = online ? "ONLINE" : "OFFLINE";
-                txtStatus.Foreground = online
+                txtStatus1.Text = online ? "ONLINE" : "OFFLINE";
+                txtStatus1.Foreground = online
                     ? Brushes.LimeGreen
                     : Brushes.Red;
             }
             catch
             {
-                txtStatus.Text = "OFFLINE";
-                txtStatus.Foreground = Brushes.Red;
+                txtStatus1.Text = "OFFLINE";
+                txtStatus1.Foreground = Brushes.Red;
             }
         }
 
 
 
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+
+            Close();
+        }
 
     }
 }

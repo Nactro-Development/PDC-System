@@ -30,10 +30,11 @@ namespace PDC_System
             LoadTimeDropdowns();
           
               Employee = new Employee();   // empty employee
+            EmployeeIncentiveTextBox.Text = "0.00";  // Set default value for EmployeeIncentiveTextBox
 
 
 
-        
+
         }
 
 
@@ -43,18 +44,29 @@ namespace PDC_System
 
 
 
-  
+
 
         private void Finger1_Click(object sender, RoutedEventArgs e)
         {
-          Fingerprint fingerprintWindow = new Fingerprint();
-            fingerprintWindow.ShowDialog();
+            Fingerprint win = new Fingerprint(1);
 
-        }   
+            if (win.ShowDialog() == true)
+            {
+                txtFinger1.Text = "Captured";
+                string fingerData = win.FingerData;
+            }
+        }
+
         private void Finger2_Click(object sender, RoutedEventArgs e)
         {
-           
-        }   
+            Fingerprint win = new Fingerprint(2);
+
+            if (win.ShowDialog() == true)
+            {
+                txtFinger2.Text = "Captured";
+                string fingerData = win.FingerData;
+            }
+        }
 
 
 
@@ -202,9 +214,9 @@ namespace PDC_System
             }
 
             // Validate Salary
-            if (!decimal.TryParse(EmployeeSalaryTextBox.Text.Trim(), out decimal employeeS) || employeeS < 0)
+            if (!decimal.TryParse(EmployeeIncentiveTextBox.Text.Trim(), out decimal employeeS) || employeeS < 0)
             {
-                CustomMessageBox.Show("Please enter a valid positive number for Salary.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show("Please enter a valid positive number for Incentive.", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -485,7 +497,7 @@ namespace PDC_System
         private void Close_Click(object sender, RoutedEventArgs e)
         {
 
-            Hide();
+            Close();
         }
 
         #endregion
@@ -683,14 +695,81 @@ namespace PDC_System
         }
 
 
+        private void EmployeeEmailTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string email = EmployeeEmailTextBox.Text.Trim();
+
+            if (string.IsNullOrEmpty(email) ||
+                Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                EmailErrorText.Text = "";
+                EmailErrorText.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                EmailErrorText.Text = "Please enter a valid email address.";
+                EmailErrorText.Visibility = Visibility.Visible;
+            }
+        }
+
+
+
+        private void EmployeeBasicTextBox_TextChanged(object sender, TextChangedEventArgs e)
+
+        {
+
+            EmployeeIncentiveTextBox_TextChanged();
+        }
+
+
+        private void EmployeeIncentiveTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EmployeeIncentiveTextBox_TextChanged();
+        }
+
+        private void EmployeeIncentiveTextBox_TextChanged()
+        {
+            if (!decimal.TryParse(EmployeeBasicSalaryTextBox.Text, out decimal basicSalary))
+                return;
+
+
+            if (!decimal.TryParse(EmployeeIncentiveTextBox.Text, out decimal incentive))
+                return;
+
+
+            decimal incentiveSalary = incentive == 0
+      ? basicSalary
+      : basicSalary + incentive;
+
+            EmployeeSalaryTextBox.Text = incentiveSalary.ToString("F2");
+
+        }
+
+
+        public void Autofill_Salary(object sender, RoutedEventArgs e)
+        {
+            if (!decimal.TryParse(EmployeeBasicSalaryTextBox.Text, out decimal basicSalary))
+                return;
+        
+
+
+
+
+            decimal dailySalary = basicSalary / 25m;
+            decimal ot = dailySalary / 8m;
+            decimal dot = ot * 1.5m;
+            decimal absent = dailySalary;
+
+            EmployeeOTTextBox.Text = ot.ToString("F2");
+            EmployeeDOTTextBox.Text = dot.ToString("F2");
+            EmployeeAbsentTextBox.Text = absent.ToString("F2");
+         
+        }
 
 
 
 
 
-
-
-   
 
 
     }
