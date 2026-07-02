@@ -1,13 +1,14 @@
 ﻿using Newtonsoft.Json;
+using PDC_System.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Security.Cryptography;
 
 namespace PDC_System
 {
@@ -86,9 +87,32 @@ namespace PDC_System
         }
 
 
-        private void DeleteEmployee_Click(object sender, RoutedEventArgs e)
+        private async void DeleteEmployee_Click(object sender, RoutedEventArgs e)
         {
             var selectedEmployee = EmployeeDataGrid.SelectedItem as Employee;
+
+
+
+
+            var hikvision = new HikvisionService(
+   "192.168.1.15",
+            "admin",
+            "priyanthaD@8");
+
+            bool success = await hikvision.DeleteUser(
+             selectedEmployee.EmployeeId
+            );
+
+            if (!success)
+            {
+                MessageBox.Show("Failed to create user on terminal.");
+                return;
+            }
+
+
+
+
+
 
             if (selectedEmployee != null)
             {

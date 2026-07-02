@@ -49,6 +49,22 @@ namespace PDC_System.Services
 
             _isSyncing = true;
 
+
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var home = Application.Current.Windows
+                              .OfType<Home>()
+                              .FirstOrDefault();
+
+
+
+                home?.Rotation_start();
+            });
+
+
+
+
             try
             {
                 int localCount = _database.GetAttendanceEventCount();
@@ -56,14 +72,48 @@ namespace PDC_System.Services
                 int totalMatches = await _hikvision.GetTotalMatches();
 
 
-                MessageBox.Show($"Local = {localCount}\nDevice = {totalMatches}");
+               
+
+
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var home = Application.Current.Windows
+                                  .OfType<Home>()
+                                  .FirstOrDefault();
+
+
+
+                    home?.updateattendacecheck_status(
+                    localCount,
+                    totalMatches
+                    );
+                });
+
+
+
+
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var home = Application.Current.Windows
+                                  .OfType<Home>()
+                                  .FirstOrDefault();
+
+                  
+
+                    home?.updateattendacecheck();
+                });
+
+
 
                 if (localCount >= totalMatches)
                     return;
 
                 int missing = totalMatches - localCount;
 
-                var events = await _hikvision.DownloadAttendanceEvents(
+                var events =
+ await _hikvision.DownloadAttendanceEvents(
                     localCount,
                     missing);
 
@@ -71,18 +121,26 @@ namespace PDC_System.Services
                 foreach (var item in events)
                 {
                     _database.SaveAttendanceEvent(item);
+
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        var home = Application.Current.Windows
+                                      .OfType<Home>()
+                                      .FirstOrDefault();
+
+
+
+                        home?.Rotation_Stop();
+                    });
+
+
+
                 }
 
 
 
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    var home = Application.Current.Windows
-                                 .OfType<Home>()
-                                 .FirstOrDefault();
 
-                    home?.updateattendacecheck();
-                });
 
 
 
@@ -97,6 +155,18 @@ namespace PDC_System.Services
             finally
             {
                 _isSyncing = false;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var home = Application.Current.Windows
+                                  .OfType<Home>()
+                                  .FirstOrDefault();
+
+
+
+                    home?.Rotation_Stop();
+                });
+
             }
         }
 

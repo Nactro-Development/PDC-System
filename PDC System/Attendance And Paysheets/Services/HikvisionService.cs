@@ -180,6 +180,11 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
                         Major = item["major"]?.Value<int>() ?? 0,
                         Minor = item["minor"]?.Value<int>() ?? 0
                     });
+
+
+
+                  
+
                 }
 
                
@@ -212,7 +217,11 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 
 
 
-        public async Task<bool> CreateUser(string employeeNo, string name)
+        public async Task<bool> CreateUser(
+     string employeeNo,
+     string name,
+     DateTime beginTime,
+     DateTime endTime)
         {
             var body = new
             {
@@ -224,8 +233,8 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
                     Valid = new
                     {
                         enable = true,
-                        beginTime = "2025-01-01T00:00:00",
-                        endTime = "2035-12-31T23:59:59",
+                        beginTime = beginTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        endTime = endTime.ToString("yyyy-MM-ddTHH:mm:ss"),
                         timeType = "local"
                     },
                     doorRight = "1"
@@ -355,6 +364,42 @@ $@"<?xml version=""1.0"" encoding=""UTF-8""?>
                 .Element(ns + "fingerData")
                 ?.Value;
         }
+
+
+        public async Task<string?> GetFingerprintData(
+           string employeeNo,
+           int fingerPrintID = 1,
+           int cardReaderNo = 1)
+        {
+            var body = new
+            {
+                FingerPrintCond = new
+                {
+                    searchID = "1",
+                    employeeNo = employeeNo,
+                    cardReaderNo = cardReaderNo,
+                    fingerPrintID = fingerPrintID
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            var response = await _client.PostAsync(
+                "/ISAPI/AccessControl/FingerPrintUpload?format=json",
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            response.EnsureSuccessStatusCode();
+
+            string result = await response.Content.ReadAsStringAsync();
+
+            JObject obj = JObject.Parse(result);
+
+            return obj["FingerPrintInfo"]?["FingerPrintList"]?
+                      .FirstOrDefault()?["fingerData"]?
+                      .ToString();
+        }
+
+
 
 
         public async Task<JObject> GetUserList(int start = 0, int max = 100)

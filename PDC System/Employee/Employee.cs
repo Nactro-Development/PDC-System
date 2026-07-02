@@ -96,6 +96,14 @@
         public bool Sunday { get; set; }
 
 
+        public bool fingerprint1 { get; set; } 
+        public bool fingerprint2 { get; set; } 
+
+
+        public DateTime? begintimee { get; set; }
+        public DateTime? endintimee { get; set; }
+
+
         // Removed ValidFrom and ValidTo properties
     }
 }

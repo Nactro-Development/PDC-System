@@ -80,11 +80,11 @@ namespace PDC_System
                     FingerData = data;
 
                     DialogResult = true;
-                    Close();
+                    txtStatus.Text = "Capture Succsesss Full";
                     return;
                 }
 
-                MessageBox.Show("Fingerprint capture failed.");
+                CustomMessageBox.Show("Fingerprint capture failed.");
             }
             catch (Exception ex)
             {
@@ -152,4 +152,15 @@ namespace PDC_System
         }
 
     }
+
+
+
+    public class PendingFingerprint
+    {
+        public int FingerId { get; set; }
+
+        public string FingerData { get; set; } = "";
+    }
+
+
 }

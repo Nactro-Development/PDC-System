@@ -83,7 +83,7 @@ namespace PDC_System
             };
 
 
-
+     
 
 
         }
@@ -407,8 +407,53 @@ namespace PDC_System
 
         public void updateattendacecheck()
         {
-            check_status.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+           
 
+            string DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            check_status.Text = ($"Last Check: {DATE}");
+        }
+
+        public void updateattendacecheck_status(int local, int device)
+        {
+            attendacecheck_status.Text = $"Local = {local}  Device = {device}";
+        }
+
+
+
+        private Storyboard _rotationStoryboard;
+
+        public void Rotation_start()
+        {
+            if (_rotationStoryboard != null)
+                return; // Already running
+
+            _rotationStoryboard = new Storyboard();
+
+            DoubleAnimation rotate = new DoubleAnimation
+            {
+                From = 0,
+                To = 360,
+                Duration = TimeSpan.FromSeconds(2),
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            Storyboard.SetTarget(rotate, LoadingImage);
+            Storyboard.SetTargetProperty(
+                rotate,
+                new PropertyPath("RenderTransform.Angle"));
+
+            _rotationStoryboard.Children.Add(rotate);
+            _rotationStoryboard.Begin();
+        }
+
+        public void Rotation_Stop()
+        {
+            if (_rotationStoryboard != null)
+            {
+                _rotationStoryboard.Stop();
+                _rotationStoryboard = null;
+            }
         }
 
 

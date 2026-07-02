@@ -530,7 +530,7 @@
                 <Border CornerRadius="14" Margin="5"
                         Background="{DynamicResource Background}"
                         Grid.Row="2" Grid.Column="3">
-                    <Grid HorizontalAlignment="Center">
+                    <Grid  Margin="20" HorizontalAlignment="Center"  >
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
@@ -544,7 +544,7 @@
                                    FontSize="22"
                                    FontWeight="SemiBold"/>
 
-                        <lvc:PieChart Grid.Column="0" x:Name="LoanPieChart"
+                        <lvc:PieChart  Grid.Column="0" x:Name="LoanPieChart"
                                       LegendLocation="None"
                                       InnerRadius="70"
                                       HoverPushOut="8"

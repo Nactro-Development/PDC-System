@@ -492,11 +492,22 @@ Margin="3" Width="250" Height="45">
 
                 <Grid Grid.Row="3" Grid.ColumnSpan="3" >
                     <StackPanel Orientation="Horizontal" Margin="20,0,0,0" >
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Assets/Backup.png" Width="15"/>
-                        
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" RenderTransformOrigin="0.5,0.5" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="LoadingImage"  Source="/Assets/Backup.png" Width="15">
+
+                            <Image.RenderTransform>
+                                <RotateTransform/>
+                            </Image.RenderTransform>
+                        </Image>
+
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="Fingerprint Sync" FontSize="10" Foreground="{DynamicResource Forground}" FontWeight="Regular" />
 
                         <TextBlock HorizontalAlignment="Center" x:Name="check_status" VerticalAlignment="Center" Margin="10,0,0,0" Text="Last Check: 2026-06-26 4:06pm" Foreground="Gray" />
+
+                    </StackPanel>
+
+                    <StackPanel HorizontalAlignment="Right"  VerticalAlignment="Center" >
+
+                        <TextBlock x:Name="attendacecheck_status" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20,0"  Foreground="Gray" />
 
                     </StackPanel>
 

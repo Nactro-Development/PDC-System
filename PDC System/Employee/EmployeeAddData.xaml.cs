@@ -1,15 +1,18 @@
-﻿using Microsoft.Win32;
+﻿using iText.Kernel.Pdf;
+using Microsoft.Win32;
 using Org.BouncyCastle.Asn1.Cms;
+using PDC_System.Services;
+using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System;
-using System.Diagnostics;
-using XamlAnimatedGif;
-
 using System.Windows.Media.Imaging;
+using XamlAnimatedGif;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace PDC_System
 {
@@ -19,6 +22,9 @@ namespace PDC_System
         public ImageInfo imageInfo { get; private set; }
 
         private Employee originalEmployee;
+
+
+        private readonly List<PendingFingerprint> _pendingFingerprints = new();
 
 
         private string customFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ImageImports");
@@ -42,6 +48,33 @@ namespace PDC_System
 
 
 
+        private void EndDatePicker_SelectedDateChanged(object sender, EventArgs e)
+        {
+
+           
+
+
+            if (begintimecal.SelectedDate > endtimecal.SelectedDate)
+            {
+                
+
+                CustomMessageBox.Show(
+                    "End Date cannot be earlier than Start Date.",
+                    "Invalid Date Range",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+              
+
+
+
+                return;
+            }
+
+            
+        }
+
+
 
 
 
@@ -50,10 +83,21 @@ namespace PDC_System
         {
             Fingerprint win = new Fingerprint(1);
 
+
             if (win.ShowDialog() == true)
             {
                 txtFinger1.Text = "Captured";
-                string fingerData = win.FingerData;
+
+
+                finger1true = true;
+
+                _pendingFingerprints.RemoveAll(x => x.FingerId == 1);
+
+                _pendingFingerprints.Add(new PendingFingerprint
+                {
+                    FingerId = 1,
+                    FingerData = win.FingerData!
+                });
             }
         }
 
@@ -64,7 +108,17 @@ namespace PDC_System
             if (win.ShowDialog() == true)
             {
                 txtFinger2.Text = "Captured";
-                string fingerData = win.FingerData;
+
+                finger2true = true;
+
+                _pendingFingerprints.RemoveAll(x => x.FingerId == 2);
+
+                _pendingFingerprints.Add(new PendingFingerprint
+                {
+                    FingerId = 2,
+                    FingerData = win.FingerData!
+                });
+
             }
         }
 
@@ -93,8 +147,16 @@ namespace PDC_System
             contact2.Text = Employee.Contactn2;
             NatId.Text = Employee.NID;
             birthday.SelectedDate = Employee.Birthday;
+            begintimecal.SelectedDate = Employee.begintimee;
+            endtimecal.SelectedDate = Employee.endintimee;
+
+            EmployeeIDTextBox.IsEnabled = false; // Disable editing of Employee ID in edit mode
+
+
             Department.Text = Employee.Department;
 
+            finger1true = Employee.fingerprint1;
+            finger2true = Employee.fingerprint2;
 
             CountOffDays.IsChecked = Employee.CountOffDays;
 
@@ -128,6 +190,15 @@ namespace PDC_System
 
 
 
+            txtFinger1.Text = Employee.fingerprint1 ? "Captured" : "Not Captured";
+            txtFinger2.Text = Employee.fingerprint2 ? "Captured" : "Not Captured";
+            txtFinger1.Foreground = Employee.fingerprint1 ? System.Windows.Media.Brushes.White : System.Windows.Media.Brushes.Red;
+            txtFinger2.Foreground = Employee.fingerprint2 ? System.Windows.Media.Brushes.White : System.Windows.Media.Brushes.Red;
+
+
+            Fingerorint1button.Background = Employee.fingerprint1 ? System.Windows.Media.Brushes.Blue : System.Windows.Media.Brushes.Red;
+            Fingerorint2button.Background = Employee.fingerprint2 ? System.Windows.Media.Brushes.Blue : System.Windows.Media.Brushes.Red;
+
             // store original copy (deep copy)
             originalEmployee = new Employee
             {
@@ -144,6 +215,8 @@ namespace PDC_System
                 NID = existingEmployee.NID,
                 Birthday = existingEmployee.Birthday,
                 Department = existingEmployee.Department,
+
+
 
                 Salary = existingEmployee.Salary,
                 BSalary = existingEmployee.BSalary,
@@ -181,6 +254,9 @@ namespace PDC_System
 
 
 
+
+
+
         private void adress_TextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             // You might want to add event logic here or remove this method if not needed.
@@ -196,7 +272,7 @@ namespace PDC_System
             public string SavedLocation { get; set; }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // Validate Name
             if (string.IsNullOrWhiteSpace(EmployeeNameTextBox.Text))
@@ -322,6 +398,43 @@ namespace PDC_System
 
 
 
+            var hikvision = new HikvisionService(
+       "192.168.1.15",
+                "admin",
+                "priyanthaD@8");
+
+            bool success = await hikvision.CreateUser(
+               EmployeeIDTextBox.Text.Trim(),
+               EmployeeNameTextBox.Text.Trim(),
+               begintimecal.SelectedDate.HasValue ? begintimecal.SelectedDate.Value : DateTime.Now,
+                endtimecal.SelectedDate.HasValue ? endtimecal.SelectedDate.Value : DateTime.Now.AddYears(10)
+
+
+            );
+
+            if (!success)
+            {
+                MessageBox.Show("Failed to create user on terminal.");
+                return;
+            }
+
+
+            foreach (var finger in _pendingFingerprints)
+            {
+                bool uploaded = await hikvision.UploadFingerprint(
+                    EmployeeIDTextBox.Text.Trim(),
+                    finger.FingerData,
+                    finger.FingerId);
+
+                if (!uploaded)
+                {
+                    MessageBox.Show($"Fingerprint {finger.FingerId} upload failed.");
+                    return;
+                }
+            }
+
+
+
             // Create Employee Object
             Employee = new Employee
             {
@@ -338,7 +451,15 @@ namespace PDC_System
                 Contactn2 = contact2.Text.Trim(),
                 NID = NatId.Text.Trim(),
                 Birthday = birthday.SelectedDate,
+                begintimee = begintimecal.SelectedDate,
+                endintimee = endtimecal.SelectedDate,
                 Department = Department.Text.Trim(),
+
+
+                fingerprint1 = finger1true,
+                fingerprint2 = finger2true,
+
+
 
                 CountOffDays = (CountOffDays.IsChecked == true),
 
@@ -361,7 +482,15 @@ namespace PDC_System
                 OvertimeAmount = employeeOT,
                 DoubleOvertimeAmount = employeeDOT,
                 AbesentAmount = employeeAbsent,
+
+
+
             };
+
+
+
+
+
 
             // Check if imageInfo is null before using it
             if (imageInfo != null)
@@ -520,6 +649,9 @@ namespace PDC_System
         }
 
         private bool vEntered = false;
+        private bool finger1true;
+        private bool finger2true;
+
         private void NatId_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             // Allow "V" only once

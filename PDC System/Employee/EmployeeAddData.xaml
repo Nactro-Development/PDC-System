@@ -249,7 +249,7 @@ Background="{DynamicResource Background}"
 
                                                     <!-- Finger 1 -->
                                                     <StackPanel Margin="5">
-                                                        <Button Height="45" 
+                                                        <Button Height="45" x:Name="Fingerorint1button"
                         Click="Finger1_Click" 
                         HorizontalAlignment="Center" 
                         Width="120" 
@@ -284,7 +284,7 @@ Background="{DynamicResource Background}"
 
                                                     <!-- Finger 2 -->
                                                     <StackPanel Margin="5">
-                                                        <Button Height="45" 
+                                                        <Button Height="45" x:Name="Fingerorint2button"
                         Click="Finger2_Click" 
                         HorizontalAlignment="Center" 
                         Width="120" 
@@ -333,7 +333,24 @@ Background="{DynamicResource Background}"
                                                 <TextBlock Text="NoPay" Margin="10" FontSize="14"/>
                                                 <TextBox  x:Name="NoPayTextBox" Style="{DynamicResource TextBoxStyle}" Margin="10" SelectionTextBrush="White" PreviewTextInput="NumberOnly_PreviewTextInput" FontSize="16"/>
                                             </StackPanel>
+                                     
+                                        </StackPanel>
 
+
+                                        <StackPanel Grid.Row="1">
+                                            <TextBlock Text="Begin Time" Margin="10" FontSize="14"/>
+                                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"  Margin="10" CornerRadius="5">
+                                                <cal:CustomDatePicker x:Name="begintimecal"  Width="auto"  Height="auto" />
+                                            </Border>
+                                        </StackPanel>
+
+                                        
+
+                                        <StackPanel Grid.Row="1" Grid.Column="1" >
+                                            <TextBlock Text="End Time" Margin="10" FontSize="14"/>
+                                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"  Margin="10" CornerRadius="5">
+                                                <cal:CustomDatePicker SelectedDateChanged="EndDatePicker_SelectedDateChanged" x:Name="endtimecal"  Width="auto"  Height="auto" />
+                                            </Border>
                                         </StackPanel>
 
 
